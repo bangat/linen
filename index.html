@@ -3,81 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한림병원 린넨류 요청</title>
+    <title>린넨실 요청서</title>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            position: relative; /* 추가: 메뉴바의 상대 위치 지정 */
         }
+
+        .menu-bar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .menu-bar div {
+            width: 30px;
+            height: 3px;
+            margin: 5px 0;
+            cursor: pointer;
+            background-color: black;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            width: 150px; /* 드롭다운 메뉴 너비 조정 */
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+
+        /* 요청하기 버튼과 같은 색상으로 아이콘 색상 설정 */
+        #cameraButton,
+        #submitBtn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px; /* 크기 조정 */
+            border: none;
+            cursor: pointer;
+            border-radius: 5px; /* 둥근 모양 */
+            margin-left: 20px; /* 요청하기 버튼과의 간격 */
+            display: inline-flex; /* 아이콘과 텍스트를 나란히 배치 */
+            align-items: center; /* 수직 가운데 정렬 */
+            font-size: 12px; /* 폰트 크기 조정 */
+        }
+
+        /* 카메라 아이콘의 크기와 여백 설정 */
+        .camera-icon {
+            font-size: 12px; /* 아이콘 크기 설정 */
+            margin-right: 8px; /* 아이콘과 텍스트 사이 여백 설정 */
+            vertical-align: middle; /* 아이콘을 수직 가운데 정렬 */
+        }
+
+        /* 요청하기 버튼의 아이콘 스타일 */
+        .submit-icon {
+            font-size: 12px; /* 아이콘 크기 설정 */
+            margin-right: 8px; /* 아이콘과 텍스트 사이 여백 설정 */
+            vertical-align: middle; /* 아이콘을 수직 가운데 정렬 */
+        }
+
         .form-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 5px;
         }
+
         .form-group label {
             margin-right: 2px;
             min-width: 100px;
         }
+
         .form-group input {
             flex-grow: 1;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 5px;
         }
-.tabs {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px; /* 탭 사이의 간격을 줄임 */
-    margin-bottom: 8px;
-}
-.tab {
-    cursor: pointer;
-    padding: 4px 6px; /* 탭의 패딩을 조정하여 컴팩트하게 설정 */
-    font-size: 13px; /* 탭의 폰트 사이즈를 일관성 있게 설정 */
-    border: 1px solid #ddd; /* 탭의 테두리 추가 */
-    border-radius: 5px; /* 탭의 모서리를 둥글게 처리 */
-    background-color: #f0f0f0; /* 탭의 배경색 설정 */
-}
 
-.tab.active {
-    background-color: #4CAF50;
-    color: white;
-}
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tab {
+            cursor: pointer;
+            padding: 4px 6px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
         .form-section {
             display: none;
         }
+
         .form-section.active {
             display: block;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
         }
+
         th {
             background-color: #f2f2f2;
         }
-td:first-child {
-            width: 75%; /* 품목 칸의 너비를 넓게 설정 */
+
+        td:first-child {
+            width: 75%;
         }
+
         td:last-child {
-            width: 25%; /* 입력칸의 너비를 좁게 설정 */
+            width: 25%;
         }
-item-name {
-            letter-spacing: 10px; /* 글자 사이의 간격 설정 */
-        }
-        input[type="number"], input[type="text"] {
+
+        input[type="number"],
+        input[type="text"] {
             width: 100%;
             box-sizing: border-box;
             padding: 5px;
         }
+
         input[type="submit"] {
             background-color: #4CAF50;
             color: white;
@@ -85,36 +174,81 @@ item-name {
             border: none;
             cursor: pointer;
         }
+
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+
         .camera-section {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            flex-wrap: wrap; /* 필요에 따라 버튼과 이미지를 여러 줄로 나누기 위해 flex-wrap 추가 */
             margin-bottom: 20px;
         }
+
         .camera-section button {
             cursor: pointer;
-            padding: 10px 20px;
-            background-color: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 8px 16px; /* 크기 조정 */
+            background-color: #3498db;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            margin-right: 20px;
+            font-size: 12px; /* 폰트 크기 조정 */
         }
+
+        .camera-section input[type="file"] {
+            display: none; /* 파일 업로드 필드는 숨기고 버튼을 클릭했을 때 파일 업로드 필드를 클릭하도록 설정 */
+        }
+
         #preview {
             max-width: 100%;
             margin-top: 10px;
             display: none;
         }
+
         .error-message {
             color: red;
             font-weight: bold;
             margin-top: 10px;
         }
+
+#statusMessage {
+    position: fixed;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; /* 너비를 더 넓게 설정 */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 999;
+    display: none;
+    white-space: normal; /* 텍스트 줄 바꿈 설정 */
+    font-size: 14px; /* 필요시 글꼴 크기 조정 */
+}
+
     </style>
 </head>
 <body>
-    <h1>한림병원 린넨실 요청서</h1>
+
+
+    <div class="menu-bar" id="menuBar">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <a href="#">공지사항</a>
+        <a href="#">관리자 문의</a>
+    </div>
+
+
+
+    <h1>린넨실 요청서</h1>
     <form id="linenRequestForm">
         <div class="form-group">
             <label for="ward">병동명 :</label>
@@ -127,11 +261,11 @@ item-name {
 
         <div class="tabs">
             <div class="tab active" data-tab="sheet">시트/기타</div>
-            <div class="tab" data-tab="normal">일반환의</div>
-            <div class="tab" data-tab="ortho">정형환의</div>
-            <div class="tab" data-tab="inventory">재고사진</div>
+            <div class="tab" data-tab="normal">일반 환의</div>
+            <div class="tab" data-tab="ortho">정형 환의</div>
+            <div class="tab" data-tab="inventory">재고/요청</div>
         </div>
-         <div id="sheet" class="form-section active">
+        <div id="sheet" class="form-section active">
             <table>
                 <tr>
                     <th>품목</th>
@@ -154,7 +288,7 @@ item-name {
                     <td><input type="number" name="중환의_요청수량" min="0"></td>
                 </tr>
                 <tr>
-                    <td>이      불</td>
+                    <td>이 불</td>
                     <td><input type="number" name="이불_요청수량" min="0"></td>
                 </tr>
                 <tr>
@@ -166,7 +300,7 @@ item-name {
                     <td><input type="number" name="억제대_요청수량" min="0"></td>
                 </tr>
                 <tr>
-                    <td>수      건</td>
+                    <td>수 건</td>
                     <td><input type="number" name="수건_요청수량" min="0"></td>
                 </tr>
             </table>
@@ -219,7 +353,7 @@ item-name {
                     <td><input type="number" name="L_하_요청수량" min="0"></td>
                 </tr>
                 <tr>
-                    <td>M 상</td>
+                    <td>M 상의</td>
                     <td><input type="number" name="M_상_요청수량" min="0"></td>
                 </tr>
                 <tr>
@@ -237,17 +371,16 @@ item-name {
             </table>
         </div>
 
+        
+
         <div id="ortho" class="form-section">
             <table>
                 <tr>
                     <th>품목</th>
                     <th>요청수량</th>
                 </tr>
-                <tr>
-
-
-            
-                    <td>3XL 상의</rd>
+             <tr>
+                    <td>3XL 상의</td>
                     <td><input type="number" name="3XL_상_요청수량" min="0"></td>
                 </tr>
                 <tr>
@@ -263,7 +396,6 @@ item-name {
                     <td><input type="number" name="2XL_하_요청수량" min="0"></td>
                 </tr>
                 <tr>
-
                     <td>XL 상의</td>
                     <td><input type="number" name="XL_상_요청수량" min="0"></td>
                 </tr>
@@ -298,162 +430,210 @@ item-name {
             </table>
         </div>
 
-        <div id="inventory" class="form-section">
-            <div class="camera-section">
-                <input type="file" id="inventoryPhoto" name="inventoryPhoto" accept="image/*" capture="environment" style="display: none;">
-                <button id="cameraButton" type="button">카메라 활성화</button>
-                <img id="preview" src="#" alt="업로드된 사진">
-            </div>
+
+
+
+<div id="inventory" class="form-section">
+    <div class="camera-section">
+        <div class="button-container">
+            <button type="button" id="cameraButton">
+                <i class="fa fa-camera camera-icon"></i> 카메라 촬영
+            </button>
+            <input type="file" id="inventoryPhoto" style="display:none;" accept="image/*">
         </div>
-<input type="submit" value="요청하기" id="submitBtn">
-<p id="statusMessage" style="display:none;">요청 중 입니다. 잠시만 기다려 주세요...</p>
-        
+        <button type="submit" id="submitBtn">
+            <i class="fas fa-paper-plane submit-icon"></i> 요청하기
+        </button>
+        <img id="preview" src="#" alt="Preview" style="max-width:100%; display:none;">
+        <div id="statusMessage" style="display:none;">요청을 전송중 입니다..잠시만 기다려주세요..</div>
+    </div> <!-- 이 태그는 camera-section을 닫습니다. -->
+</div> <!-- 이 태그는 form-section을 닫습니다. -->
+
     </form>
+
+    <div id="responseMessage"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
-        $(document).ready(function() {
-    $("#requestDate").datepicker({
-        dateFormat: 'yy-mm-dd'
+  $(document).ready(function() {
+
+    // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
+    $("h1").click(function() {
+        $(".tab").removeClass("active");
+        $(".tab[data-tab='sheet']").addClass("active");
+        $(".form-section").removeClass("active");
+        $("#sheet").addClass("active");
+        $(".tab").css("background-color", ""); // 모든 탭의 배경색 초기화
+        $(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
     });
 
+    // 탭 클릭 시 해당 섹션으로 이동
     $(".tab").click(function() {
+        var tabId = $(this).attr("data-tab");
         $(".tab").removeClass("active");
         $(this).addClass("active");
-
-        var tabId = $(this).attr("data-tab");
         $(".form-section").removeClass("active");
         $("#" + tabId).addClass("active");
+
+        // 모든 탭의 배경색 초기화 후 클릭한 탭의 배경색을 초록색으로 변경
+        $(".tab").css("background-color", "");
+        $(this).css("background-color", "#4CAF50");
     });
+   
+            $("#requestDate").datepicker({
+                dateFormat: 'yy-mm-dd'
+            });
 
-    $("#cameraButton").click(function() {
-        $("#inventoryPhoto").click();
-    });
+            $(".tab").click(function() {
+                $(".tab").removeClass("active");
+                $(this).addClass("active");
 
-    $("#inventoryPhoto").change(function(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
+                var tabId = $(this).attr("data-tab");
+                $(".form-section").removeClass("active");
+                $("#" + tabId).addClass("active");
+            });
 
-        reader.onload = function(e) {
-            $("#preview").attr("src", e.target.result);
-            $("#preview").show();
-        };
+            $("#cameraButton").click(function() {
+                $("#inventoryPhoto").click();
+            });
 
-        reader.readAsDataURL(file);
-    });
+            $("#inventoryPhoto").change(function(event) {
+                const file = event.target.files[0];
+                const reader = new FileReader();
 
-    $("#linenRequestForm").submit(function(event) {
-        event.preventDefault();
+                reader.onload = function(e) {
+                    $("#preview").attr("src", e.target.result);
+                    $("#preview").show();
+                };
 
-        const wardValue = $("#ward").val().trim();
-        const requestDate = $("#requestDate").val();
-        const photoFile = $("#inventoryPhoto")[0].files[0];
+                reader.readAsDataURL(file);
+            });
 
-        if (!wardValue || !requestDate || !photoFile) {
-            alert('병동명, 입고날짜 및 사진은 필수 입력 항목입니다.');
-            return;
-        }
-
-        $("#submitBtn").prop('disabled', true); // 요청 버튼 비활성화
-        $("#statusMessage").show(); // 요청 중 메시지 표시
-
-        let message = `<b>병동명:</b> ${wardValue}\n`;
-        message += `<b>입고날짜:</b> ${requestDate}\n\n`;
-
-        message += `<b>[시트/기타]</b>\n`;
-        $("#sheet input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
-            const itemCount = $(this).val();
-            if (itemCount > 0) {
-                message += `${itemName} ${itemCount}개\n`;
-            }
+// 삼선 메뉴바 클릭 이벤트
+        $("#menuBar").click(function() {
+            $("#dropdownMenu").toggle();
         });
 
-        message += `\n<b>[일반환의]</b>\n`;
-        $("#normal input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
-            const itemCount = $(this).val();
-            if (itemCount > 0) {
-                message += `${itemName} ${itemCount}개\n`;
-            }
-        });
+            $("#linenRequestForm").submit(function(event) {
+                event.preventDefault();
 
-        message += `\n<b>[정형환의]</b>\n`;
-        $("#ortho input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
-            const itemCount = $(this).val();
-            if (itemCount > 0) {
-                message += `${itemName} ${itemCount}개\n`;
-            }
-        });
+                const wardValue = $("#ward").val().trim();
+                const requestDate = $("#requestDate").val();
+                const photoFile = $("#inventoryPhoto")[0].files[0];
 
-        const chatId = "5432510881"; // 텔레그램 채팅방 ID
-        const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
-        const url = `https://api.telegram.org/bot${token}/sendMessage`;
+                if (!wardValue || !requestDate) {
+                    alert('병동명과 입고 날짜는 필수 입력 항목입니다.');
+                    return;
+                }
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chat_id: chatId,
-                parse_mode: 'HTML',
-                text: message
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                const photoUrl = `https://api.telegram.org/bot${token}/sendPhoto`;
-                const blob = dataURItoBlob($("#preview").attr("src"));
+                $("#submitBtn").prop('disabled', true); // 요청 버튼 비활성화
+                $("#statusMessage").show(); // 요청 중 메시지 표시
 
-                let photoFormData = new FormData();
-                photoFormData.append('chat_id', chatId);
-                photoFormData.append('photo', blob);
+                let message = `병동명 : ${wardValue}\n`;
+                message += `입고날짜 : ${requestDate}\n\n`;
 
-                return fetch(photoUrl, {
-                    method: 'POST',
-                    body: photoFormData
+                message += `[시트/기타]\n`;
+                $("#sheet input[type='number']").each(function() {
+                    const itemName = $(this).parent().prev().text().trim();
+                    const itemCount = $(this).val();
+                    if (itemCount > 0) {
+                        message += `${itemName} ${itemCount}개\n`;
+                    }
                 });
-            } else {
-                throw new Error('메시지 전송 실패');
-            }
-        })
-        .then(photoResponse => photoResponse.json())
-        .then(photoData => {
-            if (photoData.ok) {
-                alert('요청이 성공적으로 전송되었습니다.');
-                $("#linenRequestForm")[0].reset();
-                $("#preview").attr("src", "#");
-                $("#preview").hide();
-            } else {
-                throw new Error('사진 전송 실패');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('요청을 전송하는 도중 오류가 발생했습니다.');
-        })
-        .finally(() => {
-            $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
-            $("#statusMessage").hide(); // 요청 중 메시지 숨기기
-        });
-    });
 
-    function dataURItoBlob(dataURI) {
-        const byteString = atob(dataURI.split(',')[1]);
-        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        return new Blob([ab], { type: mimeString });
-    }
-});
+                message += `\n[일반환의]\n`;
+                $("#normal input[type='number']").each(function() {
+                    const itemName = $(this).parent().prev().text().trim();
+                    const itemCount = $(this).val();
+                    if (itemCount > 0) {
+                        message += `${itemName} ${itemCount}개\n`;
+                    }
+                });
+
+                message += `\n[정형환의]\n`;
+                $("#ortho input[type='number']").each(function() {
+                    const itemName = $(this).parent().prev().text().trim();
+                    const itemCount = $(this).val();
+                    if (itemCount > 0) {
+                        message += `${itemName} ${itemCount}개\n`;
+                    }
+                });
+
+                const chatId = "5432510881"; // 텔레그램 채팅방 ID
+                const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
+                let url;
+                let formData;
+
+                if (photoFile) {
+                    // 사진 파일이 첨부된 경우
+                    url = `https://api.telegram.org/bot${token}/sendPhoto`;
+                    formData = new FormData();
+                    formData.append('chat_id', chatId);
+                    formData.append('photo', photoFile);
+                    formData.append('caption', message);
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.ok) {
+                            alert('요청이 성공적으로 전송되었습니다.');
+                            $("#linenRequestForm")[0].reset();
+                            $("#preview").attr("src", "#");
+                            $("#preview").hide();
+                        } else {
+                            throw new Error('전송 실패');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('요청을 전송하는 도중 오류가 발생했습니다.');
+                    })
+                    .finally(() => {
+                        $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
+                        $("#statusMessage").hide(); // 요청 중 메시지 숨기기
+                    });
+                } else {
+                    // 사진 파일이 첨부되지 않은 경우
+                    url = `https://api.telegram.org/bot${token}/sendMessage`;
+                    formData = JSON.stringify({
+                        chat_id: chatId,
+                        parse_mode: 'HTML',
+                        text: message
+                    });
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.ok) {
+                            alert('요청이 성공적으로 전송되었습니다.');
+                            $("#linenRequestForm")[0].reset();
+                        } else {
+                            throw new Error('전송 실패');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('요청을 전송하는 도중 오류가 발생했습니다.');
+                    })
+                    .finally(() => {
+                        $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
+                        $("#statusMessage").hide(); // 요청 중 메시지 숨기기
+                    });
+                }
+            });
+        });
     </script>
 </body>
 </html>
+
 
