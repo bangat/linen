@@ -135,13 +135,17 @@
 
     <script>
 
-        // 공지사항 링크 클릭 시 처리
         document.addEventListener('DOMContentLoaded', function() {
-            const noticeHeader = document.querySelector('h1:first-of-type'); // 첫 번째 h1 요소 선택
-            noticeHeader.addEventListener('click', function() {
-                window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
-            });
-        });
+    const headers = document.querySelectorAll('h1');
+    const noticeHeader = headers[0]; // 첫 번째 h1 요소
+    const linenRequestHeader = headers[1]; // 두 번째 h1 요소
+
+    noticeHeader.addEventListener('click', function() {
+        window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
+    });
+
+    // 필요시 두 번째 h1 요소에 다른 이벤트 리스너를 추가할 수 있음
+});
 
         $(document).ready(function() {
             $('#adminPageLink').click(function(e) {
