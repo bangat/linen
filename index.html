@@ -34,9 +34,16 @@
             padding: 10px;
         }
 
-        .header-container h1 {
+        .header-container h1:first-of-type {
             margin: 0;
-            font-size: 20px; /* 필요시 글꼴 크기 조정 */
+            font-size: 25px; /* 공지사항의 글꼴 크기 */
+        }
+
+        .header-container h1:last-of-type {
+            margin: 0;
+            font-size: 18px; /* 린넨실 요청서의 글꼴 크기 */
+            flex: 1;
+            text-align: center; /* 중앙 정렬 */
         }
     </style>
 </head>
