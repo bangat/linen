@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"> <!-- UTF-8 문자 인코딩 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일 화면에 최적화된 뷰포트 설정 -->
+    <title>관리자 페이지</title> <!-- 페이지 제목 설정 -->
+    <link rel="stylesheet" href="admin.css"> <!-- admin.css 파일 연결 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 추가 -->
+    <style>
+        /* 전체 페이지 스타일링 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* 병동 섹션 스타일링 */
+        .ward-section {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ward-section h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* 요청 목록 스타일링 */
+        .request-list {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .request-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .request-item:last-child {
+            border-bottom: none;
+        }
+
+        .request-item h3 {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .request-item p {
+            font-size: 14px;
+            color: #777;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>관리자 페이지</h1> <!-- 페이지 제목 표시 -->
+    </header>
+
+    <main>
+        <section class="ward-section" id="wardA">
+            <h2>병동 A 요청 목록</h2>
+            <div class="request-list" id="wardARequests">
+                <!-- 여기에 병동 A의 요청 데이터를 동적으로 추가할 예정 -->
+            </div>
+        </section>
+
+        <section class="ward-section" id="wardB">
+            <h2>병동 B 요청 목록</h2>
+            <div class="request-list" id="wardBRequests">
+                <!-- 여기에 병동 B의 요청 데이터를 동적으로 추가할 예정 -->
+            </div>
+        </section>
+
+        <section class="ward-section" id="wardC">
+            <h2>병동 C 요청 목록</h2>
+            <div class="request-list" id="wardCRequests">
+                <!-- 여기에 병동 C의 요청 데이터를 동적으로 추가할 예정 -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- 추가적인 푸터 내용을 여기에 추가할 수 있습니다 -->
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            // 병동 A의 요청 데이터 예시
+            var wardARequests = [
+                { itemName: "대 시트", itemCount: 5 },
+                { itemName: "이불", itemCount: 3 },
+                // 추가적인 요청 데이터 추가 가능
+            ];
+
+            // 병동 B의 요청 데이터 예시
+            var wardBRequests = [
+                { itemName: "2XL 상의", itemCount: 2 },
+                { itemName: "XL 하의", itemCount: 4 },
+                // 추가적인 요청 데이터 추가 가능
+            ];
+
+            // 병동 C의 요청 데이터 예시
+            var wardCRequests = [
+                { itemName: "3XL 상의", itemCount: 1 },
+                { itemName: "베갯잇", itemCount: 2 },
+                // 추가적인 요청 데이터 추가 가능
+            ];
+
+            // 병동 A 요청 데이터를 HTML로 변환하여 추가
+            wardARequests.forEach(function(request) {
+                var html = '<div class="request-item">';
+                html += '<h3>' + request.itemName + '</h3>';
+                html += '<p>요청 수량: ' + request.itemCount + '</p>';
+                html += '</div>';
+                $('#wardARequests').append(html);
+            });
+
+            // 병동 B 요청 데이터를 HTML로 변환하여 추가
+            wardBRequests.forEach(function(request) {
+                var html = '<div class="request-item">';
+                html += '<h3>' + request.itemName + '</h3>';
+                html += '<p>요청 수량: ' + request.itemCount + '</p>';
+                html += '</div>';
+                $('#wardBRequests').append(html);
+            });
+
+            // 병동 C 요청 데이터를 HTML로 변환하여 추가
+            wardCRequests.forEach(function(request) {
+                var html = '<div class="request-item">';
+                html += '<h3>' + request.itemName + '</h3>';
+                html += '<p>요청 수량: ' + request.itemCount + '</p>';
+                html += '</div>';
+                $('#wardCRequests').append(html);
+            });
+        });
+    </script> <!-- admin.js 파일 추가 -->
+</body>
+</html>
