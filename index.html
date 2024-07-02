@@ -26,20 +26,36 @@
             white-space: normal; /* 텍스트 줄 바꿈 설정 */
             font-size: 14px; /* 필요시 글꼴 크기 조정 */
         }
+
+
+.content h1:last-of-type {
+    text-align: left; /* 마지막 h1 요소만 우측 정렬 */
+    font-size: 25px; /* 필요시 글꼴 크기 조정 */
+
+
+}
     </style>
 </head>
 <body>
+
+   
+   
     <div class="menu-bar" id="menuBar">
         <div></div>
         <div></div>
         <div></div>
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
-        <a href="#">공지사항</a>
+        <a href="공지사항.html">공지사항</a>
         <a href="#" id="adminPageLink">관리자 페이지</a>
     </div>
 
-    <h1>린넨실 요청서</h1>
+
+    <div class="content">
+        <h1>린넨실 요청서</h1>
+        <h1>공지사항</h1>
+    </div>
+
     <form id="linenRequestForm">
         <div class="form-group">
             <label for="ward">병동명 :</label>
@@ -118,6 +134,15 @@
     <script src="js.js"></script>
 
     <script>
+
+        // 공지사항 링크 클릭 시 처리
+        document.addEventListener('DOMContentLoaded', function() {
+            const noticeHeader = document.querySelector('h1:first-of-type'); // 첫 번째 h1 요소 선택
+            noticeHeader.addEventListener('click', function() {
+                window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
+            });
+        });
+
         $(document).ready(function() {
             $('#adminPageLink').click(function(e) {
                 e.preventDefault();
