@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
- <style>
+    <style>
         #statusMessage {
             position: fixed;
             top: 70%;
@@ -27,19 +27,20 @@
             font-size: 14px; /* 필요시 글꼴 크기 조정 */
         }
 
+        .header-container {
+            display: flex;
+            justify-content: space-between; /* 요소를 양 끝으로 배치 */
+            align-items: center; /* 세로 중앙 정렬 */
+            padding: 10px;
+        }
 
-.content h1:last-of-type {
-    text-align: left; /* 마지막 h1 요소만 우측 정렬 */
-    font-size: 25px; /* 필요시 글꼴 크기 조정 */
-
-
-}
+        .header-container h1 {
+            margin: 0;
+            font-size: 25px; /* 필요시 글꼴 크기 조정 */
+        }
     </style>
 </head>
 <body>
-
-   
-   
     <div class="menu-bar" id="menuBar">
         <div></div>
         <div></div>
@@ -49,11 +50,11 @@
         <a href="공지사항.html">공지사항</a>
         <a href="#" id="adminPageLink">관리자 페이지</a>
     </div>
-
-
     <div class="content">
-        <h1>공지사항</h1>
-        <h1>린넨실 요청서</h1>
+        <div class="header-container">
+            <h1 id="noticeHeader">공지사항</h1>
+            <h1>린넨실 요청서</h1>
+        </div>
     </div>
 
     <form id="linenRequestForm">
@@ -65,7 +66,6 @@
             <label for="requestDate">입고 날짜 :</label>
             <input type="text" id="requestDate" name="requestDate" readonly placeholder="입고 요청일을 선택해주세요.">
         </div>
-
         <div class="tabs">
             <div class="tab active" data-tab="sheet">시트/기타</div>
             <div class="tab" data-tab="normal">일반 환의</div>
@@ -81,7 +81,6 @@
                 </tr>
             </table>
         </div>
-
         <div id="normal" class="form-section">
             <table>
                 <tr>
@@ -90,7 +89,6 @@
                 </tr>
             </table>
         </div>
-
         <div id="ortho" class="form-section">
             <table>
                 <tr>
@@ -99,7 +97,6 @@
                 </tr>
             </table>
         </div>
-
         <div id="uniform" class="form-section">
             <table>
                 <tr>
@@ -108,7 +105,6 @@
                 </tr>
             </table>
         </div>
-
         <div id="inventory" class="form-section">
             <div class="camera-section">
                 <div class="button-container">
@@ -123,7 +119,7 @@
                 <img id="preview" src="#" alt="Preview" style="max-width:100%; display:none;">
             </div>
         </div>
-                <div id="statusMessage">요청을 전송중 입니다..잠시만 기다려주세요..</div>
+        <div id="statusMessage">요청을 전송중 입니다..잠시만 기다려주세요..</div>
     </form>
 
     <div id="responseMessage"></div>
@@ -132,20 +128,14 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="linen_request_form.js"></script>
     <script src="js.js"></script>
-
     <script>
-
+        // 공지사항 링크 클릭 시 처리
         document.addEventListener('DOMContentLoaded', function() {
-    const headers = document.querySelectorAll('h1');
-    const noticeHeader = headers[0]; // 첫 번째 h1 요소
-    const linenRequestHeader = headers[1]; // 두 번째 h1 요소
-
-    noticeHeader.addEventListener('click', function() {
-        window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
-    });
-
-    // 필요시 두 번째 h1 요소에 다른 이벤트 리스너를 추가할 수 있음
-});
+            const noticeHeader = document.querySelector('#noticeHeader'); // 첫 번째 h1 요소 선택
+            noticeHeader.addEventListener('click', function() {
+                window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
+            });
+        });
 
         $(document).ready(function() {
             $('#adminPageLink').click(function(e) {
@@ -169,7 +159,7 @@
                 { name: '수 건', key: '수건_요청수량' }
             ];
 
-   	const requiredSizes = ['3XL', '2XL', 'XL', 'L'];
+            const requiredSizes = ['3XL', '2XL', 'XL', 'L'];
             const sizes = ['4XL', '3XL', '2XL', 'XL', 'L', 'M', 'S'];
             const types = ['상의', '하의'];
 
@@ -206,8 +196,6 @@
             populateTable('ortho', generateClothingItems(sizes.slice(1), types)); 
             populateTable('uniform', generateClothingItems(requiredSizes, types)); 
         });
-
-
     </script>
 </body>
 </html>
