@@ -4,241 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>린넨실 요청서</title>
+    <link rel="stylesheet" href="linen.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
+ <style>
+        #statusMessage {
+            position: fixed;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; /* 너비를 더 넓게 설정 */
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
             padding: 20px;
-            position: relative; /* 추가: 메뉴바의 상대 위치 지정 */
-        }
-
-        .menu-bar {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .menu-bar div {
-            width: 30px;
-            height: 3px;
-            margin: 5px 0;
-            cursor: pointer;
-            background-color: black;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 50px;
-            right: 10px;
-            background-color: white;
-            border: 1px solid #ccc;
-            z-index: 999;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-            width: 150px; /* 드롭다운 메뉴 너비 조정 */
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-            color: black;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .dropdown-menu a:last-child {
-            border-bottom: none;
-        }
-
-        /* 요청하기 버튼과 같은 색상으로 아이콘 색상 설정 */
-        #cameraButton,
-        #submitBtn {
-            background-color: #3498db;
-            color: white;
-            padding: 8px 16px; /* 크기 조정 */
-            border: none;
-            cursor: pointer;
-            border-radius: 5px; /* 둥근 모양 */
-            margin-left: 20px; /* 요청하기 버튼과의 간격 */
-            display: inline-flex; /* 아이콘과 텍스트를 나란히 배치 */
-            align-items: center; /* 수직 가운데 정렬 */
-            font-size: 12px; /* 폰트 크기 조정 */
-        }
-
-        /* 카메라 아이콘의 크기와 여백 설정 */
-        .camera-icon {
-            font-size: 12px; /* 아이콘 크기 설정 */
-            margin-right: 8px; /* 아이콘과 텍스트 사이 여백 설정 */
-            vertical-align: middle; /* 아이콘을 수직 가운데 정렬 */
-        }
-
-        /* 요청하기 버튼의 아이콘 스타일 */
-        .submit-icon {
-            font-size: 12px; /* 아이콘 크기 설정 */
-            margin-right: 8px; /* 아이콘과 텍스트 사이 여백 설정 */
-            vertical-align: middle; /* 아이콘을 수직 가운데 정렬 */
-        }
-
-        .form-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .form-group label {
-            margin-right: 2px;
-            min-width: 100px;
-        }
-
-        .form-group input {
-            flex-grow: 1;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 5px;
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .tab {
-            cursor: pointer;
-            padding: 4px 6px;
-            font-size: 13px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f0f0f0;
-        }
-
-        .tab.active {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .form-section {
-            display: none;
-        }
-
-        .form-section.active {
-            display: block;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        td:first-child {
-            width: 75%;
-        }
-
-        td:last-child {
-            width: 25%;
-        }
-
-        input[type="number"],
-        input[type="text"] {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 5px;
-        }
-
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        .camera-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap; /* 필요에 따라 버튼과 이미지를 여러 줄로 나누기 위해 flex-wrap 추가 */
-            margin-bottom: 20px;
-        }
-
-        .camera-section button {
-            cursor: pointer;
-            padding: 8px 16px; /* 크기 조정 */
-            background-color: #3498db;
-            border: none;
             border-radius: 10px;
-            color: white;
-            margin-right: 20px;
-            font-size: 12px; /* 폰트 크기 조정 */
-        }
-
-        .camera-section input[type="file"] {
-            display: none; /* 파일 업로드 필드는 숨기고 버튼을 클릭했을 때 파일 업로드 필드를 클릭하도록 설정 */
-        }
-
-        #preview {
-            max-width: 100%;
-            margin-top: 10px;
+            text-align: center;
+            z-index: 999;
             display: none;
+            white-space: normal; /* 텍스트 줄 바꿈 설정 */
+            font-size: 14px; /* 필요시 글꼴 크기 조정 */
         }
-
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-#statusMessage {
-    position: fixed;
-    top: 70%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%; /* 너비를 더 넓게 설정 */
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    z-index: 999;
-    display: none;
-    white-space: normal; /* 텍스트 줄 바꿈 설정 */
-    font-size: 14px; /* 필요시 글꼴 크기 조정 */
-}
-
     </style>
 </head>
 <body>
-
-
     <div class="menu-bar" id="menuBar">
         <div></div>
         <div></div>
@@ -246,10 +36,8 @@
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
         <a href="#">공지사항</a>
-        <a href="#">관리자 문의</a>
+        <a href="#" id="adminPageLink">관리자 페이지</a>
     </div>
-
-
 
     <h1>린넨실 요청서</h1>
     <form id="linenRequestForm">
@@ -266,6 +54,7 @@
             <div class="tab active" data-tab="sheet">시트/기타</div>
             <div class="tab" data-tab="normal">일반 환의</div>
             <div class="tab" data-tab="ortho">정형 환의</div>
+            <div class="tab" data-tab="uniform">근 무 복</div>
             <div class="tab" data-tab="inventory">재고/요청</div>
         </div>
         <div id="sheet" class="form-section active">
@@ -273,38 +62,6 @@
                 <tr>
                     <th>품목</th>
                     <th>요청수량</th>
-                </tr>
-                <tr>
-                    <td>대 시 트</td>
-                    <td><input type="number" name="대시트_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>반 시 트</td>
-                    <td><input type="number" name="반시트_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>베 갯 잇</td>
-                    <td><input type="number" name="베갯잇_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>중 환 의</td>
-                    <td><input type="number" name="중환의_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>이 불</td>
-                    <td><input type="number" name="이불_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>얼음주머니</td>
-                    <td><input type="number" name="얼음포_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>억 제 대</td>
-                    <td><input type="number" name="억제대_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>수 건</td>
-                    <td><input type="number" name="수건_요청수량" min="0"></td>
                 </tr>
             </table>
         </div>
@@ -315,66 +72,8 @@
                     <th>품목</th>
                     <th>요청수량</th>
                 </tr>
-                <tr>
-                    <td>4XL 상의</td>
-                    <td><input type="number" name="4XL_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>4XL 하의</td>
-                    <td><input type="number" name="4XL_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>3XL 상의</td>
-                    <td><input type="number" name="3XL_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>3XL 하의</td>
-                    <td><input type="number" name="3XL_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>2XL 상의</td>
-                    <td><input type="number" name="2XL_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>2XL 하의</td>
-                    <td><input type="number" name="2XL_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>XL 상의</td>
-                    <td><input type="number" name="XL_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>XL 하의</td>
-                    <td><input type="number" name="XL_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>L 상의</td>
-                    <td><input type="number" name="L_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>L 하의</td>
-                    <td><input type="number" name="L_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>M 상의</td>
-                    <td><input type="number" name="M_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>M 하의</td>
-                    <td><input type="number" name="M_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>S 상의</td>
-                    <td><input type="number" name="S_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>S 하의</td>
-                    <td><input type="number" name="S_하_요청수량" min="0"></td>
-                </tr>
             </table>
         </div>
-
-        
 
         <div id="ortho" class="form-section">
             <table>
@@ -382,261 +81,104 @@
                     <th>품목</th>
                     <th>요청수량</th>
                 </tr>
-             <tr>
-                    <td>3XL 상의</td>
-                    <td><input type="number" name="3XL_상_요청수량" min="0"></td>
-                </tr>
+            </table>
+        </div>
+
+        <div id="uniform" class="form-section">
+            <table>
                 <tr>
-                    <td>3XL 하의</td>
-                    <td><input type="number" name="3XL_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>2XL 상의</td>
-                    <td><input type="number" name="2XL_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>2XL 하의</td>
-                    <td><input type="number" name="2XL_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>XL 상의</td>
-                    <td><input type="number" name="XL_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>XL 하의</td>
-                    <td><input type="number" name="XL_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>L 상의</td>
-                    <td><input type="number" name="L_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>L 하의</td>
-                    <td><input type="number" name="L_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>M 상의</td>
-                    <td><input type="number" name="M_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>M 하의</td>
-                    <td><input type="number" name="M_하_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>S 상의</td>
-                    <td><input type="number" name="S_상_요청수량" min="0"></td>
-                </tr>
-                <tr>
-                    <td>S 하의</td>
-                    <td><input type="number" name="S_하_요청수량" min="0"></td>
+                    <th>품목</th>
+                    <th>요청수량</th>
                 </tr>
             </table>
         </div>
 
-
-
-
-<div id="inventory" class="form-section">
-    <div class="camera-section">
-        <div class="button-container">
-            <button type="button" id="cameraButton">
-                <i class="fa fa-camera camera-icon"></i> 카메라 촬영
-            </button>
-            <input type="file" id="inventoryPhoto" style="display:none;" accept="image/*">
+        <div id="inventory" class="form-section">
+            <div class="camera-section">
+                <div class="button-container">
+                    <button type="button" id="cameraButton">
+                        <i class="fa fa-camera camera-icon"></i> 카메라 촬영
+                    </button>
+                    <input type="file" id="inventoryPhoto" style="display:none;" accept="image/*">
+                </div>
+                <button type="submit" id="submitBtn">
+                    <i class="fas fa-paper-plane submit-icon"></i> 요청하기
+                </button>
+                <img id="preview" src="#" alt="Preview" style="max-width:100%; display:none;">
+            </div>
         </div>
-        <button type="submit" id="submitBtn">
-            <i class="fas fa-paper-plane submit-icon"></i> 요청하기
-        </button>
-        <img id="preview" src="#" alt="Preview" style="max-width:100%; display:none;">
-        <div id="statusMessage" style="display:none;">요청을 전송중 입니다..잠시만 기다려주세요..</div>
-    </div> <!-- 이 태그는 camera-section을 닫습니다. -->
-</div> <!-- 이 태그는 form-section을 닫습니다. -->
-
+                <div id="statusMessage">요청을 전송중 입니다..잠시만 기다려주세요..</div>
     </form>
 
     <div id="responseMessage"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="linen_request_form.js"></script>
+    <script src="js.js"></script>
+
     <script>
-  $(document).ready(function() {
-
-    // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
-    $("h1").click(function() {
-        $(".tab").removeClass("active");
-        $(".tab[data-tab='sheet']").addClass("active");
-        $(".form-section").removeClass("active");
-        $("#sheet").addClass("active");
-        $(".tab").css("background-color", ""); // 모든 탭의 배경색 초기화
-        $(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
-    });
-
-    // 탭 클릭 시 해당 섹션으로 이동
-    $(".tab").click(function() {
-        var tabId = $(this).attr("data-tab");
-        $(".tab").removeClass("active");
-        $(this).addClass("active");
-        $(".form-section").removeClass("active");
-        $("#" + tabId).addClass("active");
-
-        // 모든 탭의 배경색 초기화 후 클릭한 탭의 배경색을 초록색으로 변경
-        $(".tab").css("background-color", "");
-        $(this).css("background-color", "#4CAF50");
-    });
-   
-            $("#requestDate").datepicker({
-                dateFormat: 'yy-mm-dd'
-            });
-
-            $(".tab").click(function() {
-                $(".tab").removeClass("active");
-                $(this).addClass("active");
-
-                var tabId = $(this).attr("data-tab");
-                $(".form-section").removeClass("active");
-                $("#" + tabId).addClass("active");
-            });
-
-            $("#cameraButton").click(function() {
-                $("#inventoryPhoto").click();
-            });
-
-            $("#inventoryPhoto").change(function(event) {
-                const file = event.target.files[0];
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    $("#preview").attr("src", e.target.result);
-                    $("#preview").show();
-                };
-
-                reader.readAsDataURL(file);
-            });
-
-// 삼선 메뉴바 클릭 이벤트
-        $("#menuBar").click(function() {
-            $("#dropdownMenu").toggle();
-        });
-
-            $("#linenRequestForm").submit(function(event) {
-                event.preventDefault();
-
-                const wardValue = $("#ward").val().trim();
-                const requestDate = $("#requestDate").val();
-                const photoFile = $("#inventoryPhoto")[0].files[0];
-
-                if (!wardValue || !requestDate) {
-                    alert('병동명과 입고 날짜는 필수 입력 항목입니다.');
-                    return;
-                }
-
-                $("#submitBtn").prop('disabled', true); // 요청 버튼 비활성화
-                $("#statusMessage").show(); // 요청 중 메시지 표시
-
-                let message = `병동명 : ${wardValue}\n`;
-                message += `입고날짜 : ${requestDate}\n\n`;
-
-                message += `[시트/기타]\n`;
-                $("#sheet input[type='number']").each(function() {
-                    const itemName = $(this).parent().prev().text().trim();
-                    const itemCount = $(this).val();
-                    if (itemCount > 0) {
-                        message += `${itemName} ${itemCount}개\n`;
-                    }
-                });
-
-                message += `\n[일반환의]\n`;
-                $("#normal input[type='number']").each(function() {
-                    const itemName = $(this).parent().prev().text().trim();
-                    const itemCount = $(this).val();
-                    if (itemCount > 0) {
-                        message += `${itemName} ${itemCount}개\n`;
-                    }
-                });
-
-                message += `\n[정형환의]\n`;
-                $("#ortho input[type='number']").each(function() {
-                    const itemName = $(this).parent().prev().text().trim();
-                    const itemCount = $(this).val();
-                    if (itemCount > 0) {
-                        message += `${itemName} ${itemCount}개\n`;
-                    }
-                });
-
-                const chatId = "5432510881"; // 텔레그램 채팅방 ID
-                const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
-                let url;
-                let formData;
-
-                if (photoFile) {
-                    // 사진 파일이 첨부된 경우
-                    url = `https://api.telegram.org/bot${token}/sendPhoto`;
-                    formData = new FormData();
-                    formData.append('chat_id', chatId);
-                    formData.append('photo', photoFile);
-                    formData.append('caption', message);
-
-                    fetch(url, {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.ok) {
-                            alert('요청이 성공적으로 전송되었습니다.');
-                            $("#linenRequestForm")[0].reset();
-                            $("#preview").attr("src", "#");
-                            $("#preview").hide();
-                        } else {
-                            throw new Error('전송 실패');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('요청을 전송하는 도중 오류가 발생했습니다.');
-                    })
-                    .finally(() => {
-                        $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
-                        $("#statusMessage").hide(); // 요청 중 메시지 숨기기
-                    });
+        $(document).ready(function() {
+            $('#adminPageLink').click(function(e) {
+                e.preventDefault();
+                var password = prompt("관리자 페이지 암호를 입력하세요.");
+                if (password === "911206") { // 관리자 페이지 암호 설정
+                    window.location.href = "admin.html";
                 } else {
-                    // 사진 파일이 첨부되지 않은 경우
-                    url = `https://api.telegram.org/bot${token}/sendMessage`;
-                    formData = JSON.stringify({
-                        chat_id: chatId,
-                        parse_mode: 'HTML',
-                        text: message
-                    });
-
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.ok) {
-                            alert('요청이 성공적으로 전송되었습니다.');
-                            $("#linenRequestForm")[0].reset();
-                        } else {
-                            throw new Error('전송 실패');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('요청을 전송하는 도중 오류가 발생했습니다.');
-                    })
-                    .finally(() => {
-                        $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
-                        $("#statusMessage").hide(); // 요청 중 메시지 숨기기
-                    });
+                    alert("암호가 일치하지 않습니다.");
                 }
             });
+
+            const sheetItems = [
+                { name: '대 시 트', key: '대시트_요청수량' },
+                { name: '반 시 트', key: '반시트_요청수량' },
+                { name: '베 갯 잇', key: '베갯잇_요청수량' },
+                { name: '중 환 의', key: '중환의_요청수량' },
+                { name: '이 불', key: '이불_요청수량' },
+                { name: '얼음주머니', key: '얼음포_요청수량' },
+                { name: '억 제 대', key: '억제대_요청수량' },
+                { name: '수 건', key: '수건_요청수량' }
+            ];
+
+   	const requiredSizes = ['3XL', '2XL', 'XL', 'L'];
+            const sizes = ['4XL', '3XL', '2XL', 'XL', 'L', 'M', 'S'];
+            const types = ['상의', '하의'];
+
+            function populateTable(sectionId, items) {
+                const table = document.querySelector(`#${sectionId} table`);
+                items.forEach(item => {
+                    const row = document.createElement('tr');
+                    const itemCell = document.createElement('td');
+                    itemCell.textContent = item.name;
+                    const inputCell = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.name = item.key;
+                    input.min = 0;
+                    inputCell.appendChild(input);
+                    row.appendChild(itemCell);
+                    row.appendChild(inputCell);
+                    table.appendChild(row);
+                });
+            }
+
+            populateTable('sheet', sheetItems);
+
+            function generateClothingItems(sizes, types) {
+                return sizes.flatMap(size => 
+                    types.map(type => ({
+                        name: `${size} ${type}`,
+                        key: `${size}_${type}_요청수량`
+                    }))
+                );
+            }
+
+            populateTable('normal', generateClothingItems(sizes, types));
+            populateTable('ortho', generateClothingItems(sizes.slice(1), types)); 
+            populateTable('uniform', generateClothingItems(requiredSizes, types)); 
         });
+
+
     </script>
 </body>
 </html>
-
-
