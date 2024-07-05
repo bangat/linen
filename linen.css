@@ -6,26 +6,6 @@ body {
     position: relative;
 }
 
-@media screen and (max-width: 600px) {
-    .form-group {
-        flex-direction: column;
-    }
-
-    .form-group label {
-        margin-bottom: 5px; /* 입력 필드 위에 라벨을 위치시키기 위해 추가 */
-    }
-
-    .form-group input[type="text"] {
-        width: 60%; /* 입력 필드 너비 60%로 설정 */
-        margin-bottom: 10px; /* 입력 필드 간의 간격을 조정 */
-    }
-
-    .form-group select {
-        width: 100%; /* 드롭다운 메뉴 너비 100%로 설정 */
-        margin-bottom: 10px; /* 입력 필드 간의 간격을 조정 */
-        min-width: 120px; /* 최소 너비 설정 */
-    }
-}
 
 .menu-bar {
     position: absolute;
@@ -108,10 +88,18 @@ body {
 }
 
 .form-group input {
-    flex-grow: 1;
-    width: 100%;
+    flex-grow: 4; /* 80%를 차지하도록 설정 */
+    width: calc(70% - 10px); /* 드롭박스와의 간격(10px)을 뺀 80% 너비 설정 */
     box-sizing: border-box;
     padding: 5px;
+}
+
+.form-group select {
+    flex-grow: 1; /* 20%를 차지하도록 설정 */
+    width: calc(30% - 10px); /* 드롭박스와의 간격(10px)을 뺀 20% 너비 설정 */
+    box-sizing: border-box;
+    padding: 5px;
+    margin-left: 10px; /* 병동 입력란과 드롭박스 사이의 간격 설정 */
 }
 
 .tabs {
