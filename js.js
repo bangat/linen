@@ -8,22 +8,22 @@ $(document).ready(function() {
         $('#noticeContent').text('공지사항을 불러오는 데 실패했습니다.');
     });
 
-    // 팝업 닫기 함수
+     // 팝업 닫기 함수
     function closePopup() {
         $('#popupContainer').hide();
     }
 
-    // 팝업 표시 함수
+    // 팝업 열기 함수
     function showPopup() {
         $('#popupContainer').show();
     }
 
-    // 팝업 표시 여부 확인 (로컬 스토리지 사용)
-    if (!localStorage.getItem('popupShown')) {
+    // 팝업 열기 버튼 클릭 시
+    $('#openPopup').click(function() {
         showPopup();
-    }
+    });
 
-    // 닫기 버튼 클릭 시 팝업 닫기
+    // 팝업 닫기 버튼 클릭 시
     $('.closeBtn').click(function(e) {
         e.preventDefault(); // 클릭 이벤트 기본 동작 방지
         closePopup();
