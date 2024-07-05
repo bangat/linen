@@ -189,35 +189,12 @@ $(document).ready(function() {
     });
 
     // 공지사항 링크 처리 (Javascript로 변경)
-    document.getElementById('noticeHeader').addEventListener('click', function() {
+    $('#noticeHeader').click(function() {
         window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
     });
 
-    // jQuery UI Datepicker 초기화
+    // jQuery UI Datepicker 초기화 (중복 초기화 제거)
     $("#requestDate").datepicker({
         dateFormat: 'yy-mm-dd'
-    });
-
-    // 카메라 촬영 버튼 클릭 시 파일 업로드 버튼 클릭
-    $("#cameraButton").click(function() {
-        $("#inventoryPhoto").click();
-    });
-
-    // 파일 업로드 시 이미지 미리보기 기능
-    $("#inventoryPhoto").change(function(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            $("#preview").attr("src", e.target.result);
-            $("#preview").show();
-        };
-
-        reader.readAsDataURL(file);
-    });
-
-    // 메뉴바 클릭 시 드롭다운 메뉴 토글
-    $("#menuBar").click(function() {
-        $("#dropdownMenu").toggle();
     });
 });
