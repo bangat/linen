@@ -4,8 +4,9 @@ body {
     margin: 0 auto;
     padding: 20px;
     position: relative;
-    font-size: 14px; /* 폰트 크기 조정 */
+
 }
+
 
 /* 팝업 스타일 */
 #popupContainer {
@@ -15,17 +16,18 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* 어두운 배경색 */
+    background-color: rgba(255, 255, 255, 0.8); /* 밝은 배경색 */
     z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 14px; /* 폰트 크기 조정 */
 }
 
 .popup {
     background-color: #fefefe;
-    width: 90%; /* 팝업 가로 비율 조정 */
-    max-width: 90%;
+    width: 100%; /* 팝업 가로 비율 조정 */
+    max-width: 100%;
     max-width: 600px;
     padding: 30px;
     border-radius: 8px;
@@ -104,6 +106,7 @@ body {
     }
 }
 
+
 .menu-bar {
     position: absolute;
     top: 10px;
@@ -174,22 +177,24 @@ body {
 
 .form-group {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 5px;
 }
 
 .form-group label {
-    margin-right: 2px;
+    margin-right: 10px; /* 라벨과 입력란 사이의 간격을 더 넓게 설정 */
     min-width: 100px;
 }
 
-.form-group input {
-    flex-grow: 1;
-    width: 100%;
+.form-group input,
+.form-group select {
+    flex-grow: 1; /* 두 요소가 동일한 비율로 너비를 차지하도록 설정 */
     box-sizing: border-box;
     padding: 5px;
 }
+
+
+
 
 .tabs {
     display: flex;
@@ -300,5 +305,3 @@ input[type="submit"]:hover {
     display: none;
     font-size: 12px;
 }
-
-
