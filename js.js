@@ -10,6 +10,12 @@ $(document).ready(function() {
         $(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
     });
 
+       // 드롭다운 메뉴에서 병동 선택 시 처리
+    $("#wardDropdown").change(function() {
+        const selectedWard = $(this).val();
+        $("#ward").val(selectedWard);
+    });
+
     // 탭 클릭 시 해당 섹션으로 이동
     $(".tab").click(function() {
         var tabId = $(this).attr("data-tab");
