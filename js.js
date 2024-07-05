@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
         $(".tab").removeClass("active");
@@ -9,13 +8,6 @@ $(document).ready(function() {
         $(".tab").css("background-color", ""); // 
         $(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
     });
-
-           // 드롭다운 메뉴에서 병동 선택 시 처리
-           $("#wardDropdown").change(function() {
-            const selectedWard = $(this).val();
-            $("#ward").val(selectedWard);
-        });
-    
 
     // 탭 클릭 시 해당 섹션으로 이동
     $(".tab").click(function() {
@@ -30,14 +22,17 @@ $(document).ready(function() {
         $(this).css("background-color", "#4CAF50");
     });
 
+    // 날짜 선택기 초기화
     $("#requestDate").datepicker({
         dateFormat: 'yy-mm-dd'
     });
 
+    // 카메라 버튼 클릭 시 파일 업로드 버튼 클릭
     $("#cameraButton").click(function() {
         $("#inventoryPhoto").click();
     });
 
+    // 파일 업로드 시 미리보기 표시
     $("#inventoryPhoto").change(function(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -50,15 +45,16 @@ $(document).ready(function() {
         reader.readAsDataURL(file);
     });
 
-    // 삼선 메뉴바 클릭 이벤트
+    // 메뉴바 클릭 시 드롭다운 메뉴 토글
     $("#menuBar").click(function() {
         $("#dropdownMenu").toggle();
     });
 
+    // 요청서 전송
     $("#linenRequestForm").submit(function(event) {
         event.preventDefault();
 
-        const wardValue = $("#ward").val().trim();
+        const wardValue = $("#wardDropdown").val().trim(); // 드롭다운 메뉴에서 선택된 병동명 가져오기
         const requestDate = $("#requestDate").val();
         const photoFile = $("#inventoryPhoto")[0].files[0];
 
@@ -100,7 +96,7 @@ $(document).ready(function() {
             }
         });
 
-                message += `\n[근무복]\n`;
+        message += `\n[근무복]\n`;
         $("#uniform input[type='number']").each(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
@@ -179,5 +175,49 @@ $(document).ready(function() {
                 $("#statusMessage").fadeOut(); // 요청 중 메시지 숨기기
             });
         }
+    });
+
+    // 관리자 페이지 링크 처리
+    $('#adminPageLink').click(function(e) {
+        e.preventDefault();
+        var password = prompt("관리자 페이지 암호를 입력하세요.");
+        if (password === "911206") { // 관리자 페이지 암호 설정
+            window.location.href = "admin.html";
+        } else {
+            alert("암호가 일치하지 않습니다.");
+        }
+    });
+
+    // 공지사항 링크 처리 (Javascript로 변경)
+    document.getElementById('noticeHeader').addEventListener('click', function() {
+        window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
+    });
+
+    // jQuery UI Datepicker 초기화
+    $("#requestDate").datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
+
+    // 카메라 촬영 버튼 클릭 시 파일 업로드 버튼 클릭
+    $("#cameraButton").click(function() {
+        $("#inventoryPhoto").click();
+    });
+
+    // 파일 업로드 시 이미지 미리보기 기능
+    $("#inventoryPhoto").change(function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            $("#preview").attr("src", e.target.result);
+            $("#preview").show();
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+    // 메뉴바 클릭 시 드롭다운 메뉴 토글
+    $("#menuBar").click(function() {
+        $("#dropdownMenu").toggle();
     });
 });
