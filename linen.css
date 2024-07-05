@@ -93,14 +93,7 @@ body {
     padding: 5px;
 }
 
-.form-group input {
-    width: calc(70% - 10px); /* 드롭박스와의 간격(10px)을 뺀 70% 너비 설정 */
-}
 
-.form-group select {
-    width: calc(30% - 10px); /* 드롭박스와의 간격(10px)을 뺀 30% 너비 설정 */
-    margin-left: 10px; /* 병동 입력란과 드롭박스 사이의 간격 설정 */
-}
 
 
 .tabs {
