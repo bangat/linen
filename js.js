@@ -8,19 +8,13 @@ $(document).ready(function() {
         $('#noticeContent').text('공지사항을 불러오는 데 실패했습니다.');
     });
 
- // 팝업 표시 함수
-    function showPopup() {
-        loadNotice(); // 공지사항 불러오기
-        $('#popupContainer').show(); // 팝업 표시
-    }
-
     // 팝업 닫기 함수
     function closePopup() {
         $('#popupContainer').hide();
     }
 
-     // 닫기 버튼 클릭 시 팝업 닫기
-    $('#closeBtn').click(function() {
+       // 닫기 버튼 클릭 시 팝업 닫기
+    $('.closeBtn').click(function() {
         closePopup();
     });
 
