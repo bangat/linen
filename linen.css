@@ -89,7 +89,7 @@ body {
 
 .form-group input {
     flex-grow: 4; /* 80%를 차지하도록 설정 */
-    width: calc(70% - 10px); /* 드롭박스와의 간격(10px)을 뺀 80% 너비 설정 */
+    width: 100%; /* 드롭박스와의 간격(10px)을 뺀 80% 너비 설정 */
     box-sizing: border-box;
     padding: 5px;
 }
