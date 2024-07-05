@@ -47,18 +47,35 @@
         }
     </style>
 </head>
-<body
+<body>
 
-      <!-- 팝업 컨테이너 -->
+   <!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>린넨실 요청서</title>
+    <link rel="stylesheet" href="linen.css">
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- 팝업 컨테이너 -->
     <div id="popupContainer">
-        <div id="popupContent">
-            <h2>공지사항</h2>
-            <p id="noticeContent">로딩 중...</p>
-        
-            <button id="closePopupButton">닫기</button>
+        <div class="popup">
+            <h2>오늘의 공지사항</h2>
+            <p id="noticeContent">팝업에 표시할 공지사항 내용을 여기에 추가합니다.</p>
+            <div class="popupButtons">
+                <button class="closeBtn" onclick="closePopup()">닫기</button>
+                <button class="confirmBtn" onclick="doNotShowAgain()">오늘 다시 보지 않기</button>
+            </div>
         </div>
     </div>
-    
+
+
     <div class="menu-bar" id="menuBar">
         <div></div>
         <div></div>
@@ -165,11 +182,6 @@
             });
         });
 
-        // 팝업 닫기 함수
-        function closePopup() {
-            $('#popupContainer').hide();
-        }
-
         $(document).ready(function() {
             $('#adminPageLink').click(function(e) {
                 e.preventDefault();
@@ -197,7 +209,7 @@
             const types = ['상의', '하의'];
 
             function populateTable(sectionId, items) {
-                const table = document.querySelector(`#${sectionId} table`);
+                const table = document.querySelector(#${sectionId} table);
                 items.forEach(item => {
                     const row = document.createElement('tr');
                     const itemCell = document.createElement('td');
@@ -219,8 +231,8 @@
             function generateClothingItems(sizes, types) {
                 return sizes.flatMap(size => 
                     types.map(type => ({
-                        name: `${size} ${type}`,
-                        key: `${size}_${type}_요청수량`
+                        name: ${size} ${type},
+                        key: ${size}_${type}_요청수량
                     }))
                 );
             }
