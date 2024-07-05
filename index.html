@@ -48,22 +48,6 @@
     </style>
 </head>
 <body>
-
-      <form id="linenRequestForm">
-        <div class="form-group">
-            <label for="wardDropdown">병동명 :</label>
-            <select id="wardDropdown" name="ward" required>
-                <option value="" disabled selected>병동 선택</option>
-                <option value="낮병동">낮병동</option>
-                <option value="내시경실">내시경실</option>
-                <option value="중환자실">중환자실</option>
-                <option value="인공신장실">인공신장실</option>
-                <option value="수술실">수술실</option>
-                <option value="면역치료실">면역치료실</option>
-                <option value="응급실">응급실</option>
-            </select>
-        </div>
-          
     <div class="menu-bar" id="menuBar">
         <div></div>
         <div></div>
@@ -80,11 +64,22 @@
         </div>
     </div>
 
+
     <form id="linenRequestForm">
         <div class="form-group">
-            <label for="ward">병동명 :</label>
-            <input type="text" id="ward" name="ward" required placeholder="병동명을 입력해주세요.">
+            <label for="wardDropdown">병동명 :</label>
+            <select id="wardDropdown" name="ward" required>
+                <option value="" disabled selected>병동 선택</option>
+                <option value="낮병동">낮병동</option>
+                <option value="내시경실">내시경실</option>
+                <option value="중환자실">중환자실</option>
+                <option value="인공신장실">인공신장실</option>
+                <option value="수술실">수술실</option>
+                <option value="면역치료실">면역치료실</option>
+                <option value="응급실">응급실</option>
+            </select>
         </div>
+
         <div class="form-group">
             <label for="requestDate">입고 날짜 :</label>
             <input type="text" id="requestDate" name="requestDate" readonly placeholder="입고 요청일을 선택해주세요.">
@@ -149,7 +144,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="linen_request_form.js"></script>
     <script src="js.js"></script>
     <script>
         // 공지사항 링크 클릭 시 처리
@@ -187,7 +181,7 @@
             const types = ['상의', '하의'];
 
             function populateTable(sectionId, items) {
-                const table = document.querySelector(`#${sectionId} table`);
+                const table = document.querySelector(#${sectionId} table);
                 items.forEach(item => {
                     const row = document.createElement('tr');
                     const itemCell = document.createElement('td');
@@ -209,8 +203,8 @@
             function generateClothingItems(sizes, types) {
                 return sizes.flatMap(size => 
                     types.map(type => ({
-                        name: `${size} ${type}`,
-                        key: `${size}_${type}_요청수량`
+                        name: ${size} ${type},
+                        key: ${size}_${type}_요청수량
                     }))
                 );
             }
