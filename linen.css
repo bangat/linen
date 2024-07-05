@@ -15,9 +15,13 @@ body {
         margin-bottom: 5px; /* 입력 필드 위에 라벨을 위치시키기 위해 추가 */
     }
 
-    /* 드롭다운 메뉴 너비 100%로 설정 */
+    .form-group input[type="text"] {
+        width: 60%; /* 입력 필드 너비 60%로 설정 */
+        margin-bottom: 10px; /* 입력 필드 간의 간격을 조정 */
+    }
+
     .form-group select {
-        width: 100%;
+        width: 40%; /* 드롭다운 메뉴 너비 40%로 설정 */
         margin-bottom: 10px; /* 입력 필드 간의 간격을 조정 */
     }
 }
