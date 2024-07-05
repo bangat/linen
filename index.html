@@ -66,11 +66,10 @@
     <!-- 팝업 컨테이너 -->
     <div id="popupContainer">
         <div class="popup">
-            <h2>오늘의 공지사항</h2>
-            <p id="noticeContent">팝업에 표시할 공지사항 내용을 여기에 추가합니다.</p>
+            <h2>공지사항</h2>
+            <p id="noticeContent">공지사항을 읽어오는중 입니다...</p>
             <div class="popupButtons">
-                <button class="closeBtn" onclick="closePopup()">닫기</button>
-                <button class="confirmBtn" onclick="doNotShowAgain()">오늘 다시 보지 않기</button>
+                <button class="confirmBtn" onclick="doNotShowAgain()">닫기</button>
             </div>
         </div>
     </div>
@@ -209,7 +208,7 @@
             const types = ['상의', '하의'];
 
             function populateTable(sectionId, items) {
-                const table = document.querySelector(#${sectionId} table);
+                const table = document.querySelector(`#${sectionId} table`);
                 items.forEach(item => {
                     const row = document.createElement('tr');
                     const itemCell = document.createElement('td');
@@ -231,8 +230,8 @@
             function generateClothingItems(sizes, types) {
                 return sizes.flatMap(size => 
                     types.map(type => ({
-                        name: ${size} ${type},
-                        key: ${size}_${type}_요청수량
+                        name: `${size} ${type}`,
+                        key: `${size}_${type}_요청수량`
                     }))
                 );
             }
@@ -244,3 +243,6 @@
     </script>
 </body>
 </html>
+
+팝업창 전체화면에서 90% 까지 가로비율 늘려줘 
+그리고 닫기버튼 정중앙으로 나오게해줘
