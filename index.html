@@ -45,6 +45,21 @@
             flex: 1;
             text-align: center; /* 중앙 정렬 */
         }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-group input[type="text"] {
+            flex: 1;
+            margin-right: 10px; /* 입력란 오른쪽에 여백 추가 */
+        }
+
+        .form-group select {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -68,6 +83,16 @@
         <div class="form-group">
             <label for="ward">병동명 :</label>
             <input type="text" id="ward" name="ward" required placeholder="병동명을 입력해주세요.">
+            <select id="wardDropdown">
+                <option value="">병동명을 선택해주세요</option>
+                <option value="낮병동">낮병동</option>
+                <option value="내시경실">내시경실</option>
+                <option value="중환자실">중환자실</option>
+                <option value="인공신장실">인공신장실</option>
+                <option value="수술실">수술실</option>
+                <option value="면역치료실">면역치료실</option>
+                <option value="응급실">응급실</option>
+            </select>
         </div>
         <div class="form-group">
             <label for="requestDate">입고 날짜 :</label>
