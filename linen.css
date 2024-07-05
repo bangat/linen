@@ -3,7 +3,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    position: relative; 
+    position: relative;
 }
 
 @media screen and (max-width: 600px) {
@@ -21,8 +21,9 @@ body {
     }
 
     .form-group select {
-        width: 40%; /* 드롭다운 메뉴 너비 40%로 설정 */
+        width: 100%; /* 드롭다운 메뉴 너비 100%로 설정 */
         margin-bottom: 10px; /* 입력 필드 간의 간격을 조정 */
+        min-width: 120px; /* 최소 너비 설정 */
     }
 }
 
