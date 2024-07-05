@@ -10,6 +10,13 @@ $(document).ready(function() {
         $(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
     });
 
+           // 드롭다운 메뉴에서 병동 선택 시 처리
+           $("#wardDropdown").change(function() {
+            const selectedWard = $(this).val();
+            $("#ward").val(selectedWard);
+        });
+    
+
     // 탭 클릭 시 해당 섹션으로 이동
     $(".tab").click(function() {
         var tabId = $(this).attr("data-tab");
@@ -51,7 +58,7 @@ $(document).ready(function() {
     $("#linenRequestForm").submit(function(event) {
         event.preventDefault();
 
-        const wardValue = $("#wardDropdown").val().trim(); // 드롭다운 메뉴에서 선택된 병동명 가져오기
+        const wardValue = $("#ward").val().trim();
         const requestDate = $("#requestDate").val();
         const photoFile = $("#inventoryPhoto")[0].files[0];
 
@@ -93,7 +100,7 @@ $(document).ready(function() {
             }
         });
 
-        message += `\n[근무복]\n`;
+                message += `\n[근무복]\n`;
         $("#uniform input[type='number']").each(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
@@ -173,5 +180,4 @@ $(document).ready(function() {
             });
         }
     });
-
 });
