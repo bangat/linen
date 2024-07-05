@@ -8,17 +8,21 @@ $(document).ready(function() {
         $('#noticeContent').text('공지사항을 불러오는 데 실패했습니다.');
     });
 
- // 팝업 닫기 함수
-function closePopup() {
-    $('#popupContainer').hide();
-}
+ // 팝업 표시 함수
+    function showPopup() {
+        loadNotice(); // 공지사항 불러오기
+        $('#popupContainer').show(); // 팝업 표시
+    }
 
-// 팝업 닫기 버튼 클릭 시
-$('.confirmBtn').click(function(e) {
-    e.preventDefault(); // 클릭 이벤트 기본 동작 방지
-    closePopup();
-});
+    // 팝업 닫기 함수
+    function closePopup() {
+        $('#popupContainer').hide();
+    }
 
+     // 닫기 버튼 클릭 시 팝업 닫기
+    $('#closeBtn').click(function() {
+        closePopup();
+    });
 
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
