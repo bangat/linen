@@ -176,21 +176,9 @@ body {
 }
 
 .form-group {
-    display: flex;
+    display: flex; /* 내부 요소를 수평으로 정렬 */
     align-items: center;
     margin-bottom: 5px;
-}
-
-.form-group label {
-    margin-right: 10px; /* 라벨과 입력란 사이의 간격을 더 넓게 설정 */
-    min-width: 100px;
-}
-
-.form-group input,
-.form-group select {
-    flex-grow: 1; /* 두 요소가 동일한 비율로 너비를 차지하도록 설정 */
-    box-sizing: border-box;
-    padding: 5px;
 }
 
 
