@@ -77,30 +77,31 @@ body {
 
 .form-group {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 5px;
 }
 
 .form-group label {
-    margin-right: 2px;
+    margin-right: 10px; /* 라벨과 입력란 사이의 간격을 더 넓게 설정 */
     min-width: 100px;
 }
 
-.form-group input {
-    flex-grow: 4; /* 80%를 차지하도록 설정 */
-    width: 100%; /* 드롭박스와의 간격(10px)을 뺀 80% 너비 설정 */
+.form-group input,
+.form-group select {
+    flex-grow: 1; /* 두 요소가 동일한 비율로 너비를 차지하도록 설정 */
     box-sizing: border-box;
     padding: 5px;
 }
 
+.form-group input {
+    width: calc(70% - 10px); /* 드롭박스와의 간격(10px)을 뺀 70% 너비 설정 */
+}
+
 .form-group select {
-    flex-grow: 1; /* 20%를 차지하도록 설정 */
-    width: calc(30% - 10px); /* 드롭박스와의 간격(10px)을 뺀 20% 너비 설정 */
-    box-sizing: border-box;
-    padding: 5px;
+    width: calc(30% - 10px); /* 드롭박스와의 간격(10px)을 뺀 30% 너비 설정 */
     margin-left: 10px; /* 병동 입력란과 드롭박스 사이의 간격 설정 */
 }
+
 
 .tabs {
     display: flex;
