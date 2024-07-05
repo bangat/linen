@@ -1,30 +1,4 @@
 $(document).ready(function() {
-    const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
-
-    // 공지사항 불러오기
-    $.get(githubUrl, function(data) {
-        $('#noticeContent').text(data);
-    }).fail(function() {
-        $('#noticeContent').text('공지사항을 불러오는 데 실패했습니다.');
-    });
-
- 
-    // 팝업 표시 함수
-    function showPopup() {
-        $('#popupContainer').show();
-    }
-
-
-    // 팝업 닫기
-    function closePopup() {
-        $('#popupContainer').fadeOut();
-    }
-
- // 닫기 버튼 클릭 시 팝업 닫기
-    $('.closeBtn').click(function() {
-        closePopup();
-    });
-
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
         $(".tab").removeClass("active");
@@ -213,3 +187,211 @@ $(document).ready(function() {
         dateFormat: 'yy-mm-dd'
     });
 });
+
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+
+.menu-bar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.menu-bar div {
+    width: 30px;
+    height: 3px;
+    margin: 5px 0;
+    cursor: pointer;
+    background-color: black;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 999;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    width: 150px;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 1px solid #ccc;
+}
+
+.dropdown-menu a:last-child {
+    border-bottom: none;
+}
+
+#cameraButton,
+#submitBtn {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 20px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.camera-icon {
+    font-size: 12px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.submit-icon {
+    font-size: 12px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.form-group label {
+    margin-right: 10px; /* 라벨과 입력란 사이의 간격을 더 넓게 설정 */
+    min-width: 100px;
+}
+
+.form-group input,
+.form-group select {
+    flex-grow: 1; /* 두 요소가 동일한 비율로 너비를 차지하도록 설정 */
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+
+
+
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2px;
+    margin-top: 25px;
+    margin-bottom: 8px;
+}
+
+.tab {
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 11px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+.tab.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.form-section {
+    display: none;
+}
+
+.form-section.active {
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+td:first-child {
+    width: 75%;
+}
+
+td:last-child {
+    width: 25%;
+}
+
+input[type="number"],
+input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.camera-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.camera-section button {
+    cursor: pointer;
+    padding: 8px 16px;
+    background-color: #3498db;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    margin-right: 20px;
+    font-size: 12px;
+}
+
+.camera-section input[type="file"] {
+    display: none;
+}
+
+#preview {
+    max-width: 100%;
+    margin-top: 10px;
+    display: none;
+}
+
+#statusMessage {
+    margin-top: 10px;
+    display: none;
+    font-size: 12px;
+}
