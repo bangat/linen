@@ -13,11 +13,11 @@ $(document).ready(function() {
         $('#popupContainer').hide();
     }
 
-    // 오늘 다시 보지 않기 처리 함수
-    function doNotShowAgain() {
-        localStorage.setItem('popupShown', true);
+    // 팝업 닫기 버튼 클릭 시 이벤트 전파를 막기 위해 추가
+    $('.closeBtn').click(function(e) {
+        e.stopPropagation(); // 이벤트 전파(stopPropagation) 막기
         closePopup();
-    }
+    });
 
     // 팝업 표시 함수
     function showPopup() {
@@ -32,11 +32,6 @@ $(document).ready(function() {
     // 닫기 버튼 클릭 시 팝업 닫기
     $('.closeBtn').click(function() {
         closePopup();
-    });
-
-    // 오늘 다시 보지 않기 버튼 클릭 시 처리
-    $('.confirmBtn').click(function() {
-        doNotShowAgain();
     });
 
 
