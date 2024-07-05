@@ -8,16 +8,17 @@ $(document).ready(function() {
         $('#noticeContent').text('공지사항을 불러오는 데 실패했습니다.');
     });
 
-    // 팝업 닫기 함수
+ // 팝업 닫기 함수
 function closePopup() {
     $('#popupContainer').hide();
 }
 
 // 팝업 닫기 버튼 클릭 시
-$('.closeBtn').click(function(e) {
+$('.confirmBtn').click(function(e) {
     e.preventDefault(); // 클릭 이벤트 기본 동작 방지
     closePopup();
 });
+
 
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
