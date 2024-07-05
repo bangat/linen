@@ -21,13 +21,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px; /* 폰트 크기 조정 */
 }
 
 .popup {
     background-color: #fefefe;
-    width: 100%; /* 팝업 가로 비율 조정 */
-    max-width: 100%;
+    width: 90%; /* 팝업 가로 비율 조정 */
     max-width: 600px;
     padding: 30px;
     border-radius: 8px;
