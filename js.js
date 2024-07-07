@@ -177,6 +177,32 @@ $(document).ready(function() {
         }
     });
 
+                const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
+
+            // 모달 열기
+            function openModal() {
+                $('#myModal').css('display', 'block');
+            }
+
+            // 모달 닫기
+            $('.close').click(function() {
+                $('#myModal').css('display', 'none');
+            });
+
+            $.get(githubUrl, function(data) {
+                $('#noticeContent').text(data);
+                // 공지사항을 불러왔으므로 모달을 닫습니다.
+                $('#myModal').css('display', 'none');
+            }).fail(function() {
+                $('#noticeContent').text('공지사항을 불러오는 데 실패했습니다.');
+                // 실패 시에도 모달을 닫습니다.
+                $('#myModal').css('display', 'none');
+            });
+
+            // 페이지가 로드되면 모달을 엽니다.
+            openModal();
+ });
+
     // 관리자 페이지 링크 처리
     $('#adminPageLink').click(function(e) {
         e.preventDefault();
