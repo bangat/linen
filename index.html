@@ -12,35 +12,39 @@
     <style>
 
                 /* 팝업 스타일 */
-    #popupContainer {
+       #popupContainer {
         display: none; /* 초기에 숨김 */
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        max-width: 90%; /* 최대 너비 설정 */
-        max-height: 90%; /* 최대 높이 설정 */
-        overflow: auto; /* 내용이 넘칠 경우 스크롤 허용 */
+        width: 90%; /* 가로 길이를 화면 너비의 90%로 설정 */
+        max-width: 600px; /* 최대 너비 설정 */
         background-color: rgba(0, 0, 0, 0.8);
         color: white;
         padding: 20px;
         border-radius: 10px;
         text-align: center;
         z-index: 999;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* 그림자 효과 추가 */
     }
 
     #closeBtn {
         position: absolute;
-        top: 10px;
+        bottom: 10px;
         right: 10px;
         cursor: pointer;
         color: white;
-        font-size: 20px;
+        font-size: 24px;
+        background-color: rgba(0, 0, 0, 0.5); /* 배경색 */
+        padding: 10px 15px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease; /* 호버 효과를 위한 전환 효과 */
     }
-        #popupContent {
-            font-size: 16px;
-        }
 
+    #closeBtn:hover {
+        background-color: rgba(0, 0, 0, 0.8); /* 호버 시 배경색 변화 */
+    }
  
         
         #statusMessage {
@@ -168,12 +172,10 @@
 
     
     <!-- 팝업 창 -->
-    <div id="popupContainer">
-        <div id="popupContent">
-            <!-- 여기에 공지사항 내용이 들어갈 것입니다. -->
-        </div>
-        <div id="closeBtn">&times;</div>
-    </div>
+<div id="popupContainer">
+    <div id="popupContent"></div>
+    <div id="closeBtn">&times; 닫기</div>
+</div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
