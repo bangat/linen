@@ -59,8 +59,7 @@
     </div>
     <div class="content">
         <div class="header-container">
-            <h1 id="noticeHeader">공지사항</h1>
-            <h1>요청서</h1>
+            <h1 id="noticeHeader">요청서</h1>
         </div>
     </div>
 
@@ -150,15 +149,6 @@
         window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
     });
 
-    $('#adminPageLink').click(function(e) {
-        e.preventDefault();
-        var password = prompt("관리자 페이지 암호를 입력하세요.");
-        if (password === "911206") { // 관리자 페이지 암호 설정
-            window.location.href = "admin.html";
-        } else {
-            alert("암호가 일치하지 않습니다.");
-        }
-    });
 
     const sheetItems = [
         { name: '대 시 트', key: '대시트_요청수량' },
