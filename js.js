@@ -22,6 +22,12 @@ $(document).ready(function() {
         $(this).css("background-color", "#4CAF50");
     });
 
+    .ui-datepicker {
+    font-size: 16px; /* 기본 폰트 사이즈보다 크게 설정 */
+    width: 280px; /* 달력의 너비 설정 */
+    max-width: 90%; /* 최대 너비 설정 */
+}
+
     // 날짜 선택기 초기화
     $("#requestDate").datepicker({
         dateFormat: 'yy-mm-dd'
