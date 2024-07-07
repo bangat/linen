@@ -181,7 +181,7 @@ $(document).ready(function() {
     $('#adminPageLink').click(function(e) {
         e.preventDefault();
         var password = prompt("관리자 페이지 암호를 입력하세요.");
-        if (password === "911206") { // 관리자 페이지 암호 설정
+        if (password === "1214") { // 관리자 페이지 암호 설정
             window.location.href = "admin.html";
         } else {
             alert("암호가 일치하지 않습니다.");
