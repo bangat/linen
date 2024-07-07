@@ -12,33 +12,36 @@
     <style>
 
                 /* 팝업 스타일 */
-        #popupContainer {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            display: none;
-            max-width: 90%;
-            max-height: 90%;
-            overflow: auto;
-        }
+    #popupContainer {
+        display: none; /* 초기에 숨김 */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 90%; /* 최대 너비 설정 */
+        max-height: 90%; /* 최대 높이 설정 */
+        overflow: auto; /* 내용이 넘칠 경우 스크롤 허용 */
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 999;
+    }
 
+    #closeBtn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        color: white;
+        font-size: 20px;
+    }
         #popupContent {
             font-size: 16px;
         }
 
-        #closeBtn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-        }
-
+ 
         
         #statusMessage {
             position: fixed;
@@ -178,20 +181,20 @@
     <script>
         // 페이지 로드 후 실행될 함수
        $(document).ready(function() {
-    const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
+          const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
 
-    $.get(githubUrl, function(data) {
-        $('#popupContent').text(data);
-        $('#popupContainer').fadeIn(); // 팝업 창 보이기
-    }).fail(function() {
-        $('#popupContent').text('공지사항을 불러오는 데 실패했습니다.');
-        $('#popupContainer').fadeIn(); // 팝업 창 보이기
-    });
+        $.get(githubUrl, function(data) {
+            $('#popupContent').text(data);
+            $('#popupContainer').fadeIn(); // 팝업 창 보이기
+        }).fail(function() {
+            $('#popupContent').text('공지사항을 불러오는 데 실패했습니다.');
+            $('#popupContainer').fadeIn(); // 팝업 창 보이기
+        });
 
-    // 닫기 버튼 클릭 시 팝업 숨기기
-    $('#closeBtn').on('click', function() {
-        $('#popupContainer').fadeOut();
-    });
+        // 닫기 버튼 클릭 시 팝업 숨기기
+        $('#closeBtn').on('click', function() {
+            $('#popupContainer').fadeOut();
+        });
 
     const sheetItems = [
         { name: '대 시 트', key: '대시트_요청수량' },
