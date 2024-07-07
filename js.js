@@ -189,10 +189,6 @@ $(document).ready(function() {
         }
     });
 
-    // 공지사항 링크 처리 (Javascript로 변경)
-    $('#noticeHeader').click(function() {
-        window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
-    });
 
     // jQuery UI Datepicker 초기화 (중복 초기화 제거)
     $("#requestDate").datepicker({
