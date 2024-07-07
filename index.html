@@ -44,6 +44,16 @@
     </style>
 </head>
 <body>
+        <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>공지사항</h1>
+            <div id="noticeContent">
+                잠시만 기다려주세요. 불러오는 중..
+            </div>
+        </div>
+    </div>
+    
     <div class="menu-bar" id="menuBar">
         <div></div>
         <div></div>
@@ -135,23 +145,28 @@
 
     <div id="responseMessage"></div>
 
-        <!-- 모달(팝업) 창 -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>처음 방문해 주셔서 감사합니다. 공지사항을 불러오는 중입니다.</p>
-        </div>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="js.js"></script>
     <script>
-     document.addEventListener('DOMContentLoaded', function() {
-    const noticeHeader = document.querySelector('#noticeHeader'); // 첫 번째 h1 요소 선택
-    noticeHeader.addEventListener('click', function() {
-        window.location.href = '공지사항.html'; // 공지사항 페이지로 이동
-    });
+      document.addEventListener('DOMContentLoaded', function() {
+            // 공지사항 불러오기
+            const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
+
+            $.get(githubUrl, function(data) {
+                $('#noticeContent').text(data);
+                $('#myModal').fadeIn(); // 페이지 로드 후 팝업 창 표시
+            }).fail(function() {
+                $('#noticeContent').text('공지사항을 불러오는 데 실패했습니다.');
+                $('#myModal').fadeIn(); // 페이지 로드 후 팝업 창 표시
+            });
+
+            // 팝업 닫기 버튼 클릭 이벤트 처리
+            $('.close').click(function() {
+                $('#myModal').fadeOut(); // 팝업 창 닫기
+            });
+        });
 
 
     const sheetItems = [
