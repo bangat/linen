@@ -264,6 +264,21 @@
     populateTable('normal', generateClothingItems(sizes, types));
     populateTable('ortho', generateClothingItems(sizes.slice(1), types));
     populateTable('uniform', generateClothingItems(requiredSizes, types));
+
+                     // 요청서 클릭 시 초기 상태로 돌아가는 이벤트 핸들러
+            $('#noticeHeader').on('click', function() {
+                // 모든 입력 필드 초기화
+                $('input[type="number"]').val('');
+                $('#wardDropdown').val('');
+                $('#requestDate').val('');
+                
+                // "시트/기타" 탭을 활성화 상태로 설정
+                $('.tab').removeClass('active');
+                $('.form-section').removeClass('active');
+                $('[data-tab="sheet"]').addClass('active');
+                $('#sheet').addClass('active');
+            });
+           
 });
 
     </script>
