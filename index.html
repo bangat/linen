@@ -12,16 +12,17 @@
     <style>
 
                 /* 팝업 스타일 */
-       #popupContainer {
-        display: none; /* 초기에 숨김 */
+          #popupContainer {
+        display: none;
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 90%; /* 가로 길이를 화면 너비의 90%로 설정 */
         max-width: 600px; /* 최대 너비 설정 */
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
+        height: 50vh; /* 화면의 세로 높이의 50% 설정 */
+        background-color: white;
+        color: black;
         padding: 20px;
         border-radius: 10px;
         text-align: center;
@@ -29,21 +30,26 @@
         box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* 그림자 효과 추가 */
     }
 
+    #popupContent {
+        height: calc(100% - 40px); /* 내용 영역의 높이를 조절하여 닫기 버튼의 높이 만큼 빼줌 */
+        overflow-y: auto; /* 내용이 넘칠 경우 스크롤 바 표시 */
+    }
+
     #closeBtn {
         position: absolute;
-        bottom: 10px;
-        right: 10px;
+        bottom: -20px;
+        right: -20px;
         cursor: pointer;
         color: white;
         font-size: 24px;
-        background-color: rgba(0, 0, 0, 0.5); /* 배경색 */
-        padding: 10px 15px;
-        border-radius: 5px;
+        background-color: black; /* 배경색 */
+        padding: 10px;
+        border-radius: 50%; /* 원형 모양으로 변경 */
         transition: background-color 0.3s ease; /* 호버 효과를 위한 전환 효과 */
     }
 
     #closeBtn:hover {
-        background-color: rgba(0, 0, 0, 0.8); /* 호버 시 배경색 변화 */
+        background-color: darkslategray; /* 호버 시 배경색 변화 */
     }
  
         
@@ -174,7 +180,7 @@
     <!-- 팝업 창 -->
 <div id="popupContainer">
     <div id="popupContent"></div>
-    <div id="closeBtn">&times; 닫기</div>
+    <div id="closeBtn">&times;</div>
 </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -184,6 +190,7 @@
         // 페이지 로드 후 실행될 함수
        $(document).ready(function() {
           const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
+
 
         $.get(githubUrl, function(data) {
             $('#popupContent').text(data);
