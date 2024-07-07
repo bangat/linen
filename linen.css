@@ -20,7 +20,7 @@ body {
 .menu-bar div {
     width: 30px;
     height: 3px;
-    margin: 5px 0;
+    margin: 3px 0;
     cursor: pointer;
     background-color: black;
 }
