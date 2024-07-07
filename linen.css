@@ -7,6 +7,17 @@ body {
 
 }
 
+ /* 날짜 선택기 스타일 */
+        .date-picker {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 300px;
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+        }
    
 .menu-bar {
     position: absolute;
