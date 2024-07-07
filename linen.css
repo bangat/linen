@@ -20,10 +20,11 @@ body {
 .menu-bar div {
     width: 30px;
     height: 3px;
-    margin: 3px 0;
+    margin: 3px 0; /* 간격을 줄이기 위해 값을 2px로 변경 */
     cursor: pointer;
     background-color: black;
 }
+
 
 .dropdown-menu {
     display: none;
