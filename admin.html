@@ -60,8 +60,8 @@
             padding: 10px;
             border-radius: 5px;
             margin-top: 10px;
-            max-height: 80vh; /* 높이를 뷰포트 높이의 80%로 설정 */
-            overflow-y: hidden; /* 스크롤 대신 이전/다음 버튼 사용 */
+            max-height: 80vh;
+            overflow-y: hidden;
             text-align: center;
         }
 
@@ -72,15 +72,15 @@
             padding: 10px;
             border-radius: 5px;
             background-color: #fff;
-            display: none; /* 기본적으로 숨김, 현재 사진만 표시 */
-            max-width: 100%; /* 가로로 꽉 차도록 설정 */
-            max-height: 70vh; /* 세로로 꽉 차도록 설정 */
+            display: none;
+            max-width: 100%;
+            max-height: 70vh;
         }
 
         .photo-gallery img {
             max-width: 100%;
             max-height: 70vh;
-            cursor: pointer; /* 클릭 가능 표시 */
+            cursor: pointer;
         }
 
         .delete-button {
@@ -90,13 +90,13 @@
             background-color: red;
             color: white;
             border: none;
-            padding: 3px 5px; /* 크기 조정 */
+            padding: 3px 5px;
             cursor: pointer;
             border-radius: 5px;
         }
 
         .date-label {
-            text-align: left; /* 날짜를 왼쪽 정렬 */
+            text-align: left;
             margin-bottom: 10px;
         }
 
@@ -110,8 +110,8 @@
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s;
-            display: inline-block; /* 인라인 블록으로 설정 */
-            margin-right: 5px; /* 버튼 사이의 오른쪽 여백 조정 */
+            display: inline-block;
+            margin-right: 5px;
         }
 
         #cameraButton:hover, #viewButton:hover {
@@ -278,7 +278,7 @@
             $('#nextButton').on('click', function() {
                 let photos = $('.photo-container');
                 if (currentPhotoIndex < photos.length - 1) {
-currentPhotoIndex++;
+                    currentPhotoIndex++;
                     showPhoto(currentPhotoIndex);
                 }
             });
@@ -320,7 +320,7 @@ currentPhotoIndex++;
 
             function uploadPhoto(file) {
                 let ward = $('#wardSelect').val();
-                let date = new Date().toISOString().slice(0, 16).replace("T", " ").split(':').join(' ');
+                let date = new Date().toISOString().slice(0, 16).replace("T", " ");
 
                 let formData = new FormData();
                 formData.append('image', file);
@@ -359,22 +359,19 @@ currentPhotoIndex++;
                 $('#viewButton').click(); // 사진 삭제 후 조회 버튼 클릭하여 갱신
             }
 
-            // 초기 로드 시 현재 날짜를 설정
-            $('#datePicker').val(new Date().toISOString().slice(0, 10));
+            function formatDateToKorean(dateString) {
+                let date = new Date(dateString.replace(' ', 'T'));
+                let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
 
-            function function formatDateToKorean(dateString) {
-    let date = new Date(dateString.replace(' ', 'T').replace(/ /g, ':').slice(0, 19));
-    let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
-
-    return kstDate.toLocaleString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    }).replace('오전', 'AM').replace('오후', 'PM');
-}
+                return kstDate.toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                }).replace('오전', 'AM').replace('오후', 'PM');
+            }
 
             function openModal(url) {
                 $('#modalImage').attr('src', url);
@@ -390,6 +387,9 @@ currentPhotoIndex++;
                     $('#myModal').css('display', 'none');
                 }
             });
+
+            // 초기 로드 시 현재 날짜를 설정
+            $('#datePicker').val(new Date().toISOString().slice(0, 10));
         });
     </script>
 </body>
