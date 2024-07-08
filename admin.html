@@ -79,7 +79,8 @@
             max-width: 300px;
         }
 
-        #cameraButton {
+        #cameraButton,
+        #viewButton {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 16px;
@@ -89,9 +90,11 @@
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s;
+            margin-right: 10px;
         }
 
-        #cameraButton:hover {
+        #cameraButton:hover,
+        #viewButton:hover {
             background-color: royalblue;
         }
     </style>
@@ -125,6 +128,7 @@
         </select>
 
         <button id="cameraButton">사진 촬영</button>
+        <button id="viewButton">조회하기</button>
         <input type="file" id="cameraInput" accept="image/*" capture="camera" style="display: none;">
 
         <section class="ward-section" id="wardSection">
@@ -139,12 +143,13 @@
     </footer>
 
     <script>
+        const imgbbAPIKey = 'YOUR_IMGBB_API_KEY';
+
         $(document).ready(function() {
             $('#wardSelect').change(function() {
                 var wardName = $(this).find("option:selected").text();
                 $('#wardTitle').text(wardName + " 사진첩");
                 $('#photoGallery').empty();
-                // 서버에서 사진을 가져와서 표시하는 로직 추가 가능
             });
 
             $('#cameraButton').on('click', function() {
@@ -158,14 +163,35 @@
             $('#cameraInput').on('change', function() {
                 var file = this.files[0];
                 if (file) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        var img = $('<img>').attr('src', e.target.result);
-                        $('#photoGallery').append(img);
-                        console.log('사진이 업로드되었습니다.');
-                        // 실제로 서버로 업로드하는 로직을 추가해야 합니다.
-                    };
-                    reader.readAsDataURL(file);
+                    var formData = new FormData();
+                    formData.append('image', file);
+
+                    fetch(`https://api.imgbb.com/1/upload?key=${imgbbAPIKey}`, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            var img = $('<img>').attr('src', data.data.url);
+                            $('#photoGallery').append(img);
+                            console.log('사진이 업로드되었습니다.');
+                            // 실제로 서버로 업로드하는 로직을 추가해야 합니다.
+                        } else {
+                            console.error('업로드 실패:', data);
+                        }
+                    })
+                    .catch(err => console.error('Error:', err));
+                }
+            });
+
+            $('#viewButton').on('click', function() {
+                if ($('#wardSelect').val()) {
+                    // 병동별로 사진을 조회하는 로직을 추가해야 합니다.
+                    // 예를 들어, 특정 병동의 사진을 서버에서 가져오는 API 호출
+                    alert('사진 조회 기능은 아직 구현되지 않았습니다.');
+                } else {
+                    alert('병동을 선택하세요.');
                 }
             });
         });
