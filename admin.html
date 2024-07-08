@@ -55,20 +55,13 @@
             margin-bottom: 20px;
         }
 
-        .ward-section h2 {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
         .photo-gallery {
             background-color: #f9f9f9;
             padding: 10px;
             border-radius: 5px;
             margin-top: 10px;
-            max-height: 300px;
-            overflow-y: hidden; /* 스크롤 대신 이전/다음 버튼 사용 */
+            max-height: 500px;
+            overflow-y: hidden;
             text-align: center;
         }
 
@@ -79,11 +72,12 @@
             padding: 10px;
             border-radius: 5px;
             background-color: #fff;
-            display: none; /* 기본적으로 숨김, 현재 사진만 표시 */
+            display: none;
         }
 
         .photo-gallery img {
             max-width: 100%;
+            max-height: 400px;
         }
 
         .delete-button {
@@ -93,34 +87,33 @@
             background-color: red;
             color: white;
             border: none;
-            padding: 3px 5px; /* 크기 조정 */
+            padding: 3px 5px;
             cursor: pointer;
             border-radius: 5px;
         }
 
         .date-label {
-            text-align: left; /* 날짜를 왼쪽 정렬 */
+            text-align: left;
             margin-bottom: 10px;
         }
 
-       #cameraButton, #viewButton {
-    margin-top: 5px;
-    padding: 7px 15px;
-    font-size: 13px;
-    cursor: pointer;
-    background-color: dodgerblue;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    display: inline-block; /* 인라인 블록으로 설정 */
-    margin-right: 5px; /* 버튼 사이의 오른쪽 여백 조정 */
-}
+        #cameraButton, #viewButton {
+            margin-top: 5px;
+            padding: 7px 15px;
+            font-size: 13px;
+            cursor: pointer;
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: inline-block;
+            margin-right: 5px;
+        }
 
-#cameraButton:hover, #viewButton:hover {
-    background-color: royalblue;
-}
-
+        #cameraButton:hover, #viewButton:hover {
+            background-color: royalblue;
+        }
 
         #uploadMessage {
             text-align: center;
@@ -174,12 +167,11 @@
 
         <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
 
-<button id="cameraButton" class="nav-button">사진 촬영</button>
-<button id="viewButton" class="nav-button">조회하기</button>
+        <button id="cameraButton" class="nav-button">사진 촬영</button>
+        <button id="viewButton" class="nav-button">조회하기</button>
         <input type="file" id="cameraInput" accept="image/*" capture="camera" style="display: none;">
 
         <section class="ward-section" id="wardSection">
-            <h2 id="wardTitle">병동 사진첩</h2>
             <div class="photo-gallery" id="photoGallery">
                 <!-- 여기에 선택된 병동의 사진을 동적으로 추가할 예정 -->
             </div>
@@ -194,7 +186,7 @@
     </footer>
 
     <script>
-         const API_KEY = '197c02787b4764d219198f8c2a68656a';
+        const API_KEY = '197c02787b4764d219198f8c2a68656a';
 
         $(document).ready(function() {
             let currentPhotoIndex = 0;
@@ -290,7 +282,7 @@
                         $('#uploadMessage').text('사진이 업로드되었습니다.');
                         setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
                     },
-                    error: function() {
+error: function() {
                         $('#uploadMessage').text('사진 업로드에 실패했습니다.');
                         setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
                     }
@@ -313,6 +305,42 @@
 
             // 초기 로드 시 현재 날짜를 설정
             $('#datePicker').val(new Date().toISOString().slice(0, 10));
+
+            function formatDateToKorean(dateString) {
+                let date = new Date(dateString);
+                return date.toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+
+            // 기존 loadPhotos 함수 수정
+            function loadPhotos(ward, date) {
+                let photos = JSON.parse(localStorage.getItem(ward)) || [];
+                $('#photoGallery').empty();
+
+                let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+                filteredPhotos.forEach(photo => {
+                    let photoContainer = $('<div>').addClass('photo-container');
+                    let dateLabel = $('<div>').addClass('date-label').text(formatDateToKorean(photo.date));
+                    let img = $('<img>').attr('src', photo.url);
+                    let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+
+                    deleteButton.on('click', function() {
+                        deletePhoto(ward, photo);
+                    });
+
+                    photoContainer.append(dateLabel, img, deleteButton);
+                    $('#photoGallery').append(photoContainer);
+                });
+
+                currentPhotoIndex = 0;
+                showPhoto(currentPhotoIndex);
+            }
         });
     </script>
 </body>
