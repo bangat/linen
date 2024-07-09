@@ -76,7 +76,7 @@
 
         .photo-gallery img {
             width: 100%;
-            height: 100%;
+            height: 80%;
             object-fit: cover;
             cursor: pointer;
         }
@@ -298,6 +298,8 @@
                 var date = $('#datePicker').val();
                 if (file && date) {
                     uploadPhoto(file, date);
+                } else {
+                    alert('날짜를 선택하세요.');
                 }
             });
 
@@ -356,7 +358,6 @@
 
             function uploadPhoto(file, date) {
                 let ward = $('#wardSelect').val();
-                let dateTime = date + ' ' + new Date().toTimeString().slice(0, 5);
 
                 let formData = new FormData();
                 formData.append('image', file);
@@ -370,7 +371,7 @@
                     contentType: false,
                     success: function(response) {
                         let url = response.data.url;
-                        savePhoto(ward, dateTime, url);
+                        savePhoto(ward, date, url);
                         alert('사진이 업로드되었습니다.');
                         setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
                     },
@@ -400,15 +401,14 @@
                 let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
 
                 return kstDate.toLocaleString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        }).replace('오전', 'AM').replace('오후', 'PM');
-    }
-
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                }).replace('오전', 'AM').replace('오후', 'PM');
+            }
 
             function openModal(url) {
                 $('#modalImage').attr('src', url);
