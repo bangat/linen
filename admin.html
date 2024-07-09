@@ -316,31 +316,34 @@ height: 100%;
     });
 
     function loadPhotos(ward, date) {
-        let photos = JSON.parse(localStorage.getItem(ward)) || [];
-        $('#photoGallery').empty();
+    let photos = JSON.parse(localStorage.getItem(ward)) || [];
+    $('#photoGallery').empty();
 
-        let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
-        filteredPhotos.forEach(photo => {
-            let photoContainer = $('<div>').addClass('photo-container');
-            let dateLabel = $('<div>').addClass('date-label').text(formatDateToKorean(photo.date));
-            let img = $('<img>').attr('src', photo.url);
-            let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+    let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+    let photoCount = filteredPhotos.length; // 사진 개수 계산
 
-            deleteButton.on('click', function() {
-                deletePhoto(ward, photo);
-            });
+    filteredPhotos.forEach(photo => {
+        let photoContainer = $('<div>').addClass('photo-container');
+        let formattedDate = formatDateToKorean(photo.date);
+        let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${photoCount}장>`); // 사진 개수 추가
+        let img = $('<img>').attr('src', photo.url);
+        let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
-            img.on('click', function() {
-                openModal(photo.url);
-            });
-
-            photoContainer.append(dateLabel, img, deleteButton);
-            $('#photoGallery').append(photoContainer);
+        deleteButton.on('click', function() {
+            deletePhoto(ward, photo);
         });
 
-        currentPhotoIndex = 0;
-        showPhoto(currentPhotoIndex);
-    }
+        img.on('click', function() {
+            openModal(photo.url);
+        });
+
+        photoContainer.append(dateLabel, img, deleteButton);
+        $('#photoGallery').append(photoContainer);
+    });
+
+    currentPhotoIndex = 0;
+    showPhoto(currentPhotoIndex);
+}
 
     function showPhoto(index) {
         let photos = $('.photo-container');
