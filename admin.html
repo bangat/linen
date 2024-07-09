@@ -256,7 +256,7 @@ height: 100%;
     <script>
         const API_KEY = '197c02787b4764d219198f8c2a68656a';
 
-       $(document).ready(function() {
+      $(document).ready(function() {
     let currentPhotoIndex = 0;
 
     $('#viewButton').on('click', function() {
@@ -316,34 +316,34 @@ height: 100%;
     });
 
     function loadPhotos(ward, date) {
-    let photos = JSON.parse(localStorage.getItem(ward)) || [];
-    $('#photoGallery').empty();
+        let photos = JSON.parse(localStorage.getItem(ward)) || [];
+        $('#photoGallery').empty();
 
-    let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
-    let photoCount = filteredPhotos.length; // 사진 개수 계산
+        let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+        let photoCount = filteredPhotos.length; // 사진 개수 계산
 
-    filteredPhotos.forEach(photo => {
-        let photoContainer = $('<div>').addClass('photo-container');
-        let formattedDate = formatDateToKorean(photo.date);
-        let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${photoCount}장>`); // 사진 개수 추가
-        let img = $('<img>').attr('src', photo.url);
-        let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+        filteredPhotos.forEach(photo => {
+            let photoContainer = $('<div>').addClass('photo-container');
+            let formattedDate = formatDateToKorean(photo.date);
+            let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${photoCount}장>`); // 사진 개수 추가
+            let img = $('<img>').attr('src', photo.url);
+            let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
-        deleteButton.on('click', function() {
-            deletePhoto(ward, photo);
+            deleteButton.on('click', function() {
+                deletePhoto(ward, photo);
+            });
+
+            img.on('click', function() {
+                openModal(photo.url);
+            });
+
+            photoContainer.append(dateLabel, img, deleteButton);
+            $('#photoGallery').append(photoContainer);
         });
 
-        img.on('click', function() {
-            openModal(photo.url);
-        });
-
-        photoContainer.append(dateLabel, img, deleteButton);
-        $('#photoGallery').append(photoContainer);
-    });
-
-    currentPhotoIndex = 0;
-    showPhoto(currentPhotoIndex);
-}
+        currentPhotoIndex = 0;
+        showPhoto(currentPhotoIndex);
+    }
 
     function showPhoto(index) {
         let photos = $('.photo-container');
@@ -355,7 +355,7 @@ height: 100%;
 
     function uploadPhoto(file) {
         let ward = $('#wardSelect').val();
-        let date = new Date().toISOString().slice(0, 16).replace("T", " ");
+        let date = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Seoul' }).replace(" ", "T");
 
         let formData = new FormData();
         formData.append('image', file);
@@ -424,7 +424,11 @@ height: 100%;
     });
 
     // 초기 로드 시 현재 날짜를 설정
-    $('#datePicker').val(new Date().toISOString().slice(0, 10));
+    $('#datePicker').val(new Date().toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).replace(/\./g, '-').trim());
 });
     </script>
 </body>
