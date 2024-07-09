@@ -61,7 +61,7 @@
             border-radius: 3px;
             margin-top: 1px;
             max-height: 70vh;
-            overflow-y: hidden;
+            overflow-y: auto; /* 수정: 스크롤 추가 */
             text-align: center;
         }
 
@@ -69,58 +69,43 @@
             position: relative;
             margin-bottom: 3px;
             background-color: #fff;
-            display: none;
             width: 100%;
-            height: 70vh;
+            height: auto; /* 수정: 이미지 높이 자동 조정 */
         }
 
         .photo-gallery img {
             width: 100%;
-            height: 70vh; /* 조정 필요한 부분 */
+            max-width: 100%;
+            height: auto; /* 수정: 이미지 크기 자동 조정 */
             object-fit: cover;
             cursor: pointer;
         }
 
         .delete-button {
             position: absolute;
-            top: 2px;
-            right: 1px;
+            top: 5px;
+            right: 5px;
             background-color: red;
             color: white;
             border: none;
             padding: 3px 5px;
             cursor: pointer;
             border-radius: 5px;
+            z-index: 1; /* 수정: 다른 요소 위에 겹치도록 */
         }
 
         .date-label {
             text-align: left;
             margin-bottom: 10px;
-        }
-
-        #cameraButton, #viewButton {
-            margin-top: 5px;
-            padding: 7px 15px;
-            font-size: 13px;
-            cursor: pointer;
-            background-color: dodgerblue;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        #cameraButton:hover, #viewButton:hover {
-            background-color: royalblue;
-        }
-
-        #uploadMessage {
-            text-align: center;
-            margin-top: 10px;
-            color: green;
+            padding-left: 5px;
             font-weight: bold;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
         }
 
         .nav-button {
@@ -162,7 +147,7 @@
 
         .modal-content img {
             width: 100%;
-            height: 100%;
+            height: auto;
         }
 
         .close {
@@ -181,18 +166,6 @@
             color: #bbb;
             text-decoration: none;
         }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .left-buttons, .right-buttons {
-            display: flex;
-            align-items: center;
-        }
     </style>
 </head>
 <body>
@@ -202,7 +175,7 @@
 
     <main>
         <select id="wardSelect">
-            <option value="">전체보기</option>
+            <option value="all">전체보기</option>
             <option value="ward93">93 병동</option>
             <option value="ward83">83 병동</option>
             <option value="ward73">73 병동</option>
@@ -265,8 +238,8 @@
                 var date = $('#datePicker').val();
                 if (ward && date) {
                     loadPhotos(ward, date);
-                } else
-alert('병동과 날짜를 선택하세요.');
+                } else {
+                    alert('병동과 날짜를 선택하세요.');
                 }
             });
 
@@ -275,8 +248,6 @@ alert('병동과 날짜를 선택하세요.');
                 var date = $('#datePicker').val();
                 if (ward && date) {
                     loadPhotos(ward, date);
-                } else {
-                    alert('병동과 날짜를 선택하세요.');
                 }
             });
 
@@ -285,8 +256,6 @@ alert('병동과 날짜를 선택하세요.');
                 var date = $(this).val();
                 if (ward && date) {
                     loadPhotos(ward, date);
-                } else {
-                    alert('병동과 날짜를 선택하세요.');
                 }
             });
 
@@ -305,7 +274,8 @@ alert('병동과 날짜를 선택하세요.');
                 }
             });
 
-            $('#prevButton').on('click', function() {
+            $('#prevButton').
+$('#prevButton').on('click', function() {
                 if (currentPhotoIndex > 0) {
                     currentPhotoIndex--;
                     showPhoto(currentPhotoIndex);
@@ -321,22 +291,28 @@ alert('병동과 날짜를 선택하세요.');
             });
 
             function loadPhotos(ward, date) {
-                let photos = JSON.parse(localStorage.getItem(ward)) || [];
-                $('#photoGallery').empty();
-
-                let filteredPhotos;
-                if (date === '') {
-                    filteredPhotos = photos;
+                let photos = [];
+                if (ward === 'all') {
+                    // 모든 병동의 사진을 가져와서 필터링
+                    for (let i = 1; i <= 93; i++) {
+                        let wardKey = 'ward' + i;
+                        let wardPhotos = JSON.parse(localStorage.getItem(wardKey)) || [];
+                        photos = photos.concat(wardPhotos);
+                    }
                 } else {
-                    filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+                    photos = JSON.parse(localStorage.getItem(ward)) || [];
                 }
 
-                let photoCount = filteredPhotos.length; // 사진 개수 계산
+                // 선택한 날짜에 맞는 사진들만 필터링
+                let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+                let photoCount = filteredPhotos.length;
+
+                $('#photoGallery').empty();
 
                 filteredPhotos.forEach((photo, index) => {
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
-                    let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${ward}> (${index + 1}/${photoCount})`); // 사진 개수 추가
+                    let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${index + 1}/${photoCount}장>`);
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
@@ -366,7 +342,7 @@ alert('병동과 날짜를 선택하세요.');
 
             function uploadPhoto(file) {
                 let ward = $('#wardSelect').val();
-                let date = new Date().toLocaleString('ko-KR', { hour12: true }); // 한국 시간 형식으로 변환
+                let date = new Date().toISOString().slice(0, 16).replace("T", " ");
 
                 let formData = new FormData();
                 formData.append('image', file);
@@ -406,8 +382,10 @@ alert('병동과 날짜를 선택하세요.');
             }
 
             function formatDateToKorean(dateString) {
-                let date = new Date(dateString);
-                return date.toLocaleString('ko-KR', {
+                let date = new Date(dateString.replace(' ', 'T'));
+                let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
+
+                return kstDate.toLocaleString('ko-KR', {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
