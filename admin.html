@@ -6,167 +6,192 @@
     <title>관리자 페이지</title>
     <link rel="stylesheet" href="admin.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+    }
 
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 2px;
-            text-align: center;
-        }
+    header {
+        background-color: #333;
+        color: #fff;
+        padding: 2px;
+        text-align: center;
+    }
 
-        main {
-            padding: 5px;
-        }
+    main {
+        padding: 5px;
+    }
 
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 2px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
+    footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 2px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
 
-        .date-picker, #wardSelect {
-            margin-bottom: 5px;
-            padding: 5px;
-            font-size: 16px;
-            width: calc(100% - 10px);
-            max-width: 300px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            box-sizing: border-box;
-        }
+    .date-picker,
+    #wardSelect {
+        margin-bottom: 5px;
+        padding: 5px;
+        font-size: 16px;
+        width: calc(100% - 10px);
+        max-width: 300px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
+    }
 
-        .ward-section {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
+    .ward-section {
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
 
-        .photo-gallery {
-            background-color: #f9f9f9;
-            padding: 3px;
-            border-radius: 3px;
-            margin-top: 1px;
-            max-height: 70vh;
-            overflow-y: auto; /* 수정: 스크롤 추가 */
-            text-align: center;
-        }
+    .photo-gallery {
+        background-color: #f9f9f9;
+        padding: 3px;
+        border-radius: 3px;
+        margin-top: 1px;
+        max-height: 70vh;
+        overflow-y: hidden;
+        text-align: center;
+    }
 
-        .photo-container {
-            position: relative;
-            margin-bottom: 3px;
-            background-color: #fff;
-            width: 100%;
-            height: auto; /* 수정: 이미지 높이 자동 조정 */
-        }
+    .photo-container {
+        position: relative;
+        margin-bottom: 3px;
+        background-color: #fff;
+        display: none;
+        width: 100%;
+        height: auto; /* 자동으로 높이 조정 */
+    }
 
-        .photo-gallery img {
-            width: 100%;
-            max-width: 100%;
-            height: auto; /* 수정: 이미지 크기 자동 조정 */
-            object-fit: cover;
-            cursor: pointer;
-        }
+    .photo-gallery img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+    }
 
-        .delete-button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 3px 5px;
-            cursor: pointer;
-            border-radius: 5px;
-            z-index: 1; /* 수정: 다른 요소 위에 겹치도록 */
-        }
+    .delete-button {
+        position: absolute;
+        top: 2px;
+        right: 1px;
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 3px 5px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
 
-        .date-label {
-            text-align: left;
-            margin-bottom: 10px;
-            padding-left: 5px;
-            font-weight: bold;
-        }
+    .date-label {
+        text-align: left;
+        margin-bottom: 10px;
+    }
 
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
+    #cameraButton,
+    #viewButton,
+    #prevButton,
+    #nextButton {
+        margin-top: 5px;
+        padding: 7px 15px;
+        font-size: 13px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        display: inline-block;
+        margin-right: 5px;
+    }
 
-        .nav-button {
-            padding: 7px;
-            font-size: 13px;
-            cursor: pointer;
-            background-color: lightgray;
-            color: black;
-            border: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            margin: 6px;
-        }
+    #cameraButton,
+    #viewButton {
+        background-color: dodgerblue;
+        color: white;
+    }
 
-        .nav-button:hover {
-            background-color: gray;
-        }
+    #cameraButton:hover,
+    #viewButton:hover {
+        background-color: royalblue;
+    }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            padding-top: 30px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.9);
-        }
+    #prevButton,
+    #nextButton {
+        background-color: lightgray;
+        color: black;
+    }
 
-        .modal-content {
-            margin: auto;
-            display: block;
-            width: 90%;
-            max-width: 700px;
-        }
+    #prevButton:hover,
+    #nextButton:hover {
+        background-color: gray;
+    }
 
-        .modal-content img {
-            width: 100%;
-            height: auto;
-        }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 30px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.9);
+    }
 
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            transition: 0.3s;
-            cursor: pointer;
-        }
+    .modal-content {
+        margin: auto;
+        display: block;
+        width: 90%;
+        max-width: 700px;
+    }
 
-        .close:hover,
-        .close:focus {
-            color: #bbb;
-            text-decoration: none;
-        }
-    </style>
+    .modal-content img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .left-buttons,
+    .right-buttons {
+        display: flex;
+        align-items: center;
+    }
+</style>
 </head>
 <body>
     <header>
@@ -228,191 +253,144 @@
     </footer>
 
     <script>
-        const API_KEY = '197c02787b4764d219198f8c2a68656a';
+    const API_KEY = '197c02787b4764d219198f8c2a68656a';
 
-        $(document).ready(function() {
-            let currentPhotoIndex = 0;
+    $(document).ready(function() {
+    let currentPhotoIndex = 0;
+    let ward = '';
 
-            $('#viewButton').on('click', function() {
-                var ward = $('#wardSelect').val();
-                var date = $('#datePicker').val();
-                if (ward && date) {
-                    loadPhotos(ward, date);
-                } else {
-                    alert('병동과 날짜를 선택하세요.');
-                }
-            });
+    $('#viewButton').on('click', function() {
+        ward = $('#wardSelect').val();
+        let date = $('#datePicker').val();
+        if (ward && date) {
+            loadPhotos(ward, date);
+        } else {
+            alert('병동과 날짜를 선택하세요.');
+        }
+    });
 
-            $('#wardSelect').on('change', function() {
-                var ward = $(this).val();
-                var date = $('#datePicker').val();
-                if (ward && date) {
-                    loadPhotos(ward, date);
-                }
-            });
+    $('#wardSelect').on('change', function() {
+        ward = $(this).val();
+        let date = $('#datePicker').val();
+        if (ward === 'all' && date) {
+            loadAllPhotos(date);
+        } else if (ward && date) {
+            loadPhotos(ward, date);
+        }
+    });
 
-            $('#datePicker').on('change', function() {
-                var ward = $('#wardSelect').val();
-                var date = $(this).val();
-                if (ward && date) {
-                    loadPhotos(ward, date);
-                }
-            });
+    $('#datePicker').on('change', function() {
+        let date = $(this).val();
+        if (ward === 'all' && date) {
+            loadAllPhotos(date);
+        } else if (ward && date) {
+            loadPhotos(ward, date);
+        }
+    });
 
-            $('#cameraButton').on('click', function() {
-                if ($('#wardSelect').val()) {
-                    $('#cameraInput').click();
-                } else {
-                    alert('병동을 선택하세요.');
-                }
-            });
+    $('#prevButton').on('click', function() {
+        if (currentPhotoIndex > 0) {
+            currentPhotoIndex--;
+            showPhoto(currentPhotoIndex);
+        }
+    });
 
-            $('#cameraInput').on('change', function() {
-                var file = this.files[0];
-                if (file) {
-                    uploadPhoto(file);
-                }
-            });
+    $('#nextButton').on('click', function() {
+        let photos = $('.photo-container');
+        if (currentPhotoIndex < photos.length - 1) {
+            currentPhotoIndex++;
+            showPhoto(currentPhotoIndex);
+        }
+    });
 
-            $('#prevButton').
-$('#prevButton').on('click', function() {
-                if (currentPhotoIndex > 0) {
-                    currentPhotoIndex--;
-                    showPhoto(currentPhotoIndex);
-                }
-            });
+    function loadPhotos(ward, date) {
+        let photos = JSON.parse(localStorage.getItem(ward)) || [];
+        $('#photoGallery').empty();
 
-            $('#nextButton').on('click', function() {
-                let photos = $('.photo-container');
-                if (currentPhotoIndex < photos.length - 1) {
-                    currentPhotoIndex++;
-                    showPhoto(currentPhotoIndex);
-                }
-            });
+        let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+        if (filteredPhotos.length > 0) {
+            $('#prevButton, #nextButton').show(); // 이미지가 하나 이상 있을 때만 이전/다음 버튼 표시
+            filteredPhotos.forEach((photo, index) => {
+                let photoContainer = $('<div>').addClass('photo-container');
+                let formattedDate = formatDateToKorean(photo.date);
+                let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${ward}/${index + 1}장>`);
+                let img = $('<img>').attr('src', photo.url);
+                let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
-            function loadPhotos(ward, date) {
-                let photos = [];
-                if (ward === 'all') {
-                    // 모든 병동의 사진을 가져와서 필터링
-                    for (let i = 1; i <= 93; i++) {
-                        let wardKey = 'ward' + i;
-                        let wardPhotos = JSON.parse(localStorage.getItem(wardKey)) || [];
-                        photos = photos.concat(wardPhotos);
-                    }
-                } else {
-                    photos = JSON.parse(localStorage.getItem(ward)) || [];
-                }
-
-                // 선택한 날짜에 맞는 사진들만 필터링
-                let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
-                let photoCount = filteredPhotos.length;
-
-                $('#photoGallery').empty();
-
-                filteredPhotos.forEach((photo, index) => {
-                    let photoContainer = $('<div>').addClass('photo-container');
-                    let formattedDate = formatDateToKorean(photo.date);
-                    let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${index + 1}/${photoCount}장>`);
-                    let img = $('<img>').attr('src', photo.url);
-                    let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
-
-                    deleteButton.on('click', function() {
-                        deletePhoto(ward, photo);
-                    });
-
-                    img.on('click', function() {
-                        openModal(photo.url);
-                    });
-
-                    photoContainer.append(dateLabel, img, deleteButton);
-                    $('#photoGallery').append(photoContainer);
+                deleteButton.on('click', function() {
+                    deletePhoto(ward, photo);
                 });
 
-                currentPhotoIndex = 0;
-                showPhoto(currentPhotoIndex);
-            }
-
-            function showPhoto(index) {
-                let photos = $('.photo-container');
-                photos.hide();
-                if (photos.length > 0) {
-                    $(photos[index]).show();
-                }
-            }
-
-            function uploadPhoto(file) {
-                let ward = $('#wardSelect').val();
-                let date = new Date().toISOString().slice(0, 16).replace("T", " ");
-
-                let formData = new FormData();
-                formData.append('image', file);
-                formData.append('key', API_KEY);
-
-                $.ajax({
-                    url: 'https://api.imgbb.com/1/upload',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        let url = response.data.url;
-                        savePhoto(ward, date, url);
-                        alert('사진이 업로드되었습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
-                    },
-                    error: function() {
-                        $('#uploadMessage').text('사진 업로드에 실패했습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
-                    }
+                img.on('click', function() {
+                    openModal(photo.url);
                 });
-            }
 
-            function savePhoto(ward, date, url) {
-                let photos = JSON.parse(localStorage.getItem(ward)) || [];
-                photos.push({ date: date, url: url });
-                localStorage.setItem(ward, JSON.stringify(photos));
-                $('#viewButton').click(); // 사진 업로드 후 조회 버튼 클릭하여 갱신
-            }
-
-            function deletePhoto(ward, photoToDelete) {
-                let photos = JSON.parse(localStorage.getItem(ward)) || [];
-                photos = photos.filter(photo => photo.url !== photoToDelete.url);
-                localStorage.setItem(ward, JSON.stringify(photos));
-                $('#viewButton').click(); // 사진 삭제 후 조회 버튼 클릭하여 갱신
-            }
-
-            function formatDateToKorean(dateString) {
-                let date = new Date(dateString.replace(' ', 'T'));
-                let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
-
-                return kstDate.toLocaleString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                }).replace('오전', 'AM').replace('오후', 'PM');
-            }
-
-            function openModal(url) {
-                $('#modalImage').attr('src', url);
-                $('#myModal').css('display', 'block');
-            }
-
-            $('.close').on('click', function() {
-                $('#myModal').css('display', 'none');
+                photoContainer.append(dateLabel, img, deleteButton);
+                $('#photoGallery').append(photoContainer);
             });
+            currentPhotoIndex = 0;
+            showPhoto(currentPhotoIndex);
+        } else {
+            $('#prevButton, #nextButton').hide(); // 이미지가 없을 경우 이전/다음 버튼 숨김
+            $('#photoGallery').text('해당 날짜에 사진이 없습니다.');
+        }
+    }
 
-            $(window).on('click', function(event) {
-                if (event.target.id === 'myModal') {
-                    $('#myModal').css('display', 'none');
-                }
-            });
-
-            // 초기 로드 시 현재 날짜를 설정
-            $('#datePicker').val(new Date().toISOString().slice(0, 10));
+    function loadAllPhotos(date) {
+        $('#photoGallery').empty();
+        let wards = ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
+        wards.forEach(ward => {
+            loadPhotos(ward, date);
         });
-    </script>
+    }
+
+    function showPhoto(index) {
+        let photos = $('.photo-container');
+        photos.hide();
+        if (photos.length > 0) {
+            $(photos[index]).show();
+        }
+    }
+
+    function deletePhoto(ward, photoToDelete) {
+        let photos = JSON.parse(localStorage.getItem(ward)) || [];
+        photos = photos.filter(photo => photo.url !== photoToDelete.url);
+        localStorage.setItem(ward, JSON.stringify(photos));
+        loadPhotos(ward, $('#datePicker').val()); // 사진 삭제 후 다시 로드
+    }
+
+    function formatDateToKorean(dateString) {
+        let date = new Date(dateString.replace(' ', 'T'));
+        let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
+
+        return kstDate.toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }).replace('오전', 'AM').replace('오후', 'PM');
+    }
+
+    function openModal(url) {
+        $('#modalImage').attr('src', url);
+        $('#myModal').css('display', 'block');
+    }
+
+    $('.close').on('click', function() {
+        $('#myModal').css('display', 'none');
+    });
+
+    $(window).on('click', function(event) {
+        if (event.target.id === 'myModal') {
+            $('#myModal').css('display', 'none');
+        }
+    });
+
+    // 초기 로드 시 현재 날짜를 설정
+    $('#datePicker').val(new Date().toISOString().slice(0, 10));
+});
+ </script>
 </body>
 </html>
