@@ -66,20 +66,20 @@
         }
 
         .photo-container {
-            position: relative;
-            margin-bottom: 3px;
-            background-color: #fff;
-            display: none;
-            width: 100%;
-            height: 70vh;
-        }
+    position: relative;
+    margin-bottom: 3px;
+    background-color: #fff;
+    display: none;
+    width: 100%;
+    height: 70vh;
+}
 
-        .photo-gallery img {
-            width: 100%;
-            height: 80%;
-            object-fit: cover;
-            cursor: pointer;
-        }
+.photo-gallery img {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+    cursor: pointer;
+}
 
         .delete-button {
             position: absolute;
@@ -98,7 +98,7 @@
             margin-bottom: 10px;
         }
 
-        #cameraButton, #viewButton {
+         #cameraButton, #viewButton {
             margin-top: 5px;
             padding: 7px 15px;
             font-size: 13px;
@@ -162,7 +162,7 @@
 
         .modal-content img {
             width: 100%;
-            height: 100%;
+height: 100%;
         }
 
         .close {
@@ -182,7 +182,7 @@
             cursor: pointer;
         }
 
-        .button-container {
+ .button-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -255,245 +255,177 @@
 
     <script>
         const API_KEY = '197c02787b4764d219198f8c2a68656a';
-        const JSONBIN_API_KEY = '668cf266c709fc0801fea61e';
-        const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/64a8f6178e4aa6225ec683f1';
 
-        $(document).ready(function() {
-            let currentPhotoIndex = 0;
+       $(document).ready(function() {
+    let currentPhotoIndex = 0;
 
-            $('#viewButton').on('click', function() {
-                var ward = $('#wardSelect').val();
-                var date = $('#datePicker').val();
-                if (ward && date) {
-                    loadPhotos(ward, date);
-                } else {
-                    alert('병동과 날짜를 선택하세요.');
-                }
-            });
+    $('#viewButton').on('click', function() {
+        var ward = $('#wardSelect').val();
+        var date = $('#datePicker').val();
+        if (ward && date) {
+            loadPhotos(ward, date);
+        } else {
+            alert('병동과 날짜를 선택하세요.');
+        }
+    });
 
-            $('#wardSelect').on('change', function() {
-                var ward = $(this).val();
-                var date = $('#datePicker').val();
-                if (ward && date) {
-                    loadPhotos(ward, date);
-                }
-            });
+    $('#wardSelect').on('change', function() {
+        var ward = $(this).val();
+        var date = $('#datePicker').val();
+        if (ward && date) {
+            loadPhotos(ward, date);
+        }
+    });
 
-            $('#datePicker').on('change', function() {
-                var ward = $('#wardSelect').val();
-                var date = $(this).val();
-                if (ward && date) {
-                    loadPhotos(ward, date);
-                }
-            });
+    $('#datePicker').on('change', function() {
+        var ward = $('#wardSelect').val();
+        var date = $(this).val();
+        if (ward && date) {
+            loadPhotos(ward, date);
+        }
+    });
 
-            $('#cameraButton').on('click', function() {
-                if ($('#wardSelect').val()) {
-                    $('#cameraInput').click();
-                } else {
-                    alert('병동을 선택하세요.');
-                }
-            });
+    $('#cameraButton').on('click', function() {
+        if ($('#wardSelect').val()) {
+            $('#cameraInput').click();
+        } else {
+            alert('병동을 선택하세요.');
+        }
+    });
 
-            $('#cameraInput').on('change', function() {
-                var file = this.files[0];
-                if (file) {
-                    uploadPhoto(file);
-                }
-            });
+    $('#cameraInput').on('change', function() {
+        var file = this.files[0];
+        if (file) {
+            uploadPhoto(file);
+        }
+    });
 
-            $('#prevButton').on('click', function() {
-                if (currentPhotoIndex > 0) {
-                    currentPhotoIndex--;
-                    showPhoto(currentPhotoIndex);
-                }
-            });
+    $('#prevButton').on('click', function() {
+        if (currentPhotoIndex > 0) {
+            currentPhotoIndex--;
+            showPhoto(currentPhotoIndex);
+        }
+    });
 
-            $('#nextButton').on('click', function() {
-                let photos = $('.photo-container');
-                if (currentPhotoIndex < photos.length - 1) {
-                    currentPhotoIndex++;
-                    showPhoto(currentPhotoIndex);
-                }
-            });
+    $('#nextButton').on('click', function() {
+        let photos = $('.photo-container');
+        if (currentPhotoIndex < photos.length - 1) {
+            currentPhotoIndex++;
+            showPhoto(currentPhotoIndex);
+        }
+    });
 
-            function loadPhotos(ward, date) {
-                $.ajax({
-                    url: JSONBIN_URL,
-                    type: 'GET',
-                    headers: {
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
-                    success: function(response) {
-                        let photos = response.record[ward] || [];
-                        $('#photoGallery').empty();
+    function loadPhotos(ward, date) {
+    let photos = JSON.parse(localStorage.getItem(ward)) || [];
+    $('#photoGallery').empty();
 
-                        let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
-                        let photoCount = filteredPhotos.length;
+    let filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+    let photoCount = filteredPhotos.length; // 사진 개수 계산
 
-                        filteredPhotos.forEach(photo => {
-                            let photoContainer = $('<div>').addClass('photo-container');
-                            let formattedDate = formatDateToKorean(photo.date);
-                            let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${photoCount}장>`);
-                            let img = $('<img>').attr('src', photo.url);
-                            let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+    filteredPhotos.forEach(photo => {
+        let photoContainer = $('<div>').addClass('photo-container');
+        let formattedDate = formatDateToKorean(photo.date);
+        let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${photoCount}장>`); // 사진 개수 추가
+        let img = $('<img>').attr('src', photo.url);
+        let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
-                            deleteButton.on('click', function() {
-                                deletePhoto(ward, photo);
-                            });
-
-                            img.on('click', function() {
-                                openModal(photo.url);
-                            });
-
-                            photoContainer.append(dateLabel, img, deleteButton);
-                            $('#photoGallery').append(photoContainer);
-                        });
-
-                        currentPhotoIndex = 0;
-                        showPhoto(currentPhotoIndex);
-                    },
-                    error: function() {
-                        alert('사진을 불러오는 데 실패했습니다.');
-                    }
-                });
-            }
-
-            function showPhoto(index) {
-                let photos = $('.photo-container');
-                photos.hide();
-                if (photos.length > 0) {
-                    $(photos[index]).show();
-                }
-            }
-
-            function uploadPhoto(file) {
-                let ward = $('#wardSelect').val();
-                let date = new Date().toISOString().slice(0, 16).replace("T", " ");
-
-                let formData = new FormData();
-                formData.append('image', file);
-                formData.append('key', API_KEY);
-
-                $.ajax({
-                    url: 'https://api.imgbb.com/1/upload',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        let url = response.data.url;
-                        savePhoto(ward, date, url);
-                        alert('사진이 업로드되었습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
-                    },
-                    error: function() {
-                        $('#uploadMessage').text('사진 업로드에 실패했습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
-                    }
-                });
-            }
-
-            function savePhoto(ward, date, url) {
-                $.ajax({
-                    url: JSONBIN_URL,
-                    type: 'GET',
-                    headers: {
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
-                    success: function(response) {
-                        let photos = response.record[ward] || [];
-                        photos.push({ date: date, url: url });
-                        response.record[ward] = photos;
-
-                        $.ajax({
-                            url: JSONBIN_URL,
-                            type: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Master-Key': JSONBIN_API_KEY
-                            },
-                            data: JSON.stringify(response),
-                            success: function() {
-                                $('#viewButton').click();
-                            },
-                            error: function() {
-                                alert('사진 저장에 실패했습니다.');
-                            }
-                        });
-                    },
-                    error: function() {
-                        alert('사진 불러오기 실패.');
-                    }
-                });
-            }
-
-            function deletePhoto(ward, photoToDelete) {
-                $.ajax({
-                    url: JSONBIN_URL,
-                    type: 'GET',
-                    headers: {
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
-                    success: function(response) {
-                        let photos = response.record[ward] || [];
-                        photos = photos.filter(photo => photo.url !== photoToDelete.url);
-                        response.record[ward] = photos;
-
-                        $.ajax({
-                            url: JSONBIN_URL,
-                            type: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Master-Key': JSONBIN_API_KEY
-                            },
-                            data: JSON.stringify(response),
-                            success: function() {
-                                $('#viewButton').click();
-                            },
-                            error: function() {
-                                alert('사진 삭제에 실패했습니다.');
-                            }
-                        });
-                    },
-                    error: function() {
-                        alert('사진 불러오기 실패.');
-                    }
-                });
-            }
-
-            function formatDateToKorean(dateString) {
-                let date = new Date(dateString.replace(' ', 'T'));
-                let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
-
-                return kstDate.toLocaleString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                }).replace('오전', 'AM').replace('오후', 'PM');
-            }
-
-            function openModal(url) {
-                $('#modalImage').attr('src', url);
-                $('#myModal').css('display', 'block');
-            }
-
-            $('.close').on('click', function() {
-                $('#myModal').css('display', 'none');
-            });
-
-            $(window).on('click', function(event) {
-                if (event.target.id === 'myModal') {
-                    $('#myModal').css('display', 'none');
-                }
-            });
-
-            // 초기 로드 시 현재 날짜를 설정
-            $('#datePicker').val(new Date().toISOString().slice(0, 10));
+        deleteButton.on('click', function() {
+            deletePhoto(ward, photo);
         });
+
+        img.on('click', function() {
+            openModal(photo.url);
+        });
+
+        photoContainer.append(dateLabel, img, deleteButton);
+        $('#photoGallery').append(photoContainer);
+    });
+
+    currentPhotoIndex = 0;
+    showPhoto(currentPhotoIndex);
+}
+
+    function showPhoto(index) {
+        let photos = $('.photo-container');
+        photos.hide();
+        if (photos.length > 0) {
+            $(photos[index]).show();
+        }
+    }
+
+    function uploadPhoto(file) {
+        let ward = $('#wardSelect').val();
+        let date = new Date().toISOString().slice(0, 16).replace("T", " ");
+
+        let formData = new FormData();
+        formData.append('image', file);
+        formData.append('key', API_KEY);
+
+        $.ajax({
+            url: 'https://api.imgbb.com/1/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                let url = response.data.url;
+                savePhoto(ward, date, url);
+                alert('사진이 업로드되었습니다.');
+                setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+            },
+            error: function() {
+                $('#uploadMessage').text('사진 업로드에 실패했습니다.');
+                setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+            }
+        });
+    }
+
+    function savePhoto(ward, date, url) {
+        let photos = JSON.parse(localStorage.getItem(ward)) || [];
+        photos.push({ date: date, url: url });
+        localStorage.setItem(ward, JSON.stringify(photos));
+        $('#viewButton').click(); // 사진 업로드 후 조회 버튼 클릭하여 갱신
+    }
+
+    function deletePhoto(ward, photoToDelete) {
+        let photos = JSON.parse(localStorage.getItem(ward)) || [];
+        photos = photos.filter(photo => photo.url !== photoToDelete.url);
+        localStorage.setItem(ward, JSON.stringify(photos));
+        $('#viewButton').click(); // 사진 삭제 후 조회 버튼 클릭하여 갱신
+    }
+
+    function formatDateToKorean(dateString) {
+        let date = new Date(dateString.replace(' ', 'T'));
+        let kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9로 변환
+
+        return kstDate.toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }).replace('오전', 'AM').replace('오후', 'PM');
+    }
+
+    function openModal(url) {
+        $('#modalImage').attr('src', url);
+        $('#myModal').css('display', 'block');
+    }
+
+    $('.close').on('click', function() {
+        $('#myModal').css('display', 'none');
+    });
+
+    $(window).on('click', function(event) {
+        if (event.target.id === 'myModal') {
+            $('#myModal').css('display', 'none');
+        }
+    });
+
+    // 초기 로드 시 현재 날짜를 설정
+    $('#datePicker').val(new Date().toISOString().slice(0, 10));
+});
     </script>
 </body>
 </html>
