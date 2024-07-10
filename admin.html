@@ -409,11 +409,11 @@
                         let url = response.data.url;
                         savePhoto(ward, date, url);
                         alert('사진이 업로드되었습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+                        setTimeout(() => { $('#uploadMessage').text(''); }, 1000);
                     },
                     error: function() {
                         $('#uploadMessage').text('사진 업로드에 실패했습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+                        setTimeout(() => { $('#uploadMessage').text(''); }, 1000);
                     }
                 });
             }
