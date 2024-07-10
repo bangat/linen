@@ -98,6 +98,17 @@
             margin-bottom: 10px;
         }
 
+        .ward-label {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
         #cameraButton, #viewButton {
             margin-top: 5px;
             padding: 7px 15px;
@@ -193,6 +204,17 @@
             display: flex;
             align-items: center;
         }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-container input {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -221,11 +243,10 @@
         </select>
 
         <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
-        <div>
-            <label>
-                <input type="checkbox" id="viewAllCheckbox">
-                전체 보기
-            </label>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="viewAllCheckbox">
+            <label for="viewAllCheckbox">전체 보기</label>
         </div>
 
         <div class="button-container">
@@ -281,7 +302,7 @@
                 var ward = $(this).val();
                 var date = $('#datePicker').val();
                 if (ward && date) {
-                    loadPhotos(ward, date);
+                   loadPhotos(ward, date);
                 }
             });
 
@@ -333,6 +354,7 @@
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
                     let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+                    let wardLabel = $('<div>').addClass('ward-label').text(ward.replace("ward", "").replace("HR", "HR 병동").replace("ICU", "중환자실").replace("dayWard", "낮병동").replace("endoscopy", "내시경실").replace("ER", "응급실"));
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
@@ -344,12 +366,13 @@
                         openModal(photo.url);
                     });
 
-                    photoContainer.append(dateLabel, img, deleteButton);
+                    photoContainer.append(dateLabel, img, wardLabel, deleteButton);
                     $('#photoGallery').append(photoContainer);
                 });
 
                 currentPhotoIndex = 0;
                 showPhoto(currentPhotoIndex);
+                toggleNavigationButtons(filteredPhotos.length);
             }
 
             function showPhoto(index) {
@@ -357,6 +380,14 @@
                 photos.hide();
                 if (photos.length > 0) {
                     $(photos[index]).show();
+                }
+            }
+
+            function toggleNavigationButtons(photoCount) {
+                if (photoCount <= 1) {
+                    $('#prevButton, #nextButton').hide();
+                } else {
+                    $('#prevButton, #nextButton').show();
                 }
             }
 
@@ -412,7 +443,7 @@
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
-                }).replace('오전', 'AM').replace('오후', 'PM');
+                }).replace('AM', '오전').replace('PM', '오후');
             }
 
             function openModal(url) {
