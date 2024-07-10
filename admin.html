@@ -93,7 +93,7 @@
             border-radius: 5px;
         }
 
-        .date-label {
+        .date-label, .ward-label {
             text-align: left;
             margin-bottom: 10px;
         }
@@ -333,6 +333,7 @@
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
                     let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+                    let wardLabel = $('<div>').addClass('ward-label').text(ward);
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
@@ -344,12 +345,13 @@
                         openModal(photo.url);
                     });
 
-                    photoContainer.append(dateLabel, img, deleteButton);
+                    photoContainer.append(dateLabel, wardLabel, img, deleteButton);
                     $('#photoGallery').append(photoContainer);
                 });
 
                 currentPhotoIndex = 0;
                 showPhoto(currentPhotoIndex);
+                toggleNavButtons(filteredPhotos.length);
             }
 
             function showPhoto(index) {
@@ -357,6 +359,14 @@
                 photos.hide();
                 if (photos.length > 0) {
                     $(photos[index]).show();
+                }
+            }
+
+            function toggleNavButtons(photoCount) {
+                if (photoCount <= 1) {
+                    $('#prevButton, #nextButton').hide();
+                } else {
+                    $('#prevButton, #nextButton').show();
                 }
             }
 
