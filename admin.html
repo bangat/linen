@@ -35,7 +35,7 @@
             width: 100%;
         }
 
-        .date-picker, #wardSelect, #viewAllCheckbox {
+        .date-picker, #wardSelect, #viewAllCheck {
             margin-bottom: 5px;
             padding: 5px;
             font-size: 16px;
@@ -221,7 +221,7 @@
         </select>
 
         <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
-        <input type="checkbox" id="viewAllCheckbox"> 전체보기
+        <label><input type="checkbox" id="viewAllCheck"> 전체보기</label>
 
         <div class="button-container">
             <div>
@@ -263,7 +263,7 @@
             $('#viewButton').on('click', function() {
                 var ward = $('#wardSelect').val();
                 var date = $('#datePicker').val();
-                var viewAll = $('#viewAllCheckbox').is(':checked');
+                var viewAll = $('#viewAllCheck').is(':checked');
                 if (ward) {
                     loadPhotos(ward, date, viewAll);
                 } else {
@@ -274,7 +274,7 @@
             $('#wardSelect').on('change', function() {
                 var ward = $(this).val();
                 var date = $('#datePicker').val();
-                var viewAll = $('#viewAllCheckbox').is(':checked');
+                var viewAll = $('#viewAllCheck').is(':checked');
                 if (ward) {
                     loadPhotos(ward, date, viewAll);
                 }
@@ -283,7 +283,16 @@
             $('#datePicker').on('change', function() {
                 var ward = $('#wardSelect').val();
                 var date = $(this).val();
-                var viewAll = $('#viewAllCheckbox').is(':checked');
+                var viewAll = $('#viewAllCheck').is(':checked');
+                if (ward && date) {
+                    loadPhotos(ward, date, viewAll);
+                }
+            });
+
+            $('#viewAllCheck').on('change', function() {
+                var ward = $('#wardSelect').val();
+                var date = $('#datePicker').val();
+                var viewAll = $(this).is(':checked');
                 if (ward) {
                     loadPhotos(ward, date, viewAll);
                 }
@@ -294,8 +303,7 @@
                     $('#cameraInput').click();
                 } else {
                     alert('병동을 선택하세요.');
-                }
-            });
+});
 
             $('#cameraInput').on('change', function() {
                 var file = this.files[0];
@@ -323,13 +331,19 @@
                 let photos = JSON.parse(localStorage.getItem(ward)) || [];
                 $('#photoGallery').empty();
 
-                let filteredPhotos = viewAll ? photos : photos.filter(photo => photo.date.split(' ')[0] === date);
-                let photoCount = filteredPhotos.length; // 사진 개수 계산
+                let filteredPhotos;
+                if (viewAll) {
+                    filteredPhotos = photos;
+                } else {
+                    filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
+                }
+
+                let photoCount = filteredPhotos.length;
 
                 filteredPhotos.forEach(photo => {
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
-                    let dateLabel = $('<div>').addClass('date-label').text(`${formattedDate} <${photoCount}장>`); // 사진 개수 추가
+                    let dateLabel = $('<div>').addClass('date-label').text(`${ward} 병동 - ${formattedDate} (${photoCount}장)`);
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
