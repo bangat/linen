@@ -17,12 +17,12 @@
         header {
             background-color: #333;
             color: #fff;
-            padding: 2px;
+            padding: 1px;
             text-align: center;
         }
 
         main {
-            padding: 5px;
+            padding: 3px;
         }
 
         footer {
@@ -98,17 +98,17 @@
             margin-bottom: 10px;
         }
 
-      /* CSS 수정 */
-.ward-label {
-    position: absolute;
-    top: 2px;
-    right: 60px; /* 삭제 버튼 옆으로 이동 */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 4px 8px;
-    font-size: 13px;
-    border-radius: 4px;
-}
+        /* CSS 수정 */
+        .ward-label {
+            position: absolute;
+            top: 3px;
+            right: 60px; /* 삭제 버튼 옆으로 이동 */
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 8px;
+            font-size: 13px;
+            border-radius: 4px;
+        }
 
         #cameraButton, #viewButton {
             margin-top: 5px;
@@ -247,7 +247,7 @@
         
         <div class="checkbox-container">
             <input type="checkbox" id="viewAllCheckbox">
-            <label for="viewAllCheckbox">전체 보기</label>
+            <label for="viewAllCheckbox">전체 날짜</label>
             <input type="checkbox" id="viewAllWardsCheckbox">
             <label for="viewAllWardsCheckbox">전체 병동</label>
         </div>
@@ -349,12 +349,15 @@
                 }
             });
 
-            function loadPhotos(ward, date, viewAllWards) {
-                let wards = viewAllWards ? getAllWards() : [ward];
+            function loadPhotos(selectedWard, date, viewAllWards) {
+                let wards = viewAllWards ? getAllWards() : [selectedWard];
                 let photos = [];
 
                 wards.forEach(ward => {
                     let wardPhotos = JSON.parse(localStorage.getItem(ward)) || [];
+                    wardPhotos.forEach(photo => {
+                        photo.ward = ward;
+                    });
                     photos = photos.concat(wardPhotos);
                 });
 
@@ -366,12 +369,12 @@
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
                     let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
-                    let wardLabel = $('<div>').addClass('ward-label').text(ward.replace("ward", "").replace("HR", "HR 병동").replace("ICU", "중환자실").replace("dayWard", "낮병동").replace("endoscopy", "내시경실").replace("ER", "응급실"));
+                    let wardLabel = $('<div>').addClass('ward-label').text(getWardLabel(photo.ward));
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
                     deleteButton.on('click', function() {
-                        deletePhoto(ward, photo);
+                        deletePhoto(photo.ward, photo);
                     });
 
                     img.on('click', function() {
@@ -434,7 +437,7 @@
                 let photos = JSON.parse(localStorage.getItem(ward)) || [];
                 photos.push({ date: date, url: url });
                 localStorage.setItem(ward, JSON.stringify(photos));
-loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
+                loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
             }
 
             function deletePhoto(ward, photo) {
@@ -467,9 +470,33 @@ loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
                 const year = date.getFullYear();
                 const month = ('0' + (date.getMonth() + 1)).slice(-2);
                 const day = ('0' + date.getDate()).slice(-2);
-                const hours = ('0' + date.getHours()).slice(-2);
+                const hours = date.getHours();
                 const minutes = ('0' + date.getMinutes()).slice(-2);
-                return `${year}-${month}-${day} ${hours}:${minutes}`;
+                const ampm = hours >= 12 ? '오후' : '오전';
+                const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+                return `${year}-${month}-${day} ${ampm} ${formattedHours}:${minutes}`;
+            }
+
+            function getWardLabel(ward) {
+                const wardLabels = {
+                    'ward93': '93 병동',
+                    'ward83': '83 병동',
+                    'ward73': '73 병동',
+                    'ward71': '71 병동',
+                    'ward63': '63 병동',
+                    'ward62': '62 병동',
+                    'ward61': '61 병동',
+                    'HR': 'HR 병동',
+                    'ward52': '52 병동',
+                    'ward51': '51 병동',
+                    'ward42': '42 병동',
+                    'ward41': '41 병동',
+                    'ICU': '중환자실',
+                    'dayWard': '낮병동',
+                    'endoscopy': '내시경실',
+                    'ER': '응급실'
+                };
+                return wardLabels[ward] || ward;
             }
 
             function getAllWards() {
