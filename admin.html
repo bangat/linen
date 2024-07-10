@@ -17,7 +17,7 @@
         header {
             background-color: #333;
             color: #fff;
-            padding: 2px;
+            padding: 1px;
             text-align: center;
         }
 
@@ -93,7 +93,7 @@
             border-radius: 5px;
         }
 
-        .date-label, .ward-label {
+        .date-label {
             text-align: left;
             margin-bottom: 10px;
         }
@@ -333,7 +333,6 @@
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
                     let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
-                    let wardLabel = $('<div>').addClass('ward-label').text(ward);
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
@@ -345,13 +344,12 @@
                         openModal(photo.url);
                     });
 
-                    photoContainer.append(dateLabel, wardLabel, img, deleteButton);
+                    photoContainer.append(dateLabel, img, deleteButton);
                     $('#photoGallery').append(photoContainer);
                 });
 
                 currentPhotoIndex = 0;
                 showPhoto(currentPhotoIndex);
-                toggleNavButtons(filteredPhotos.length);
             }
 
             function showPhoto(index) {
@@ -359,14 +357,6 @@
                 photos.hide();
                 if (photos.length > 0) {
                     $(photos[index]).show();
-                }
-            }
-
-            function toggleNavButtons(photoCount) {
-                if (photoCount <= 1) {
-                    $('#prevButton, #nextButton').hide();
-                } else {
-                    $('#prevButton, #nextButton').show();
                 }
             }
 
@@ -388,11 +378,11 @@
                         let url = response.data.url;
                         savePhoto(ward, date, url);
                         alert('사진이 업로드되었습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+                        setTimeout(() => { $('#uploadMessage').text(''); }, 1000);
                     },
                     error: function() {
                         $('#uploadMessage').text('사진 업로드에 실패했습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+                        setTimeout(() => { $('#uploadMessage').text(''); }, 1000);
                     }
                 });
             }
