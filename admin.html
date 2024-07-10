@@ -100,7 +100,7 @@
 
         .ward-label {
             position: absolute;
-            bottom: 5px;
+            top: 5px;
             right: 5px;
             background-color: rgba(0, 0, 0, 0.5);
             color: white;
@@ -372,6 +372,7 @@
 
                 currentPhotoIndex = 0;
                 showPhoto(currentPhotoIndex);
+                toggleNavigationButtons(filteredPhotos.length);
             }
 
             function showPhoto(index) {
@@ -379,6 +380,14 @@
                 photos.hide();
                 if (photos.length > 0) {
                     $(photos[index]).show();
+                }
+            }
+
+            function toggleNavigationButtons(photoCount) {
+                if (photoCount <= 1) {
+                    $('#prevButton, #nextButton').hide();
+                } else {
+                    $('#prevButton, #nextButton').show();
                 }
             }
 
@@ -434,7 +443,7 @@
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
-                }).replace('오전', 'AM').replace('오후', 'PM');
+                }).replace('AM', '오전').replace('PM', '오후');
             }
 
             function openModal(url) {
