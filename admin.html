@@ -85,12 +85,17 @@
             position: absolute;
             top: 2px;
             right: 1px;
-            background-color: red;
+            background-color: black;
             color: white;
             border: none;
-            padding: 3px 5px;
+            padding: 3px 8px;
             cursor: pointer;
             border-radius: 5px;
+            font-size: 12px; /* 버튼 크기 조정 */
+        }
+
+        .delete-button:hover {
+            background-color: darkred;
         }
 
         .date-label {
@@ -287,7 +292,7 @@
             let currentPhotoIndex = 0;
 
             $('#viewButton').on('click', function() {
-                var ward = $('#wardSelect').val();
+                var ward = $('#wardvar ward = $('#wardSelect').val();
                 var date = $('#datePicker').val();
                 if ($('#viewAllCheckbox').is(':checked')) {
                     loadPhotos(ward, null); // 전체 보기
@@ -366,7 +371,7 @@
                         openModal(photo.url);
                     });
 
-                    photoContainer.append(dateLabel, img, wardLabel, deleteButton);
+                    photoContainer.append(dateLabel, img, deleteButton, wardLabel); // 병동명 레이블을 사진 아래로 이동
                     $('#photoGallery').append(photoContainer);
                 });
 
