@@ -1,0 +1,211 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1px;
+    text-align: center;
+}
+
+main {
+    padding: 3px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 2px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.date-picker,
+#wardSelect {
+    margin-bottom: 5px;
+    padding: 5px;
+    font-size: 16px;
+    width: calc(100% - 10px);
+    max-width: 300px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+.ward-section {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.photo-gallery {
+    background-color: #f9f9f9;
+    padding: 3px;
+    border-radius: 3px;
+    margin-top: 1px;
+    max-height: 70vh;
+    overflow-y: hidden;
+    text-align: center;
+}
+
+.photo-container {
+    position: relative;
+    margin-bottom: 3px;
+    background-color: #fff;
+    display: none;
+    width: 100%;
+    height: 70vh;
+}
+
+.photo-gallery img {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.delete-button {
+    position: absolute;
+    top: 2px;
+    right: 1px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 3px 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.date-label {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.ward-label {
+    position: absolute;
+    top: 2px;
+    right: 60px;
+    background-color: black;
+    color: white;
+    padding: 3px 5px;
+    font-size: 13px;
+    border-radius: 5px;
+}
+
+#cameraButton,
+#viewButton {
+    margin-top: 5px;
+    padding: 7px 15px;
+    font-size: 13px;
+    cursor: pointer;
+    background-color: dodgerblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+#cameraButton:hover,
+#viewButton:hover {
+    background-color: royalblue;
+}
+
+#uploadMessage {
+    text-align: center;
+    margin-top: 10px;
+    color: green;
+    font-weight: bold;
+}
+
+.nav-button {
+    padding: 7px;
+    font-size: 13px;
+    cursor: pointer;
+    background-color: lightgray;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    margin: 6px;
+}
+
+.nav-button:hover {
+    background-color: gray;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 30px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 90%;
+    max-width: 700px;
+}
+
+.modal-content img {
+    width: 100%;
+    height: 100%;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.left-buttons,
+.right-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.checkbox-container input {
+    margin-right: 5px;
+}
