@@ -17,7 +17,7 @@
         header {
             background-color: #333;
             color: #fff;
-            padding: 1px;
+            padding: 2px;
             text-align: center;
         }
 
@@ -96,6 +96,17 @@
         .date-label {
             text-align: left;
             margin-bottom: 10px;
+        }
+
+        .ward-label {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 3px;
         }
 
         #cameraButton, #viewButton {
@@ -193,6 +204,17 @@
             display: flex;
             align-items: center;
         }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-container input {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -221,11 +243,10 @@
         </select>
 
         <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
-        <div>
-            <label>
-                <input type="checkbox" id="viewAllCheckbox">
-                전체 보기
-            </label>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="viewAllCheckbox">
+            <label for="viewAllCheckbox">전체 보기</label>
         </div>
 
         <div class="button-container">
@@ -333,6 +354,7 @@
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
                     let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+                    let wardLabel = $('<div>').addClass('ward-label').text(ward.replace("ward", "").replace("HR", "HR 병동").replace("ICU", "중환자실").replace("dayWard", "낮병동").replace("endoscopy", "내시경실").replace("ER", "응급실"));
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
@@ -344,7 +366,7 @@
                         openModal(photo.url);
                     });
 
-                    photoContainer.append(dateLabel, img, deleteButton);
+                    photoContainer.append(dateLabel, img, wardLabel, deleteButton);
                     $('#photoGallery').append(photoContainer);
                 });
 
@@ -378,11 +400,11 @@
                         let url = response.data.url;
                         savePhoto(ward, date, url);
                         alert('사진이 업로드되었습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 1000);
+                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
                     },
                     error: function() {
                         $('#uploadMessage').text('사진 업로드에 실패했습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 1000);
+                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
                     }
                 });
             }
