@@ -35,7 +35,7 @@
             width: 100%;
         }
 
-        .date-picker, #wardSelect, #viewAllCheck {
+        .date-picker, #wardSelect {
             margin-bottom: 5px;
             padding: 5px;
             font-size: 16px;
@@ -96,6 +96,17 @@
         .date-label {
             text-align: left;
             margin-bottom: 10px;
+        }
+
+        .ward-label {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 3px;
         }
 
         #cameraButton, #viewButton {
@@ -193,6 +204,17 @@
             display: flex;
             align-items: center;
         }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-container input {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -221,7 +243,11 @@
         </select>
 
         <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
-        <label><input type="checkbox" id="viewAllCheck"> 전체보기</label>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="viewAllCheckbox">
+            <label for="viewAllCheckbox">전체 보기</label>
+        </div>
 
         <div class="button-container">
             <div>
@@ -263,38 +289,28 @@
             $('#viewButton').on('click', function() {
                 var ward = $('#wardSelect').val();
                 var date = $('#datePicker').val();
-                var viewAll = $('#viewAllCheck').is(':checked');
-                if (ward) {
-                    loadPhotos(ward, date, viewAll);
+                if ($('#viewAllCheckbox').is(':checked')) {
+                    loadPhotos(ward, null); // 전체 보기
+                } else if (ward && date) {
+                    loadPhotos(ward, date);
                 } else {
-                    alert('병동을 선택하세요.');
+                    alert('병동과 날짜를 선택하세요.');
                 }
             });
 
             $('#wardSelect').on('change', function() {
                 var ward = $(this).val();
                 var date = $('#datePicker').val();
-                var viewAll = $('#viewAllCheck').is(':checked');
-                if (ward) {
-                    loadPhotos(ward, date, viewAll);
+                if (ward && date) {
+                    loadPhotos(ward, date);
                 }
             });
 
             $('#datePicker').on('change', function() {
                 var ward = $('#wardSelect').val();
                 var date = $(this).val();
-                var viewAll = $('#viewAllCheck').is(':checked');
                 if (ward && date) {
-                    loadPhotos(ward, date, viewAll);
-                }
-            });
-
-            $('#viewAllCheck').on('change', function() {
-                var ward = $('#wardSelect').val();
-                var date = $('#datePicker').val();
-                var viewAll = $(this).is(':checked');
-                if (ward) {
-                    loadPhotos(ward, date, viewAll);
+                    loadPhotos(ward, date);
                 }
             });
 
@@ -303,7 +319,8 @@
                     $('#cameraInput').click();
                 } else {
                     alert('병동을 선택하세요.');
-});
+                }
+            });
 
             $('#cameraInput').on('change', function() {
                 var file = this.files[0];
@@ -327,23 +344,17 @@
                 }
             });
 
-            function loadPhotos(ward, date, viewAll) {
+            function loadPhotos(ward, date) {
                 let photos = JSON.parse(localStorage.getItem(ward)) || [];
                 $('#photoGallery').empty();
 
-                let filteredPhotos;
-                if (viewAll) {
-                    filteredPhotos = photos;
-                } else {
-                    filteredPhotos = photos.filter(photo => photo.date.split(' ')[0] === date);
-                }
-
-                let photoCount = filteredPhotos.length;
+                let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
 
                 filteredPhotos.forEach(photo => {
                     let photoContainer = $('<div>').addClass('photo-container');
                     let formattedDate = formatDateToKorean(photo.date);
-                    let dateLabel = $('<div>').addClass('date-label').text(`${ward} 병동 - ${formattedDate} (${photoCount}장)`);
+                    let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+                    let wardLabel = $('<div>').addClass('ward-label').text(ward.replace("ward", "").replace("HR", "HR 병동").replace("ICU", "중환자실").replace("dayWard", "낮병동").replace("endoscopy", "내시경실").replace("ER", "응급실"));
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
@@ -355,7 +366,7 @@
                         openModal(photo.url);
                     });
 
-                    photoContainer.append(dateLabel, img, deleteButton);
+                    photoContainer.append(dateLabel, img, wardLabel, deleteButton);
                     $('#photoGallery').append(photoContainer);
                 });
 
@@ -373,7 +384,7 @@
 
             function uploadPhoto(file) {
                 let ward = $('#wardSelect').val();
-                let date = new Date().toISOString().slice(0, 16).replace("T", " ");
+                let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
 
                 let formData = new FormData();
                 formData.append('image', file);
