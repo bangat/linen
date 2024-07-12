@@ -75,7 +75,7 @@ $(document).ready(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}개\n`;
+                message += `${itemName} ${itemCount}장\n`;
             }
         });
 
@@ -84,7 +84,7 @@ $(document).ready(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}개\n`;
+                message += `${itemName} ${itemCount}장\n`;
             }
         });
 
@@ -93,7 +93,7 @@ $(document).ready(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}개\n`;
+                message += `${itemName} ${itemCount}장\n`;
             }
         });
 
@@ -102,7 +102,7 @@ $(document).ready(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}개\n`;
+                message += `${itemName} ${itemCount}장\n`;
             }
         });
 
