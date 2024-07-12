@@ -54,6 +54,7 @@
         </div>
         
         <input type="file" id="cameraInput" accept="image/*" capture="camera" style="display: none;">
+        <input type="file" id="galleryInput" accept="image/*" style="display: none;">
 
         <section class="ward-section" id="wardSection">
             <div class="photo-gallery" id="photoGallery">
@@ -111,13 +112,18 @@
 
             $('#cameraButton').on('click', function() {
                 if ($('#wardSelect').val()) {
-                    $('#cameraInput').click();
+                    let choice = confirm("카메라를 사용하려면 확인을 누르시고, 갤러리에서 선택하려면 취소를 누르세요.");
+                    if (choice) {
+                        $('#cameraInput').click();
+                    } else {
+                        $('#galleryInput').click();
+                    }
                 } else {
                     alert('병동을 선택하세요.');
                 }
             });
 
-            $('#cameraInput').on('change', function() {
+            $('#cameraInput, #galleryInput').on('change', function() {
                 var file = this.files[0];
                 if (file) {
                     uploadPhoto(file);
@@ -298,7 +304,8 @@
                 const koreanDate = new Date(date.getTime() + timeOffset);
                 return koreanDate;
             }
-// 초기 로드 시 현재 날짜를 설정
+
+            // 초기 로드 시 현재 날짜를 설정
             $('#datePicker').val(new Date().toISOString().slice(0, 10));
         });
     </script>
