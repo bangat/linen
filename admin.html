@@ -6,7 +6,6 @@
     <title>관리자 페이지</title>
     <link rel="stylesheet" href="admin.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
     <header>
@@ -53,7 +52,7 @@
             </div>
         </div>
         
-        <input type="file" id="cameraInput" accept="image/*" style="display: none;">
+        <input type="file" id="cameraInput" accept="image/*" multiple style="display: none;">
 
         <section class="ward-section" id="wardSection">
             <div class="photo-gallery" id="photoGallery">
@@ -118,9 +117,9 @@
             });
 
             $('#cameraInput').on('change', function() {
-                var file = this.files[0];
-                if (file) {
-                    uploadPhoto(file);
+                var files = this.files;
+                if (files.length > 0) {
+                    Array.from(files).forEach(file => uploadPhoto(file));
                 }
             });
 
@@ -237,7 +236,7 @@
                     localStorage.setItem(ward, JSON.stringify(photos));
                     loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
                     alert('사진이 삭제되었습니다.');
-                }
+}
             }
 
             function openModal(url) {
