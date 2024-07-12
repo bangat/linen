@@ -22,7 +22,6 @@ $(document).ready(function() {
         $(this).css("background-color", "#4CAF50");
     });
 
-
     // 날짜 선택기 초기화
     $("#requestDate").datepicker({
         dateFormat: 'yy-mm-dd'
@@ -70,41 +69,53 @@ $(document).ready(function() {
         let message = `병동명 : ${wardValue}\n`;
         message += `입고날짜 : ${requestDate}\n\n`;
 
-        message += `[시트/기타]\n`;
+        let sheetItems = '';
         $("#sheet input[type='number']").each(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}장\n`;
+                sheetItems += `${itemName} ${itemCount}장\n`;
             }
         });
+        if (sheetItems) {
+            message += `[시트/기타]\n${sheetItems}\n`;
+        }
 
-        message += `\n[일반환의]\n`;
+        let normalItems = '';
         $("#normal input[type='number']").each(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}장\n`;
+                normalItems += `${itemName} ${itemCount}장\n`;
             }
         });
+        if (normalItems) {
+            message += `[일반환의]\n${normalItems}\n`;
+        }
 
-        message += `\n[정형환의]\n`;
+        let orthoItems = '';
         $("#ortho input[type='number']").each(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}장\n`;
+                orthoItems += `${itemName} ${itemCount}장\n`;
             }
         });
+        if (orthoItems) {
+            message += `[정형환의]\n${orthoItems}\n`;
+        }
 
-        message += `\n[근무복]\n`;
+        let uniformItems = '';
         $("#uniform input[type='number']").each(function() {
             const itemName = $(this).parent().prev().text().trim();
             const itemCount = $(this).val();
             if (itemCount > 0) {
-                message += `${itemName} ${itemCount}장\n`;
+                uniformItems += `${itemName} ${itemCount}장\n`;
             }
         });
+        if (uniformItems) {
+            message += `[근무복]\n${uniformItems}\n`;
+        }
 
         const chatId = "5432510881"; // 텔레그램 채팅방 ID
         const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
@@ -178,7 +189,6 @@ $(document).ready(function() {
         }
     });
 
-        
     // 관리자 페이지 링크 처리
     $('#adminPageLink').click(function(e) {
         e.preventDefault();
@@ -189,7 +199,6 @@ $(document).ready(function() {
             alert("암호가 일치하지 않습니다.");
         }
     });
-
 
     // jQuery UI Datepicker 초기화 (중복 초기화 제거)
     $("#requestDate").datepicker({
