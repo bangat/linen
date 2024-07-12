@@ -53,8 +53,7 @@
             </div>
         </div>
         
-        <input type="file" id="cameraInput" accept="image/*" capture="camera" style="display: none;">
-        <input type="file" id="galleryInput" accept="image/*" style="display: none;">
+        <input type="file" id="cameraInput" accept="image/*" style="display: none;">
 
         <section class="ward-section" id="wardSection">
             <div class="photo-gallery" id="photoGallery">
@@ -112,18 +111,13 @@
 
             $('#cameraButton').on('click', function() {
                 if ($('#wardSelect').val()) {
-                    let choice = confirm("카메라를 사용하려면 확인을 누르시고, 갤러리에서 선택하려면 취소를 누르세요.");
-                    if (choice) {
-                        $('#cameraInput').click();
-                    } else {
-                        $('#galleryInput').click();
-                    }
+                    $('#cameraInput').click();
                 } else {
                     alert('병동을 선택하세요.');
                 }
             });
 
-            $('#cameraInput, #galleryInput').on('change', function() {
+            $('#cameraInput').on('change', function() {
                 var file = this.files[0];
                 if (file) {
                     uploadPhoto(file);
