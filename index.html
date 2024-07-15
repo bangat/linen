@@ -217,22 +217,22 @@
     <script src="js.js"></script>
     <script>
         // 페이지 로드 후 실행될 함수
-       $(document).ready(function() {
-          const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
+ $(document).ready(function() {
+        const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
 
+        function showPopup() {
+            // 팝업 창을 AJAX를 사용하여 불러오기
+            $.ajax({
+                url: 'popup.html', // 팝업 창 파일 경로
+                cache: false, // 캐시 사용하지 않음
+                success: function(html) {
+                    $('body').append(html); // HTML 추가
+                    $('#popupContainer').fadeIn(); // 팝업 표시
+                }
+            });
+        }
 
-  function showPopup() {
-                // 팝업 창을 AJAX를 사용하여 불러오기
-                $.ajax({
-                    url: '팝업.html', // 팝업 창 파일 경로
-                    cache: false, // 캐시 사용하지 않음
-                    success: function(html) {
-                        $('body').append(html); // HTML 추가
-                        $('#popupContainer').fadeIn(); // 팝업 표시
-                    }
-                });
-      }
-      // 팝업 표시 로직 (예: 페이지 로드 후)
+        // 팝업 표시 로직 (예: 페이지 로드 후)
         showPopup();
     const sheetItems = [
         { name: '대 시 트', key: '대시트_요청수량' },
