@@ -284,7 +284,7 @@
 
 function formatDateToKorean(dateString) {
     var date = new Date(dateString);
-    var year = ('' + date.getFullYear()).slice(-2); // 년도를 두 자리 숫자로 표시
+    var year = ('' + date.getFullYear()); // .slice(-2); // 년도를 두 자리 숫자로 표시
     var month = ('0' + (date.getMonth() + 1)).slice(-2);
     var day = ('0' + date.getDate()).slice(-2);
     var hours = date.getHours();
