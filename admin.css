@@ -90,31 +90,6 @@ footer {
     margin-bottom: 20px;
 }
 
-.photo-gallery {
-    background-color: #f9f9f9;
-    padding: 2px;
-    border-radius: 3px;
-    margin-top: 1px;
-    max-height: 80vh;
-    overflow-y: hidden;
-    text-align: center;
-}
-
-.photo-container {
-    position: relative;
-    margin-bottom: 3px;
-    background-color: #fff;
-    display: none;
-    width: 100%;
-    height: 70vh;
-}
-
-.photo-gallery img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    cursor: pointer;
-}
 
 .delete-button {
     position: absolute;
@@ -213,6 +188,33 @@ footer {
     color: #bbb;
     text-decoration: none;
     cursor: pointer;
+}
+
+.photo-gallery {
+    background-color: #f9f9f9;
+    padding: 3px;
+    border-radius: 3px;
+    margin-top: 1px;
+    max-height: 70vh;
+    overflow-x: auto; /* 가로 스크롤바 추가 */
+    white-space: nowrap; /* 이미지가 줄 바꿈 없이 나열되도록 설정 */
+}
+
+.photo-container {
+    display: inline-block; /* 인라인 블록 요소로 변경 */
+    height: 70vh;
+    vertical-align: top; /* 상단 정렬 */
+    white-space: normal; /* 이미지의 텍스트 줄 바꿈 허용 */
+    max-width: calc(100% - 6px); /* 최대 너비 설정 */
+    margin-right: 3px; /* 오른쪽 여백 추가 */
+}
+
+.photo-container img {
+    width: 100%; /* 이미지를 부모 요소에 맞춰서 표시 */
+    height: auto;
+    object-fit: cover; /* 이미지가 잘리지 않고 비율 유지 */
+    cursor: pointer;
+    max-height: 100%; /* 최대 높이 설정 */
 }
 
 .button-container {
