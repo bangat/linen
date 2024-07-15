@@ -1,32 +1,21 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
     margin: 0;
     padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    font-size: 12px; /* 폰트 크기 조정 */
 }
-
 header {
-    background-color: #333;
-    color: #fff;
-    padding: 1px; /* 상단 여백을 1px로 유지 */
-    text-align: center;
-    margin-bottom: 2; /* 아래 여백 제거 */
-}
-
-main {
-    padding: 0; /* 내용의 상하 여백을 3px로 유지 */
-    margin-top: 0; /* 위 여백 제거 */
+    padding: 5px 0; /* 상단 여백을 5px로 유지 */
     margin-bottom: 0; /* 아래 여백 제거 */
 }
 
+main {
+    padding: 0; /* 내용의 상하 여백을 0으로 유지 */
+}
+
 footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+    padding: 5px 0; /* 내용의 상하 여백을 5px로 유지 */
 }
 
 .photo-container {
@@ -100,7 +89,7 @@ footer {
 #cameraButton,
 #viewButton {
     margin-top: 2px;
-    padding: 6px 13px;
+    padding: 8px 15px;
     font-size: 12px;
     cursor: pointer;
     background-color: dodgerblue;
@@ -168,30 +157,34 @@ footer {
     cursor: pointer;
 }
 
+/* 사진 갤러리 컨테이너 */
 .photo-gallery {
-    background-color: #f9f9f9;
-    padding: 2px;
-    border-radius: 3px;
-    margin-top: 1px;
-    max-height: 80vh;
-    overflow-y: hidden;
-    text-align: center;
+    background-color: #f9f9f9;   /* 배경색 설정 */
+    padding: 0;                /* 안쪽 여백 설정 */
+    border-radius: 2px;          /* 테두리 둥글기 설정 */
+    margin-top: 0;             /* 위쪽 여백 설정 */
+    max-height: 70vh;            /* 최대 높이 설정 */
+    overflow-y: hidden;          /* 세로 스크롤 숨김 */
+    overflow-x: hidden;          /* 세로 스크롤 숨김 */
+    text-align: center;          /* 텍스트 가운데 정렬 */
 }
 
+/* 사진 컨테이너 */
 .photo-container {
-    position: relative;
-    margin-bottom: 3px;
-    background-color: #fff;
-    display: none;
-    width: 100%;
-    height: 70vh;
+    position: relative;          /* 상대 위치 설정 */
+    margin-bottom: 3px;          /* 아래쪽 여백 설정 */
+    background-color: #fff;      /* 배경색 설정 */
+    display: none;               /* 초기에 숨김 상태로 설정 */
+    width: 100%;                 /* 가로 너비 100% 설정 */
+    height: 70vh;                /* 높이 설정 */
 }
 
+/* 사진 갤러리 이미지 */
 .photo-gallery img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    cursor: pointer;
+    width: 100%;                 /* 가로 너비 100% 설정 */
+    height: 100%;                /* 세로 높이 100% 설정 */
+    object-fit: cover;           /* 객체 맞춤 설정 */
+    cursor: pointer;             /* 커서 포인터 설정 */
 }
 
 .button-container {
