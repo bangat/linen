@@ -1,26 +1,26 @@
-
 /* 전체 페이지(body) 설정 */
 body {
     font-family: Arial, sans-serif; /* 전체 페이지의 폰트 설정 */
     background-color: #f2f2f2;     /* 배경색 설정 */
     margin: 0;                      /* 바깥 여백 제거 */
     padding: 0;                     /* 안쪽 여백 제거 */
-    font-size: 14px;                /* 기본 폰트 크기 설정 */
 }
 
 /* 페이지 상단 헤더(header) 설정 */
 header {
     background-color: #333; /* 배경색 설정 */
     color: #fff;            /* 글자 색상 설정 */
-    padding: 10px;          /* 안쪽 여백 설정 */
+    padding: 1px;           /* 안쪽 여백 설정 */
     text-align: center;     /* 텍스트 가운데 정렬 */
-    margin-bottom: 10px;    /* 아래쪽 여백 설정 */
-    font-size: 16px;        /* 폰트 크기 설정 */
+    margin-bottom: 2px;     /* 아래쪽 여백 설정 */
+    font-size: 13px;        /* 폰트 크기 조정 */
 }
 
 /* 페이지 메인 컨텐츠(main) 설정 */
 main {
-    padding: 10px;          /* 안쪽 여백 설정 */
+    padding: 0;          /* 안쪽 여백 설정 */
+    margin-top: 0;       /* 위쪽 여백 제거 */
+    margin-bottom: 0;    /* 아래쪽 여백 제거 */
 }
 
 /* 페이지 하단 푸터(footer) 설정 */
@@ -28,7 +28,7 @@ footer {
     background-color: #333; /* 배경색 설정 */
     color: #fff;            /* 글자 색상 설정 */
     text-align: center;     /* 텍스트 가운데 정렬 */
-    padding: 10px;          /* 안쪽 여백 설정 */
+    padding: 1px;           /* 안쪽 여백 설정 */
     position: fixed;        /* 화면 고정 위치 설정 */
     bottom: 0;              /* 하단에 배치 */
     width: 100%;            /* 전체 너비 사용 */
@@ -36,11 +36,11 @@ footer {
 
 /* 사진 컨테이너 설정 */
 .photo-container {
-    position: relative;     /* 상대적 위치 지정 */
     margin-bottom: 20px;    /* 하단 여백 20px */
-    padding: 2px;           /* 안쪽 여백 2px */
+    padding: 2px;          /* 안쪽 여백 10px */
     border: 1px solid #ddd; /* 1px 두께의 #ddd 색상 테두리 */
-    border-radius: 2px;     /* 모서리를 2px만큼 둥글게 */
+    border-radius: 2px;     /* 모서리를 5px만큼 둥글게 */
+    position: relative;     /* 상대적 위치 지정 */
 }
 
 /* 사진 이미지 설정 */
@@ -51,50 +51,73 @@ footer {
     margin: 0 auto;         /* 가운데 정렬 */
 }
 
+/* 날짜 선택기 및 워드 선택 설정 */
+.date-picker,
+#wardSelect {
+    margin-bottom: 5px;     /* 아래쪽 여백 5px 설정 */
+    padding: 5px;           /* 안쪽 여백 5px 설정 */
+    font-size: 16px;        /* 폰트 크기 16px 설정 */
+    width: calc(100% - 10px); /* 너비 계산 설정 */
+    max-width: 300px;       /* 최대 너비 300px 설정 */
+    display: block;         /* 블록 요소로 설정 */
+    margin: 0 auto;         /* 가운데 정렬 */
+    box-sizing: border-box; /* 박스 크기 설정 */
+}
+
+/* 워드 섹션 설정 */
+.ward-section {
+    background-color: #fff; /* 배경색 설정 */
+    border-radius: 5px;     /* 모서리를 5px만큼 둥글게 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 설정 */
+    padding: 20px;          /* 안쪽 여백 20px 설정 */
+    margin-bottom: 20px;    /* 아래쪽 여백 20px 설정 */
+}
+
 /* 삭제 버튼 설정 */
 .delete-button {
     position: absolute;     /* 절대 위치 설정 */
-    top: 6px;               /* 위쪽 위치 5px 설정 */
-    right: 7px;             /* 오른쪽 위치 5px 설정 */
+    top: 3px;               /* 위쪽 위치 2px 설정 */
+    right: 1px;             /* 오른쪽 위치 1px 설정 */
     background-color: red;  /* 배경색 설정 */
     color: white;           /* 글자 색상 설정 */
     border: none;           /* 테두리 없음 */
-    padding: 4px;           /* 안쪽 여백 설정 */
+    padding: 3px 5px;       /* 안쪽 여백 설정 */
     cursor: pointer;        /* 커서 포인터 설정 */
     border-radius: 5px;     /* 모서리를 5px만큼 둥글게 */
-font-size: 12px; 
 }
 
 /* 날짜 라벨 설정 */
 .date-label {
     text-align: left;       /* 텍스트 왼쪽 정렬 */
-    margin-bottom: 5px;    /* 아래쪽 여백 10px 설정 */
+    margin-bottom: 10px;    /* 아래쪽 여백 10px 설정 */
 }
 
 /* 워드 라벨 설정 */
 .ward-label {
     position: absolute;     /* 절대 위치 설정 */
-    top: 5px;               /* 위쪽 위치 5px 설정 */
-    right: 60px;            /* 오른쪽 위치 70px 설정 */
+    top: 3px;               /* 위쪽 위치 2px 설정 */
+    right: 60px;            /* 오른쪽 위치 60px 설정 */
     background-color: black; /* 배경색 설정 */
     color: white;           /* 글자 색상 설정 */
-    padding: 3px 7px;       /* 안쪽 여백 설정 */
-    font-size: 12px;        /* 폰트 크기 12px 설정 */
+    padding: 3px 5px;       /* 안쪽 여백 설정 */
+    font-size: 13px;        /* 폰트 크기 13px 설정 */
     border-radius: 5px;     /* 모서리를 5px만큼 둥글게 */
 }
 
 /* 카메라 버튼 및 뷰 버튼 설정 */
 #cameraButton,
 #viewButton {
-    padding: 10px 20px;     /* 안쪽 여백 설정 */
-    font-size: 14px;        /* 폰트 크기 14px 설정 */
+    margin-top: 1px;        /* 위쪽 여백 2px 설정 */
+    padding: 8px 15px;      /* 안쪽 여백 설정 */
+    font-size: 12px;        /* 폰트 크기 12px 설정 */
     cursor: pointer;        /* 커서 포인터 설정 */
     background-color: dodgerblue; /* 배경색 설정 */
     color: white;           /* 글자 색상 설정 */
     border: none;           /* 테두리 없음 */
     border-radius: 5px;     /* 모서리를 5px만큼 둥글게 */
     transition: background-color 0.3s; /* 배경색 전환 설정 */
-    margin-right: 5px;      /* 오른쪽 여백 5px 설정 */
+    display: inline-block;  /* 인라인 블록 요소로 설정 */
+    margin-right: 3px;      /* 오른쪽 여백 3px 설정 */
 }
 
 /* 카메라 및 뷰 버튼 호버 설정 */
@@ -109,83 +132,6 @@ font-size: 12px;
     margin-top: 10px;       /* 위쪽 여백 10px 설정 */
     color: green;           /* 글자 색상 설정 */
     font-weight: bold;      /* 글자 굵기 설정 */
-}
-
-/* 사진 갤러리 컨테이너 설정 */
-.photo-gallery {
-    background-color: #f9f9f9; /* 배경색 설정 */
-    padding: 10px;          /* 안쪽 여백 설정 */
-    border-radius: 5px;     /* 모서리를 5px만큼 둥글게 */
-    margin-top: 10px;       /* 위쪽 여백 10px 설정 */
-    max-height: 70vh;       /* 최대 높이 설정 */
-    overflow-y: auto;       /* 세로 스크롤 자동 */
-    text-align: center;     /* 텍스트 가운데 정렬 */
-}
-
-/* 사진 갤러리 이미지 설정 */
-.photo-gallery img {
-    max-width: 100%;        /* 최대 너비 100% 설정 */
-    height: auto;           /* 높이 자동 설정 */
-    object-fit: cover;      /* 객체 맞춤 설정 */
-    cursor: pointer;        /* 커서 포인터 설정 */
-}
-
-/* 버튼 컨테이너 설정 */
-.button-container {
-    display: flex;          /* 플렉스 박스 설정 */
-    justify-content: space-between; /* 공간 사이의 정렬 설정 */
-    align-items: center;    /* 아이템 가운데 정렬 설정 */
-    margin-top: 10px;       /* 위쪽 여백 10px 설정 */
-}
-
-/* 왼쪽 버튼 설정 */
-.left-buttons,
-.right-buttons {
-    display: flex;          /* 플렉스 박스 설정 */
-    align-items: center;    /* 아이템 가운데 정렬 설정 */
-}
-
-/* 체크박스 컨테이너 설정 */
-.checkbox-container {
-    display: flex;          /* 플렉스 박스 설정 */
-    align-items: center;    /* 아이템 가운데 정렬 설정 */
-    justify-content: center; /* 공간 사이의 정렬 설정 */
-    margin-bottom: 5px;     /* 아래쪽 여백 5px 설정 */
-}
-
-/* 체크박스 입력 설정 */
-.checkbox-container input {
-    margin-right: 5px;      /* 오른쪽 여백 5px 설정 */
-}
-
-/* 네비게이션 버튼 설정 */
-.nav-button {
-    padding: 10px;          /* 안쪽 여백 설정 */
-    font-size: 14px;        /* 폰트 크기 14px 설정 */
-    cursor: pointer;        /* 커서 포인터 설정 */
-    background-color: lightgray; /* 배경색 설정 */
-    color: black;           /* 글자 색상 설정 */
-    border: none;           /* 테두리 없음 */
-    border-radius: 4px;     /*
-transition: background-color 0.3s; /* 배경색 전환 설정 */
-    margin: 5px;            /* 여백 설정 */
-}
-
-/* 네비게이션 버튼 호버 설정 */
-.nav-button:hover {
-    background-color: gray; /* 호버 배경색 설정 */
-}
-
-/* 이전 버튼 설정 */
-.nav-button.previous {
-    background-color: blue; /* 배경색 설정 */
-    color: white;           /* 글자 색상 설정 */
-}
-
-/* 다음 버튼 설정 */
-.nav-button.next {
-    background-color: blue; /* 배경색 설정 */
-    color: white;           /* 글자 색상 설정 */
 }
 
 /* 모달 설정 */
@@ -235,61 +181,82 @@ transition: background-color 0.3s; /* 배경색 전환 설정 */
     cursor: pointer;        /* 커서 포인터 설정 */
 }
 
-/* 폴더블에서 동일하게 설정 */
-@media screen and (max-width: 768px) {
-    /* 페이지 상단 헤더(header) 설정 */
-    header {
-        padding: 5px 0;     /* 위아래 5px, 좌우 0 */
-        font-size: 12px;    /* 폰트 크기 12px 설정 */
-    }
+/* 사진 갤러리 컨테이너 설정 */
+.photo-gallery {
+    background-color: #f9f9f9; /* 배경색 설정 */
+    padding: 0;             /* 안쪽 여백 설정 */
+    border-radius: 2px;     /* 모서리를 2px만큼 둥글게 */
+    margin-top: 0;          /* 위쪽 여백 설정 */
+    max-height: 70vh;       /* 최대 높이 설정 */
+    overflow-y: hidden;     /* 세로 스크롤 숨김 */
+    overflow-x: hidden;     /* 가로 스크롤 숨김 */
+    text-align: center;     /* 텍스트 가운데 정렬 */
+}
 
-    /* 사진 컨테이너 설정 */
-    .photo-container {
-        padding: 5px;       /* 안쪽 여백 5px 설정 */
-    }
+/* 사진 갤러리 이미지 설정 */
+.photo-gallery img {
+    width: 100%;            /* 너비 100% 설정 */
+    height: 100%;           /* 높이 100% 설정 */
+    object-fit: cover;      /* 객체 맞춤 설정 */
+    cursor: pointer;        /* 커서 포인터 설정 */
+}
 
-    /* 삭제 버튼 설정 */
-    .delete-button {
-        top: 2px;           /* 위쪽 위치 2px 설정 */
-        right: 2px;         /* 오른쪽 위치 2px 설정 */
-        padding: 3px;       /* 안쪽 여백 3px 설정 */
-    }
+/* 버튼 컨테이너 설정 */
+.button-container {
+    display: flex;          /* 플렉스 박스 설정 */
+    justify-content: space-between; /* 공간 사이의 정렬 설정 */
+    align-items: center;    /* 아이템 가운데 정렬 설정 */
+    margin-top: 8px;       /* 위쪽 여백 10px 설정 */
+}
 
-    /* 워드 라벨 설정 */
-    .ward-label {
-        top: 2px;           /* 위쪽 위치 2px 설정 */
-        right: 60px;        /* 오른쪽 위치 45px 설정 */
-        font-size: 11px;    /* 폰트 크기 11px 설정 */
-    }
+/* 왼쪽 버튼 설정 */
+.left-buttons,
+.right-buttons {
+    display: flex;          /* 플렉스 박스 설정 */
+    align-items: center;    /* 아이템 가운데 정렬 설정 */
+}
 
-    /* 카메라 버튼 및 뷰 버튼 설정 */
-    #cameraButton,
-    #viewButton {
-        padding: 7px 12px;  /* 안쪽 여백 설정 */
-        font-size: 12px;    /* 폰트 크기 12px 설정 */
-        margin-right: 2px;  /* 오른쪽 여백 2px 설정 */
-    }
+/* 체크박스 컨테이너 설정 */
+.checkbox-container {
+    display: flex;          /* 플렉스 박스 설정 */
+    align-items: center;    /* 아이템 가운데 정렬 설정 */
+    justify-content: center; /* 공간 사이의 정렬 설정 */
+    margin-bottom: 3px;     /* 아래쪽 여백 5px 설정 */
+}
 
-    /* 업로드 메시지 설정 */
-    #uploadMessage {
-        margin-top: 15px;   /* 위쪽 여백 15px 설정 */
-    }
+/* 체크박스 입력 설정 */
+.checkbox-container input {
+    margin-right: 5px;      /* 오른쪽 여백 5px 설정 */
+}
 
-    /* 사진 갤러리 컨테이너 설정 */
-    .photo-gallery {
-        margin-top: 5px;    /* 위쪽 여백 5px 설정 */
-    }
+/* 네비게이션 버튼 설정 */
+.nav-button {
+background-color: blue;
+    padding: 7px;           /* 안쪽 여백 설정 */
+    font-size: 13px;        /* 폰트 크기 13px 설정 */
+    cursor: pointer;        /* 커서 포인터 설정 */
+    background-color: lightgray; /* 배경색 설정 */
+    color: black;           /* 글자 색상 설정 */
+    border: none;           /* 테두리 없음 */
+    border-radius: 4px;     /* 모서리를 4px만큼 둥글게 */
+    transition: background-color 0.3s; /* 배경색 전환 설정 */
+    margin: 5px;            /* 여백 설정 */
+}
 
-    /* 버튼 컨테이너 설정 */
-    .button-container {
-        margin-top: 5px;    /* 위쪽 여백 5px 설정 */
-    }
+/* 네비게이션 버튼 호버 설정 */
+.nav-button:hover {
+    background-color: gray; /* 호버 배경색 설정 */
+}
 
-    /* 네비게이션 버튼 설정 */
-    .nav-button {
-        padding: 5px 10px;  /* 안쪽 여백 설정 */
-        font-size: 11px;    /* 폰트 크기 11px 설정 */
-        margin: 3px;        /* 여백 설정 */
-    }
+/* 이전 버튼 설정 */
+.nav-button.previous {
+    background-color: blue; /* 배경색 설정 */
+    color: white;           /* 글자 색상 설정 */
+}
+
+/* 다음 버튼 설정 */
+.nav-button.next {
+    background-color: blue; /* 배경색 설정 */
+    color: white;           /* 글자 색상 설정 */
 }
 
