@@ -6,6 +6,9 @@
     <title>관리자 페이지</title>
     <link rel="stylesheet" href="admin.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
 </head>
 <body>
     <header>
@@ -33,7 +36,7 @@
         </select>
 
         <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
-        
+
         <div class="checkbox-container">
             <input type="checkbox" id="viewAllCheckbox">
             <label for="viewAllCheckbox">전체 날짜</label>
@@ -51,7 +54,7 @@
                 <button class="nav-button" id="nextButton">다음</button>
             </div>
         </div>
-        
+
         <input type="file" id="cameraInput" accept="image/*" multiple style="display: none;">
 
         <section class="ward-section" id="wardSection">
@@ -59,7 +62,7 @@
                 <!-- 여기에 선택된 병동의 사진을 동적으로 추가할 예정 -->
             </div>
         </section>
-        
+
     </main>
 
     <div id="myModal" class="modal">
@@ -73,6 +76,24 @@
     </footer>
 
     <script>
+        // Firebase 설정 객체
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlzPWmeLacWdnW0we7CtfnU2szvxgdIzc",
+            authDomain: "hallymlinen.firebaseapp.com",
+            databaseURL: "https://hallymlinen-default-rtdb.firebaseio.com",
+            projectId: "hallymlinen",
+            storageBucket: "hallymlinen.appspot.com",
+            messagingSenderId: "867775830688",
+            appId: "1:867775830688:web:cef3ed4e70ae9818f347c5",
+            measurementId: "G-T02ZFK18L3"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+
+        // Firebase Realtime Database 참조
+        const database = firebase.database();
+
         const API_KEY = '197c02787b4764d219198f8c2a68656a';
 
         $(document).ready(function() {
@@ -96,7 +117,7 @@
                 var ward = $(this).val();
                 var date = $('#datePicker').val();
                 if (ward && date) {
-                   loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'));
+                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'));
                 }
             });
 
@@ -143,13 +164,23 @@
                 let photos = [];
 
                 wards.forEach(ward => {
-                    let wardPhotos = JSON.parse(localStorage.getItem(ward)) || [];
-                    wardPhotos.forEach(photo => {
-                        photo.ward = ward;
-                    });
-                    photos = photos.concat(wardPhotos);
-                });
+                    let wardPhotosRef = database.ref('photos/' + ward);
+                    wardPhotosRef.once('value', (snapshot) => {
+                        snapshot.forEach((childSnapshot) => {
+                            let photo = childSnapshot.val();
+                            photo.ward = ward;
+                            photos.push(photo);
+                        });
 
+                        // 데이터를 모두 가져온 후에 화면에 표시
+                        if (ward === wards[wards.length - 1]) {
+                            displayPhotos(photos, date);
+                        }
+                    });
+                });
+            }
+
+            function displayPhotos(photos, date) {
                 $('#photoGallery').empty();
 
                 let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
@@ -207,67 +238,60 @@
                     url: 'https://api.imgbb.com/1/upload',
                     type: 'POST',
                     data: formData,
-                    processData: false,
                     contentType: false,
+                    processData: false,
                     success: function(response) {
-                        let url = response.data.url;
-                        savePhoto(ward, date, url);
-                        alert('사진이 업로드되었습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+                        let photoUrl = response.data.url;
+                        let newPhotoRef = database.ref('photos/' + ward).push();
+                        newPhotoRef.set({
+                            url: photoUrl,
+                            date: date
+                        }).then(() => {
+                            loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
+                        });
                     },
                     error: function() {
-                        $('#uploadMessage').text('사진 업로드에 실패했습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
+                        alert('사진 업로드 중 오류가 발생했습니다.');
                     }
                 });
             }
 
-            function savePhoto(ward, date, url) {
-                let photos = JSON.parse(localStorage.getItem(ward)) || [];
-                photos.push({ date: date, url: url });
-                localStorage.setItem(ward, JSON.stringify(photos));
-                loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
-            }
-
             function deletePhoto(ward, photo) {
-                if (confirm('정말로 이 사진을 삭제하시겠습니까?')) {
-                    let photos = JSON.parse(localStorage.getItem(ward)) || [];
-                    photos = photos.filter(p => p.url !== photo.url);
-                    localStorage.setItem(ward, JSON.stringify(photos));
-                    loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
-                    alert('사진이 삭제되었습니다.');
-}
+                let photoRef = database.ref('photos/' + ward).orderByChild('url').equalTo(photo.url);
+                photoRef.once('value', function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        childSnapshot.ref.remove().then(() => {
+                            loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
+                        });
+                    });
+                });
             }
 
-            function openModal(url) {
-                $('#modalImage').attr('src', url);
-                $('#myModal').css('display', 'block');
-            }
+            function openModal(imageUrl) {
+                var modal = document.getElementById("myModal");
+                var modalImg = document.getElementById("modalImage");
 
-            $('.close').on('click', function() {
-                $('#myModal').css('display', 'none');
-            });
+                modal.style.display = "block";
+                modalImg.src = imageUrl;
 
-            $(window).on('click', function(event) {
-                if (event.target == $('#myModal')[0]) {
-                    $('#myModal').css('display', 'none');
+                var span = document.getElementsByClassName("close")[0];
+                span.onclick = function() {
+                    modal.style.display = "none";
                 }
-            });
+            }
 
             function formatDateToKorean(dateString) {
-                const date = new Date(dateString);
-                const year = date.getFullYear();
-                const month = ('0' + (date.getMonth() + 1)).slice(-2);
-                const day = ('0' + date.getDate()).slice(-2);
-                const hours = date.getHours();
-                const minutes = ('0' + date.getMinutes()).slice(-2);
-                const ampm = hours >= 12 ? '오후' : '오전';
-                const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-                return `${year}-${month}-${day} ${ampm} ${formattedHours}:${minutes}`;
+                var date = new Date(dateString);
+                var year = date.getFullYear();
+                var month = ('0' + (date.getMonth() + 1)).slice(-2);
+                var day = ('0' + date.getDate()).slice(-2);
+                var hours = ('0' + date.getHours()).slice(-2);
+                var minutes = ('0' + date.getMinutes()).slice(-2);
+                return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
             }
 
-            function getWardLabel(ward) {
-                const wardLabels = {
+            function getWardLabel(wardCode) {
+                var wardLabels = {
                     'ward93': '93 병동',
                     'ward83': '83 병동',
                     'ward73': '73 병동',
@@ -285,17 +309,11 @@
                     'endoscopy': '내시경실',
                     'ER': '응급실'
                 };
-                return wardLabels[ward] || ward;
+                return wardLabels[wardCode] || wardCode;
             }
 
             function getAllWards() {
                 return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
-            }
-
-            function convertToKoreanTime(date) {
-                const timeOffset = 9 * 60 * 60 * 1000; // 한국 시간은 UTC+9
-                const koreanDate = new Date(date.getTime() + timeOffset);
-                return koreanDate;
             }
 
             // 초기 로드 시 현재 날짜를 설정
