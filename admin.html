@@ -193,8 +193,10 @@
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
-                    deleteButton.on('click', function() {
-                        deletePhoto(photo.ward, photo);
+		deleteButton.on('click', function() {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            deletePhoto(photo.ward, photo);
+                        }
                     });
 
                     img.on('click', function() {
@@ -233,7 +235,7 @@
                 let formData = new FormData();
                 formData.append('image', file);
                 formData.append('key', API_KEY);
-
+	$('#cameraButton').prop('disabled', true).text('업로드 중...');
                 $.ajax({
                     url: 'https://api.imgbb.com/1/upload',
                     type: 'POST',
