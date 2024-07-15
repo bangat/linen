@@ -73,7 +73,7 @@
     </footer>
 
     <script>
-        const API_KEY = '197c02787b4764d219198f8c2a68656a';
+        const API_KEY = 'YOUR_IMGBB_API_KEY';
 
         $(document).ready(function() {
             let currentPhotoIndex = 0;
@@ -211,15 +211,35 @@
                     contentType: false,
                     success: function(response) {
                         let url = response.data.url;
-                        savePhoto(ward, date, url);
+                        // 사진을 업로드하고 바로 표시
+                        displayUploadedPhoto(url, ward, date);
                         alert('사진이 업로드되었습니다.');
-                        setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
                     },
                     error: function() {
                         $('#uploadMessage').text('사진 업로드에 실패했습니다.');
                         setTimeout(() => { $('#uploadMessage').text(''); }, 3000);
                     }
                 });
+            }
+
+            function displayUploadedPhoto(url, ward, date) {
+                let photoContainer = $('<div>').addClass('photo-container');
+                let formattedDate = formatDateToKorean(date);
+                let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+                let wardLabel = $('<div>').addClass('ward-label').text(getWardLabel(ward));
+                let img = $('<img>').attr('src', url);
+                let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+
+                deleteButton.on('click', function() {
+                    deletePhoto(ward, { date: date, url: url });
+                });
+
+                img.on('click', function() {
+                    openModal(url);
+                });
+
+                photoContainer.append(dateLabel, img, wardLabel, deleteButton);
+                $('#photoGallery').prepend(photoContainer); // 새로 업로드한 사진을 맨 위에 추가
             }
 
             function savePhoto(ward, date, url) {
@@ -236,7 +256,7 @@
                     localStorage.setItem(ward, JSON.stringify(photos));
                     loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
                     alert('사진이 삭제되었습니다.');
-}
+                }
             }
 
             function openModal(url) {
