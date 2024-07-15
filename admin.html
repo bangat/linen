@@ -387,6 +387,10 @@ function formatDateToKorean(dateString) {
 		
             // 초기 로드 시 현재 날짜를 설정
             $('#datePicker').val(new Date().toISOString().slice(0, 10));
+		 // "관리자 페이지" 클릭 시 index.html로 이동
+            $('header h1').on('click', function() {
+                window.location.href = 'index.html';
+            });
         });
     </script>
 </body>
