@@ -46,11 +46,12 @@ footer {
 }
 
 .photo-container {
-    margin-bottom: 20px; /* 하단 여백 20px */
-    padding: 1px; /* 안쪽 여백 10px */
+    margin-bottom: 15px; /* 하단 여백 20px */
+    padding: 2px; /* 안쪽 여백 10px */
     border: 1px solid #ddd; /* 1px 두께의 #ddd 색상 테두리 */
-    border-radius: 85x; /* 모서리를 8px만큼 둥글게 */
+    border-radius: 5px; /* 모서리를 8px만큼 둥글게 */
     position: relative; /* 상대적 위치 지정 */
+    margin: 5px; /* 외부 여백을 20px로 설정 */
 }
 
 .photo-container img {
@@ -170,21 +171,7 @@ footer {
     font-weight: bold;
 }
 
-.nav-button {
-    padding: 7px;
-    font-size: 13px;
-    cursor: pointer;
-    background-color: lightgray;
-    color: black;
-    border: none;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-    margin: 6px;
-}
 
-.nav-button:hover {
-    background-color: gray;
-}
 
 .modal {
     display: none;
@@ -245,9 +232,25 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .checkbox-container input {
     margin-right: 5px;
+}
+
+.nav-button {
+    padding: 7px;
+    font-size: 13px;
+    cursor: pointer;
+    background-color: lightgray;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    margin: 5px;
+}
+
+.nav-button:hover {
+    background-color: gray;
 }
