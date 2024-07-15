@@ -8,13 +8,10 @@ body {
 header {
     background-color: #333;
     color: #fff;
-    padding: 10px; /* 상단 및 하단 여백을 10px로 설정 */
+    padding: 1px; /* 상단 여백을 1px로 유지 */
     text-align: center;
     margin-bottom: 0; /* 아래 여백 제거 */
-    height: auto; /* 높이 자동 조정 */
-    line-height: 1; /* 텍스트 라인 간격을 1로 설정하여 텍스트만큼의 높이를 유지 */
 }
-
 
 main {
     padding: 1px; /* 내용의 상하 여백을 3px로 유지 */
@@ -32,14 +29,13 @@ footer {
     width: 100%;
 }
 
-
 .photo-container {
     margin-bottom: 15px; /* 하단 여백 20px */
     padding: 2px; /* 안쪽 여백 10px */
     border: 1px solid #ddd; /* 1px 두께의 #ddd 색상 테두리 */
     border-radius: 5px; /* 모서리를 8px만큼 둥글게 */
     position: relative; /* 상대적 위치 지정 */
-    margin: 5px; /* 외부 여백을 20px로 설정 */
+    margin: 50px; /* 외부 여백을 20px로 설정 */
 }
 
 .photo-container img {
@@ -47,13 +43,6 @@ footer {
     height: auto;
     display: block;
     margin: 0 auto;
-}
-
-.photo-container .download-button {
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 
@@ -134,6 +123,8 @@ footer {
     font-weight: bold;
 }
 
+
+
 .modal {
     display: none;
     position: fixed;
@@ -178,28 +169,29 @@ footer {
 
 .photo-gallery {
     background-color: #f9f9f9;
-    padding: 3px;
+    padding: 2px;
     border-radius: 3px;
     margin-top: 1px;
-    overflow: hidden; /* 넘치는 내용 숨김 */
+    max-height: 80vh;
+    overflow-y: hidden;
+    text-align: center;
 }
 
-.photo-gallery .photo-container {
-    display: inline-block; /* 이미지를 가로로 나열 */
-    width: calc(33.33% - 6px); /* 각 이미지 컨테이너의 너비를 설정 (세로 스크롤바를 고려한 계산) */
-    margin: 3px; /* 이미지 간격 */
-    vertical-align: top; /* 위쪽 정렬 */
-    white-space: nowrap; /* 줄 바꿈 없이 이미지를 나열 */
-    overflow: hidden; /* 넘치는 내용 숨김 */
-    text-align: center; /* 가운데 정렬 */
+.photo-container {
+    position: relative;
+    margin-bottom: 3px;
+    background-color: #fff;
+    display: none;
+    width: 100%;
+    height: 70vh;
 }
 
-.photo-gallery .photo-container img {
-    width: 100%; /* 이미지를 컨테이너에 맞춰 가로로 채움 */
-    height: auto; /* 비율 유지를 위해 높이 자동으로 설정 */
-    object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+.photo-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
 }
-
 
 .button-container {
     display: flex;
