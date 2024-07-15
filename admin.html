@@ -282,15 +282,18 @@
                 }
             }
 
-            function formatDateToKorean(dateString) {
-                var date = new Date(dateString);
-                var year = date.getFullYear();
-                var month = ('0' + (date.getMonth() + 1)).slice(-2);
-                var day = ('0' + date.getDate()).slice(-2);
-                var hours = ('0' + date.getHours()).slice(-2);
-                var minutes = ('0' + date.getMinutes()).slice(-2);
-                return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
-            }
+function formatDateToKorean(dateString) {
+    var date = new Date(dateString);
+    var year = ('' + date.getFullYear()).slice(-2); // 년도를 두 자리 숫자로 표시
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var day = ('0' + date.getDate()).slice(-2);
+    var hours = ('0' + ((date.getHours() % 12) || 12)).slice(-2); // 12시간제로 변경
+    var minutes = ('0' + date.getMinutes()).slice(-2);
+    var period = date.getHours() >= 12 ? '오후' : '오전'; // 오후/오전 구분
+
+    return `${year}년 ${month}월 ${day}일 ${period} ${hours}시 ${minutes}분`;
+}
+
 
             function getWardLabel(wardCode) {
                 var wardLabels = {
