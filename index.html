@@ -11,6 +11,21 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <style>
 
+              #adminAccessBtn {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
 
                 /* 팝업 스타일 */
       #popupContainer {
@@ -196,7 +211,7 @@
     <button id="closeBtn">닫기</button>
 </div>
 
-
+   <button id="adminAccessBtn">관리자 접속</button>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="js.js"></script>
@@ -281,6 +296,29 @@
                 $('[data-tab="sheet"]').addClass('active');
                 $('#sheet').addClass('active');
             });
+
+            let touchCount = 0;
+        const TOUCH_THRESHOLD = 3; // 연속 터치 횟수 임계치
+
+        // 터치 이벤트 핸들러
+        document.addEventListener('touchstart', function(event) {
+            touchCount++;
+
+            if (touchCount === TOUCH_THRESHOLD) {
+                document.getElementById('adminAccessBtn').style.display = 'block';
+            }
+
+            // 임계치를 초과하면 다시 초기화
+            if (touchCount > TOUCH_THRESHOLD) {
+                touchCount = 0;
+                document.getElementById('adminAccessBtn').style.display = 'none';
+            }
+        });
+
+        // 관리자 접근 버튼 클릭 시 admin.html로 이동
+        document.getElementById('adminAccessBtn').addEventListener('click', function() {
+            window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
+        });
            
 });
 
