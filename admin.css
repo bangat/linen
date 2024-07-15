@@ -8,12 +8,15 @@ body {
 header {
     background-color: #333;
     color: #fff;
-    padding: 1px;
+    padding: 1px; /* 예시: 상하 여백을 더 크게 조정할 수 있습니다 */
     text-align: center;
+    margin-bottom: 1px; /* 아래 여백 추가 */
 }
 
 main {
-    padding: 3px;
+    padding: 3px; /* 예시: 상하 여백을 더 크게 조정할 수 있습니다 */
+    margin-top: 1px; /* 위 여백 추가 */
+    margin-bottom: 1px; /* 아래 여백 추가 */
 }
 
 footer {
@@ -44,7 +47,7 @@ footer {
 
 .photo-container {
     margin-bottom: 20px; /* 하단 여백 20px */
-    padding: 2px; /* 안쪽 여백 10px */
+    padding: 1px; /* 안쪽 여백 10px */
     border: 1px solid #ddd; /* 1px 두께의 #ddd 색상 테두리 */
     border-radius: 85x; /* 모서리를 8px만큼 둥글게 */
     position: relative; /* 상대적 위치 지정 */
@@ -142,9 +145,9 @@ footer {
 
 #cameraButton,
 #viewButton {
-    margin-top: 5px;
-    padding: 7px 15px;
-    font-size: 13px;
+    margin-top: 2px;
+    padding: 6px 13px;
+    font-size: 12px;
     cursor: pointer;
     background-color: dodgerblue;
     color: white;
@@ -152,7 +155,7 @@ footer {
     border-radius: 5px;
     transition: background-color 0.3s;
     display: inline-block;
-    margin-right: 5px;
+    margin-right: 3px;
 }
 
 #cameraButton:hover,
@@ -187,7 +190,7 @@ footer {
     display: none;
     position: fixed;
     z-index: 1;
-    padding-top: 30px;
+    padding-top: 50px;
     left: 0;
     top: 0;
     width: 100%;
