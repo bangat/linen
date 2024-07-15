@@ -10,11 +10,11 @@ header {
     color: #fff;
     padding: 1px; /* 상단 여백을 1px로 유지 */
     text-align: center;
-    margin-bottom: 0; /* 아래 여백 제거 */
+    margin-bottom: 2; /* 아래 여백 제거 */
 }
 
 main {
-    padding: 1px; /* 내용의 상하 여백을 3px로 유지 */
+    padding: 0; /* 내용의 상하 여백을 3px로 유지 */
     margin-top: 0; /* 위 여백 제거 */
     margin-bottom: 0; /* 아래 여백 제거 */
 }
@@ -23,19 +23,20 @@ footer {
     background-color: #333;
     color: #fff;
     text-align: center;
-    padding: 2px;
+    padding: 1px;
     position: fixed;
     bottom: 0;
     width: 100%;
 }
 
 .photo-container {
-    margin-bottom: 15px; /* 하단 여백 20px */
+    margin-bottom: 20px; /* 하단 여백 20px */
     padding: 2px; /* 안쪽 여백 10px */
     border: 1px solid #ddd; /* 1px 두께의 #ddd 색상 테두리 */
     border-radius: 5px; /* 모서리를 8px만큼 둥글게 */
     position: relative; /* 상대적 위치 지정 */
-    margin: 50px; /* 외부 여백을 20px로 설정 */
+    margin: 0; /* 외부 여백을 20px로 설정 */
+        top: 0;
 }
 
 .photo-container img {
