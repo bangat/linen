@@ -297,25 +297,25 @@
                 $('#sheet').addClass('active');
             });
 
-var touchCount = 0;
+   var touchCount = 0;
 
-document.addEventListener('touchstart', function(event) {
-    // 터치한 손가락의 개수가 2개일 때
-    if (event.touches.length === 2) {
-        touchCount++;
-        // 두 손가락으로 터치했을 때
-        if (touchCount === 2) {
-            $('#adminAccessBtn').css('display', 'block');
+    document.addEventListener('touchstart', function(event) {
+        // 터치한 손가락의 개수가 2개일 때
+        if (event.touches.length === 2) {
+            touchCount++;
+            // 두 손가락으로 터치했을 때
+            if (touchCount === 2) {
+                $('#adminAccessBtn').fadeIn(); // 버튼 표시
+            }
+        } else {
+            touchCount = 0;
+            // 다시 하나의 손가락으로 터치했을 때는 버튼 숨김
+            $('#adminAccessBtn').fadeOut(); // 버튼 숨김
         }
-    } else {
-        touchCount = 0;
-        // 버튼을 터치해야 사라짐
-        $('#adminAccessBtn').css('display', 'none');
-    }
-});
+    });
 
     // 관리자 접근 버튼 클릭 시 admin.html로 이동
-    document.getElementById('adminAccessBtn').addEventListener('click', function() {
+    $('#adminAccessBtn').on('click', function() {
         window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
     });
            
