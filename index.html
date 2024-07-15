@@ -298,13 +298,13 @@
             });
 
           // 2손가락으로 동시에 터치했을 때 이벤트 핸들러
-    document.addEventListener('touchstart', function(event) {
-        if (event.touches.length === 2) {
-            document.getElementById('adminAccessBtn').style.display = 'block';
-        } else {
-            document.getElementById('adminAccessBtn').style.display = 'none';
-        }
-    });
+document.addEventListener('touchstart', function(event) {
+    if (event.touches.length === 2) {
+        $('#adminAccessBtn').css('display', 'block');
+    } else {
+        $('#adminAccessBtn').css('display', 'none');
+    }
+});
 
     // 관리자 접근 버튼 클릭 시 admin.html로 이동
     document.getElementById('adminAccessBtn').addEventListener('click', function() {
