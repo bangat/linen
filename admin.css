@@ -8,15 +8,15 @@ body {
 header {
     background-color: #333;
     color: #fff;
-    padding: 1px; /* 예시: 상하 여백을 더 크게 조정할 수 있습니다 */
+    padding: 1px; /* 상단 여백을 1px로 유지 */
     text-align: center;
-    margin-bottom: 1px; /* 아래 여백 추가 */
+    margin-bottom: 0; /* 아래 여백 제거 */
 }
 
 main {
-    padding: 3px; /* 예시: 상하 여백을 더 크게 조정할 수 있습니다 */
-    margin-top: 1px; /* 위 여백 추가 */
-    margin-bottom: 1px; /* 아래 여백 추가 */
+    padding: 1px; /* 내용의 상하 여백을 3px로 유지 */
+    margin-top: 0; /* 위 여백 제거 */
+    margin-bottom: 0; /* 아래 여백 제거 */
 }
 
 footer {
