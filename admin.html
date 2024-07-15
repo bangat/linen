@@ -376,6 +376,15 @@ function formatDateToKorean(dateString) {
                 return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
             }
 
+		 function downloadPhoto(photoUrl) {
+                var link = document.createElement('a');
+                link.href = photoUrl;
+                link.download = 'photo.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+		
             // 초기 로드 시 현재 날짜를 설정
             $('#datePicker').val(new Date().toISOString().slice(0, 10));
         });
