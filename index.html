@@ -297,28 +297,19 @@
                 $('#sheet').addClass('active');
             });
 
-            let touchCount = 0;
-        const TOUCH_THRESHOLD = 3; // 연속 터치 횟수 임계치
+          // 2손가락으로 동시에 터치했을 때 이벤트 핸들러
+    document.addEventListener('touchstart', function(event) {
+        if (event.touches.length === 2) {
+            document.getElementById('adminAccessBtn').style.display = 'block';
+        } else {
+            document.getElementById('adminAccessBtn').style.display = 'none';
+        }
+    });
 
-        // 터치 이벤트 핸들러
-        document.addEventListener('touchstart', function(event) {
-            touchCount++;
-
-            if (touchCount === TOUCH_THRESHOLD) {
-                document.getElementById('adminAccessBtn').style.display = 'block';
-            }
-
-            // 임계치를 초과하면 다시 초기화
-            if (touchCount > TOUCH_THRESHOLD) {
-                touchCount = 0;
-                document.getElementById('adminAccessBtn').style.display = 'none';
-            }
-        });
-
-        // 관리자 접근 버튼 클릭 시 admin.html로 이동
-        document.getElementById('adminAccessBtn').addEventListener('click', function() {
-            window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
-        });
+    // 관리자 접근 버튼 클릭 시 admin.html로 이동
+    document.getElementById('adminAccessBtn').addEventListener('click', function() {
+        window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
+    });
            
 });
 
