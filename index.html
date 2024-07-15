@@ -297,11 +297,19 @@
                 $('#sheet').addClass('active');
             });
 
-          // 2손가락으로 동시에 터치했을 때 이벤트 핸들러
+var touchCount = 0;
+
 document.addEventListener('touchstart', function(event) {
+    // 터치한 손가락의 개수가 2개일 때
     if (event.touches.length === 2) {
-        $('#adminAccessBtn').css('display', 'block');
+        touchCount++;
+        // 두 손가락으로 터치했을 때
+        if (touchCount === 2) {
+            $('#adminAccessBtn').css('display', 'block');
+        }
     } else {
+        touchCount = 0;
+        // 버튼을 터치해야 사라짐
         $('#adminAccessBtn').css('display', 'none');
     }
 });
