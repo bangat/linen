@@ -305,16 +305,17 @@
 // 2손가락으로 동시에 터치했을 때 이벤트 핸들러
 document.addEventListener('touchstart', function(event) {
     if (event.touches.length === 2) {
-        // 관리자 접근 버튼의 클릭 이벤트를 직접 호출하여 admin.html로 이동
-        document.getElementById('adminAccessBtn').click();
+        const currentTime = new Date().getTime();
+        if (currentTime - lastTouchTime < 500) { // 500ms 내에 두 번째 터치가 발생해야 함
+            document.getElementById('adminAccessBtn').click();
+        }
+        lastTouchTime = currentTime;
     }
 });
 
-// 관리자 접근 버튼 클릭 시 admin.html로 이동
 document.getElementById('adminAccessBtn').addEventListener('click', function() {
     window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
-});
-           
+});     
 });
 
     </script>
