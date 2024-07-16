@@ -55,16 +55,6 @@
             </div>
         </div>
 
-        <!-- 사진 업로드 시 선택 창 추가 -->
-        <div class="upload-options">
-            <label>업로드 항목 선택:</label>
-            <select id="uploadCategory">
-                <option value="photo">사진</option>
-                <option value="inventory">재고</option>
-                <option value="laundry">세탁물</option>
-            </select>
-        </div>
-
         <input type="file" id="cameraInput" accept="image/*" multiple style="display: none;">
 
         <section class="ward-section" id="wardSection">
@@ -150,8 +140,7 @@
             $('#cameraInput').on('change', function() {
                 var files = this.files;
                 if (files.length > 0) {
-                    var uploadCategory = $('#uploadCategory').val(); // 선택된 업로드 항목
-                    Array.from(files).forEach(file => uploadPhoto(file, uploadCategory));
+                    Array.from(files).forEach(file => uploadPhoto(file));
                 }
             });
 
@@ -169,6 +158,8 @@
                     showPhoto(currentPhotoIndex);
                 }
             });
+
+	
 
             // 터치 이벤트 핸들러 추가
             $('#photoGallery').on('touchstart', function(event) {
@@ -238,7 +229,7 @@
                     let img = $('<img>').attr('src', photo.url);
                     let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
-                    deleteButton.on('click', function() {
+		deleteButton.on('click', function() {
                         if (confirm('정말 삭제하시겠습니까?')) {
                             deletePhoto(photo.ward, photo);
                         }
@@ -273,48 +264,46 @@
                 }
             }
 
-            function uploadPhoto(file, uploadCategory) {
-                let ward = $('#wardSelect').val();
-                let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
+         function uploadPhoto(file) {
+    let ward = $('#wardSelect').val();
+    let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
 
-                let formData = new FormData();
-                formData.append('image', file);
-                formData.append('key', API_KEY);
-                formData.append('category', uploadCategory); // 업로드 항목 추가
+    let formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', API_KEY);
 
-                // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
-                $('#cameraButton').prop('disabled', true).text('업로드 중...');
+    // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
+    $('#cameraButton').prop('disabled', true).text('업로드 중...');
 
-                $.ajax({
-                    url: 'https://api.imgbb.com/1/upload',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        let photoUrl = response.data.url;
-                        let newPhotoRef = database.ref('photos/' + ward).push();
-                        newPhotoRef.set({
-                            url: photoUrl,
-                            date: date,
-                            category: uploadCategory // 업로드 항목 저장
-                        }).then(() => {
-                            // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
-                            $('#cameraButton').prop('disabled', false).text('업로드');
-                            
-                            // 사진 로드 함수 호출
-                            loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
-                        });
-                    },
-                    error: function() {
-                        // 업로드 실패 시 처리
-                        alert('사진 업로드 중 오류가 발생했습니다.');
-                        
-                        // 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
-                        $('#cameraButton').prop('disabled', false).text('업로드');
-                    }
-                });
-            }
+    $.ajax({
+        url: 'https://api.imgbb.com/1/upload',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            let photoUrl = response.data.url;
+            let newPhotoRef = database.ref('photos/' + ward).push();
+            newPhotoRef.set({
+                url: photoUrl,
+                date: date
+            }).then(() => {
+                // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
+                $('#cameraButton').prop('disabled', false).text('업로드');
+                
+                // 사진 로드 함수 호출
+                loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
+            });
+        },
+        error: function() {
+            // 업로드 실패 시 처리
+            alert('사진 업로드 중 오류가 발생했습니다.');
+            
+            // 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
+            $('#cameraButton').prop('disabled', false).text('업로드');
+        }
+    });
+}
 
             function deletePhoto(ward, photo) {
                 let photoRef = database.ref('photos/' + ward).orderByChild('url').equalTo(photo.url);
@@ -340,23 +329,26 @@
                 }
             }
 
-            function formatDateToKorean(dateString) {
-                var date = new Date(dateString);
-                var year = ('' + date.getFullYear());
-                var month = ('0' + (date.getMonth() + 1)).slice(-2);
-                var day = ('0' + date.getDate()).slice(-2);
-                var hours = date.getHours();
-                var minutes = ('0' + date.getMinutes()).slice(-2);
-                var period = hours >= 12 ? '오후' : '오전';
+function formatDateToKorean(dateString) {
+    var date = new Date(dateString);
+    var year = ('' + date.getFullYear()); // .slice(-2); // 년도를 두 자리 숫자로 표시
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var day = ('0' + date.getDate()).slice(-2);
+    var hours = date.getHours();
+    var minutes = ('0' + date.getMinutes()).slice(-2);
+    var period = hours >= 12 ? '오후' : '오전'; // 오후/오전 구분
 
-                if (hours === 0) {
-                    hours = 12;
-                } else if (hours > 12) {
-                    hours -= 12;
-                }
+    // 12시간제로 변경 및 오전/오후 표시
+    if (hours === 0) {
+        hours = 12; // 자정을 12시로 표시
+    } else if (hours > 12) {
+        hours -= 12; // 오후 시간을 12시간제로 변환
+    }
 
-                return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
-            }
+    return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
+}
+
+
 
             function getWardLabel(wardCode) {
                 var wardLabels = {
@@ -384,12 +376,20 @@
                 return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
             }
 
+		 function downloadPhoto(photoUrl) {
+                var link = document.createElement('a');
+                link.href = photoUrl;
+                link.download = 'photo.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+		
             // 초기 로드 시 현재 날짜를 한국 시간으로 설정
-            let today = new Date();
-            today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
-            $('#datePicker').val(today.toISOString().slice(0, 10));
-
-            // "관리자 페이지" 클릭 시 index.html로 이동
+let today = new Date();
+today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
+$('#datePicker').val(today.toISOString().slice(0, 10));
+		 // "관리자 페이지" 클릭 시 index.html로 이동
             $('header h1').on('click', function() {
                 window.location.href = 'index.html';
             });
