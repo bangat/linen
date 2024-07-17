@@ -7,6 +7,36 @@ body {
 
 }
 
+.date-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.date-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.date-picker {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.date-picker:focus + .date-placeholder,
+.date-picker:not(:placeholder-shown) + .date-placeholder {
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
    
 .menu-bar {
     position: absolute;
