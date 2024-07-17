@@ -51,7 +51,7 @@
         <div class="button-container">
             <div>
 
-<button id="cameraButton" class="nav-button"><i class="fas fa-camera"></i> 업로드</button>
+<button id="cameraButton" class="nav-button"><i class="fas fa-camera"></i> 카메라</button>
 
 
                 <button id="viewButton" class="nav-button">조회하기</button>
@@ -310,7 +310,7 @@
                             date: date
                         }).then(() => {
                             // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
-                            $('#cameraButton').prop('disabled', false).text('업로드');
+                            $('#cameraButton').prop('disabled', false).text('카메라');
                             
                             // 사진 로드 함수 호출
                             loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
@@ -321,7 +321,7 @@
                         alert('사진 업로드 중 오류가 발생했습니다.');
                         
                         // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
-                        $('#cameraButton').prop('disabled', false).text('업로드');
+                        $('#cameraButton').prop('disabled', false).text('카메라');
                     }
                 });
             }
