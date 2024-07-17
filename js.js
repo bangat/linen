@@ -29,8 +29,6 @@ $(document).ready(function() {
                             // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
                             $('#cameraButton').prop('disabled', false).text('재고사진');
                             
-                            // 사진 로드 함수 호출
-                            loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
                         });
                     },
                     error: function() {
