@@ -232,24 +232,52 @@
             }
 
             function displayPhotos(photos, date) {
-                $('#photoGallery').empty();
+    $('#photoGallery').empty();
 
-                let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
+    let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
 
-                filteredPhotos.forEach(photo => {
-                    let photoContainer = $('<div>').addClass('photo-container');
-                    let formattedDate = formatDateToKorean(photo.date);
-                    let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
-                    let wardLabel = $('<div>').addClass('ward-label').text(getWardLabel(photo.ward));
-                    let img = $('<img>').attr('src', photo.url);
-                    let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+    filteredPhotos.forEach(photo => {
+        let photoContainer = $('<div>').addClass('photo-container');
+        let formattedDate = formatDateToKorean(photo.date);
+        let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+        let wardLabel = $('<div>').addClass('ward-label').text(getWardLabel(photo.ward));
+        let img = $('<img>').attr('src', photo.url);
+        let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
 
-                    deleteButton.on('click', function() {
-                        if (confirm('정말 삭제하시겠습니까?')) {
-                            deletePhoto(photo.ward, photo);
-                        }
-                    });
+        deleteButton.on('click', function() {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                deletePhoto(photo.ward, photo);
+            }
+        });
 
+        img.on('click', function() {
+            openModal(photo.url);
+        });
+
+        photoContainer.append(dateLabel, img, wardLabel, deleteButton);
+        $('#photoGallery').append(photoContainer);
+    });
+
+    currentPhotoIndex = 0;
+    showPhoto(currentPhotoIndex);
+    toggleNavigationButtons(filteredPhotos.length);
+}
+
+function deletePhoto(ward, photo) {
+    let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
+    let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
+    photoRef.once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            childSnapshot.ref.remove().then(() => {
+                alert('사진이 삭제되었습니다.');
+                loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+            }).catch((error) => {
+                console.error('삭제 중 오류가 발생했습니다:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            });
+        });
+    });
+}
                     img.on('click', function() {
                         openModal(photo.url);
                     });
