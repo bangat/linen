@@ -239,29 +239,35 @@ let photos = $('.photo-container');
             }
 
             function handlePhotoUpload(file) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    let photoURL = e.target.result;
-                    let ward = $('#wardSelect').val();
-                    let date = new Date().toISOString().split('T')[0];
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let photoURL = e.target.result;
+        let ward = $('#wardSelect').val();
+        let date = new Date().toISOString().split('T')[0];
 
-                    let isLaundry = confirm('이 사진을 세탁물로 분류하시겠습니까?');
+        // 사용자에게 세탁물로 분류할 지 물어봄
+        if (confirm('이 사진을 세탁물로 분류하시겠습니까?')) {
+            uploadPhoto(photoURL, ward, date, true);
+        } else {
+            uploadPhoto(photoURL, ward, date, false);
+        }
+    };
+    reader.readAsDataURL(file);
+}
 
-                    let photoData = {
-                        url: photoURL,
-                        date: date
-                    };
+function uploadPhoto(photoURL, ward, date, isLaundry) {
+    let photoData = {
+        url: photoURL,
+        date: date
+    };
 
-                    let photoRef = database.ref((isLaundry ? 'laundry/' : 'photos/') + ward).push();
-                    photoRef.set(photoData).then(() => {
-                        alert('사진이 성공적으로 업로드되었습니다.');
-                    }).catch(error => {
-                        console.error('사진 업로드 중 오류 발생:', error);
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-
+    let photoRef = database.ref((isLaundry ? 'laundry/' : 'photos/') + ward).push();
+    photoRef.set(photoData).then(() => {
+        alert('사진이 성공적으로 업로드되었습니다.');
+    }).catch(error => {
+        console.error('사진 업로드 중 오류 발생:', error);
+    });
+}
             function formatDateToKorean(dateString) {
                 let date = new Date(dateString);
                 return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시 ${date.getMinutes()}분`;
