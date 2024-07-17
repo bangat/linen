@@ -93,10 +93,11 @@ $(document).ready(function() {
         $(this).css("background-color", "#4CAF50");
     });
     
-    // 카메라 버튼 클릭 시 파일 업로드 버튼 클릭
-    $("#cameraButton").click(function() {
-        $("#inventoryPhoto").click();
-    });
+// 재고사진 버튼 클릭 시 카메라 열기
+$("#inventoryPhoto").click(function() {
+    // capture 속성을 사용하여 바로 카메라를 열도록 설정
+    $("#inventoryPhoto").attr("capture", "camera").click();
+});
     
     // 파일 업로드 시 미리보기 표시
     $("#inventoryPhoto").change(function(event) {
