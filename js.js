@@ -1,78 +1,74 @@
 $(document).ready(function() {
- let touchStartX = 0;
-    let touchEndX = 0;
-    const minSwipeDistance = 50; // 스와이프 최소 거리 설정 (적절히 조정)
+let touchStartX = 0;
+let touchEndX = 0;
+const minSwipeDistance = 50; // 스와이프 최소 거리 설정 (적절히 조정)
 
-    function handleGesture() {
-        const deltaX = touchEndX - touchStartX;
-        if (Math.abs(deltaX) > minSwipeDistance) {
-            if (deltaX < 0) {
-                // 스와이프 왼쪽
-                showNextTab();
-            } else {
-                // 스와이프 오른쪽
-                showPreviousTab();
-            }
-        }
-        // 스와이프 후 탭 색상 변경
-        updateTabIndicator();
-    }
-
-    function showNextTab() {
-        const activeTab = $('.tab.active');
-        const nextTab = activeTab.next('.tab');
-        if (nextTab.length) {
-            switchTabs(activeTab, nextTab);
+function handleGesture() {
+    const deltaX = touchEndX - touchStartX;
+    if (Math.abs(deltaX) > minSwipeDistance) {
+        if (deltaX < 0) {
+            // 스와이프 왼쪽
+            showNextTab();
+        } else {
+            // 스와이프 오른쪽
+            showPreviousTab();
         }
     }
+    // 스와이프 후 탭 색상 변경
+    updateTabIndicator();
+}
 
-    function showPreviousTab() {
-        const activeTab = $('.tab.active');
-        const prevTab = activeTab.prev('.tab');
-        if (prevTab.length) {
-            switchTabs(activeTab, prevTab);
-        }
+function showNextTab() {
+    const activeTab = $('.tab.active');
+    const nextTab = activeTab.next('.tab');
+    if (nextTab.length) {
+        switchTabs(activeTab, nextTab);
     }
+}
 
-    function switchTabs(currentTab, targetTab) {
-        currentTab.removeClass('active');
-        targetTab.addClass('active');
-        $('.form-section').removeClass('active');
-        $(`#${targetTab.data('tab')}`).addClass('active');
-        updateTabIndicator(); // 탭 변경 후 탭 색상 업데이트
+function showPreviousTab() {
+    const activeTab = $('.tab.active');
+    const prevTab = activeTab.prev('.tab');
+    if (prevTab.length) {
+        switchTabs(activeTab, prevTab);
     }
+}
 
-    function updateTabIndicator() {
-        const activeTab = $('.tab.active');
-        $('.tab').css("background-color", ""); // 모든 탭의 배경색 초기화
-        activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
+function switchTabs(currentTab, targetTab) {
+    currentTab.removeClass('active');
+    targetTab.addClass('active');
+    $('.form-section').removeClass('active');
+    $(#${targetTab.data('tab')}).addClass('active');
+    updateTabIndicator(); // 탭 변경 후 탭 색상 업데이트
+}
+
+function updateTabIndicator() {
+    const activeTab = $('.tab.active');
+    $('.tab').css("background-color", ""); // 모든 탭의 배경색 초기화
+    activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
+}
+
+let startX = 0;
+let endX = 0;
+
+document.addEventListener('touchstart', function(event) {
+    startX = event.touches[0].clientX;
+});
+
+document.addEventListener('touchmove', function(event) {
+    endX = event.touches[0].clientX;
+});
+
+document.addEventListener('touchend', function(event) {
+    if (startX - endX > 50) {
+        // 우측으로 스와이프 (좌에서 우로 스와이프)
+        showNextTab();
+    } else if (endX - startX > 50) {
+        // 좌측으로 스와이프 (우에서 좌로 스와이프)
+        showPreviousTab();
     }
+});
 
-    let startX = 0;
-    let endX = 0;
-
-    document.addEventListener('touchstart', function(event) {
-        startX = event.touches[0].clientX;
-    });
-
-    document.addEventListener('touchmove', function(event) {
-        endX = event.touches[0].clientX;
-        // 터치 이벤트 기본 동작 막기
-        event.preventDefault();
-    });
-
-    document.addEventListener('touchend', function(event) {
-        const deltaX = startX - endX;
-        if (Math.abs(deltaX) > 50) {
-            if (deltaX > 0) {
-                // 우측으로 스와이프 (좌에서 우로 스와이프)
-                showNextTab();
-            } else {
-                // 좌측으로 스와이프 (우에서 좌로 스와이프)
-                showPreviousTab();
-            }
-        }
-    });
 
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
