@@ -1,64 +1,63 @@
 $(document).ready(function() {
-let touchStartX = 0;
-let touchEndX = 0;
-const minSwipeDistance = 50; // 스와이프 최소 거리 설정
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const minSwipeDistance = 50; // 스와이프 최소 거리 설정
 
-function handleGesture(event) {
-    const deltaX = touchEndX - touchStartX;
-    if (Math.abs(deltaX) > minSwipeDistance) {
-        if (deltaX < 0) {
-            // 스와이프 왼쪽
-            showNextTab();
-        } else {
-            // 스와이프 오른쪽
-            showPreviousTab();
+    function handleGesture(event) {
+        const deltaX = touchEndX - touchStartX;
+        if (Math.abs(deltaX) > minSwipeDistance) {
+            if (deltaX < 0) {
+                // 스와이프 왼쪽
+                showNextTab();
+            } else {
+                // 스와이프 오른쪽
+                showPreviousTab();
+            }
+        }
+
+        // 스와이프 후 탭 색상 변경
+        const activeTab = $('.tab.active');
+        $('.tab').css("background-color", ""); // 모든 탭의 배경색 초기화
+        activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
+
+        // 이벤트 전파 방지
+        event.stopPropagation();
+    }
+
+    function showNextTab() {
+        const activeTab = $('.tab.active');
+        const nextTab = activeTab.next('.tab');
+        if (nextTab.length) {
+            activeTab.removeClass('active');
+            nextTab.addClass('active');
+            $('.form-section').removeClass('active');
+            $(`#${nextTab.data('tab')}`).addClass('active');
         }
     }
 
-        // 스와이프 후 탭 색상 변경
-    const activeTab = $('.tab.active');
-    $('.tab').css("background-color", ""); // 모든 탭의 배경색 초기화
-    activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
-    
-    // 이벤트 전파 방지
-    event.preventDefault();
-    event.stopPropagation();
-}
-
-function showNextTab() {
-    const activeTab = $('.tab.active');
-    const nextTab = activeTab.next('.tab');
-    if (nextTab.length) {
-        activeTab.removeClass('active');
-        nextTab.addClass('active');
-        $('.form-section').removeClass('active');
-        $(`#${nextTab.data('tab')}`).addClass('active');
+    function showPreviousTab() {
+        const activeTab = $('.tab.active');
+        const prevTab = activeTab.prev('.tab');
+        if (prevTab.length) {
+            activeTab.removeClass('active');
+            prevTab.addClass('active');
+            $('.form-section').removeClass('active');
+            $(`#${prevTab.data('tab')}`).addClass('active');
+        }
     }
-}
 
-function showPreviousTab() {
-    const activeTab = $('.tab.active');
-    const prevTab = activeTab.prev('.tab');
-    if (prevTab.length) {
-        activeTab.removeClass('active');
-        prevTab.addClass('active');
-        $('.form-section').removeClass('active');
-        $(`#${prevTab.data('tab')}`).addClass('active');
-    }
-}
+    // 터치 이벤트를 특정 요소에만 바인딩
+    $('#tabContainer').on('touchstart', function(event) {
+        touchStartX = event.changedTouches[0].screenX;
+    });
 
-// 터치 이벤트를 특정 요소에만 바인딩
-$('#tabContainer').on('touchstart', function(event) {
-    touchStartX = event.changedTouches[0].screenX;
-});
+    $('#tabContainer').on('touchmove', function(event) {
+        touchEndX = event.changedTouches[0].screenX;
+    });
 
-$('#tabContainer').on('touchmove', function(event) {
-    touchEndX = event.changedTouches[0].screenX;
-});
-
-$('#tabContainer').on('touchend', function(event) {
-    handleGesture(event);
-});
+    $('#tabContainer').on('touchend', function(event) {
+        handleGesture(event);
+    });
 
 
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
