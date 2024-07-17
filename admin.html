@@ -42,13 +42,11 @@
             <label for="viewAllCheckbox">전체 날짜</label>
             <input type="checkbox" id="viewAllWardsCheckbox">
             <label for="viewAllWardsCheckbox">전체 병동</label>
-            <input type="checkbox" id="laundryCheckbox">
-            <label for="laundryCheckbox">세탁물로 분류하기</label>
         </div>
 
         <div class="button-container">
             <div>
-                <button id="cameraButton" class="nav-button">업로드</button>
+                <button id="cameraButton" class="nav-button">카메라 실행</button>
                 <button id="viewButton" class="nav-button">조회하기</button>
             </div>
             <div>
@@ -57,7 +55,7 @@
             </div>
         </div>
 
-        <input type="file" id="cameraInput" accept="image/*" capture="camera" style="display: none;">
+        <input type="file" id="cameraInput" accept="image/*" multiple style="display: none;">
 
         <section class="ward-section" id="wardSection">
             <div class="photo-gallery" id="photoGallery">
@@ -68,9 +66,14 @@
     </main>
 
     <div id="myModal" class="modal">
-        <span class="close">&times;</span>
         <div class="modal-content">
             <img id="modalImage">
+            <div id="laundryCheck" class="popup">
+                <label for="laundryCheckbox">세탁물로 분류하기</label>
+                <input type="checkbox" id="laundryCheckbox">
+                <button id="confirmUpload">업로드</button>
+                <button id="cancelUpload">취소</button>
+            </div>
         </div>
     </div>
 
@@ -101,11 +104,45 @@
         $(document).ready(function() {
             let currentPhotoIndex = 0;
 
+            // 카메라 실행 버튼 클릭 시
+            $('#cameraButton').on('click', function() {
+                if ($('#wardSelect').val()) {
+                    $('#cameraInput').click();
+                } else {
+                    alert('병동을 선택하세요.');
+                }
+            });
+
+            // 카메라 입력 선택 시
+            $('#cameraInput').on('change', function() {
+                var files = this.files;
+                if (files.length > 0) {
+                    // 사진 찍은 후 세탁물 분류 팝업 열기
+                    openLaundryPopup(files);
+                }
+            });
+
+            // 사진 업로드 확인 버튼 클릭 시
+            $('#confirmUpload').on('click', function() {
+                if ($('#wardSelect').val()) {
+                    uploadPhoto($('#cameraInput')[0].files[0]);
+                } else {
+                    alert('병동을 선택하세요.');
+                }
+                closeLaundryPopup();
+            });
+
+            // 사진 업로드 취소 버튼 클릭 시
+            $('#cancelUpload').on('click', function() {
+                closeLaundryPopup();
+            });
+
+            // 조회 버튼 클릭 시
             $('#viewButton').on('click', function() {
                 var ward = $('#wardSelect').val();
                 var date = $('#datePicker').val();
                 var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
-                var viewLaundry = $('#laundryCheckbox').is(':checked');
+                var viewLaundry = $('#viewLaundryCheckbox').is(':checked'); // 세탁물 사진만 보기 여부
 
                 if ($('#viewAllCheckbox').is(':checked')) {
                     loadPhotos(ward, null, viewAllWards, viewLaundry); // 전체 보기
@@ -116,47 +153,25 @@
                 }
             });
 
+            // 병동 선택 시
             $('#wardSelect').on('change', function() {
                 var ward = $(this).val();
                 var date = $('#datePicker').val();
                 if (ward && date) {
-                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#viewLaundryCheckbox').is(':checked'));
                 }
             });
 
+            // 날짜 선택 시
             $('#datePicker').on('change', function() {
                 var ward = $('#wardSelect').val();
                 var date = $(this).val();
                 if (ward && date) {
-                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#viewLaundryCheckbox').is(':checked'));
                 }
             });
 
-            $('#cameraButton').on('click', function() {
-                if ($('#wardSelect').val()) {
-                    $('#cameraInput').click();
-                } else {
-                    alert('병동을 선택하세요.');
-                }
-            });
-
-            $('#cameraInput').on('change', function() {
-                var files = this.files;
-                if (files.length > 0) {
-                    var file = files[0];
-                    // 카메라 사진 업로드 후 세탁물 분류 여부 팝업 띄우기
-                    if ($('#laundryCheckbox').is(':checked')) {
-                        if (confirm('사진을 세탁물로 분류하시겠습니까?')) {
-                            uploadPhoto(file, true);
-                        } else {
-                            uploadPhoto(file, false);
-                        }
-                    } else {
-                        uploadPhoto(file, false);
-                    }
-                }
-            });
-
+            // 이전 버튼 클릭 시
             $('#prevButton').on('click', function() {
                 if (currentPhotoIndex > 0) {
                     currentPhotoIndex--;
@@ -164,6 +179,7 @@
                 }
             });
 
+            // 다음 버튼 클릭 시
             $('#nextButton').on('click', function() {
                 let photos = $('.photo-container');
                 if (currentPhotoIndex < photos.length - 1) {
@@ -187,141 +203,95 @@
                 let deltaX = endX - startX;
                 let deltaY = endY - startY;
 
-                    // 좌우 스와이프 거리 차이가 상하 스와이프 거리 차이보다 크다면 좌우 스와이프로 간주
-                if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                    if (deltaX > 50) {
-                        // 오른쪽 스와이프 -> 이전 사진
-                        if (currentPhotoIndex > 0) {
-                            currentPhotoIndex--;
-                            showPhoto(currentPhotoIndex);
-                        }
-                    } else if (deltaX < -50) {
-                        // 왼쪽 스와이프 -> 다음 사진
-                        let photos = $('.photo-container');
-                        if (currentPhotoIndex < photos.length - 1) {
-                            currentPhotoIndex++;
-                            showPhoto(currentPhotoIndex);
-                        }
+                // 좌우 스와이프 거리 차이가 상하 스와이프 거리 차이보다 크다면 좌우 스와이프로 간주
+                if (Math.abs(deltaX).2 * Math.abs(deltaY)) {
+                    if (deltaX > 0) {
+                        // 왼쪽으로 스와이프: 다음 사진 보기
+                        $('#nextButton').click();
+                    } else {
+                        // 오른쪽으로 스와이프: 이전 사진 보기
+                        $('#prevButton').click();
+                    }
+                } else if (Math.abs(deltaY) > .2 * Math.abs(deltaX)) {
+                    if (deltaY > 0) {
+                        // 아래로 스와이프: 아래 콘텐츠로 스크롤
+                        window.scrollTo(0, window.scrollY + 100);
+                    } else {
+                        // 위로 스와이프: 위 콘텐츠로 스크롤
+                        window.scrollTo(0, window.scrollY - 100);
                     }
                 }
             });
-$('#cameraButton').on('click', function() {
-    if ($('#wardSelect').val()) {
-        // 카메라 앱을 연다
-        navigator.camera.getPicture(uploadPhoto, function(message) {
-            alert('Failed because: ' + message);
-        }, {
-            quality: 50,
-            destinationType: Camera.DestinationType.FILE_URI
-        });
-    } else {
-        alert('병동을 선택하세요.');
-    }
-});
 
-function uploadPhoto(imageUri) {
-    let ward = $('#wardSelect').val();
-    let date = new Date().toISOString().slice(0, 16).replace("T", " ");
+            // 사진 찍은 후 세탁물 분류 팝업 열기
+            function openLaundryPopup(files) {
+                $('#myModal').css('display', 'block');
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    $('#modalImage').attr('src', event.target.result);
+                }
+                reader.readAsDataURL(files[0]);
+            }
 
-    let formData = new FormData();
-    formData.append('image', imageUri);
-    formData.append('key', API_KEY);
+            // 사진 업로드 함수
+            function uploadPhoto(file) {
+                var storageRef = firebase.storage().ref();
+                var ward = $('#wardSelect').val();
+                var date = new Date().toISOString().slice(0, 10);
 
-    // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
-    $('#cameraButton').prop('disabled', true).text('업로드 중...');
+                var uploadTask = storageRef.child(`${ward}/${date}/${file.name}`).put(file);
 
-    $.ajax({
-        url: 'https://api.imgbb.com/1/upload',
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(response) {
-            let photoUrl = response.data.url;
-            let newPhotoRef = database.ref('photos/' + ward).push();
-            newPhotoRef.set({
-                url: photoUrl,
-                date: date,
-                isLaundry: false // 세탁물로 분류 여부를 초기에 false로 설정
-            }).then(() => {
-                // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
-                $('#cameraButton').prop('disabled', false).text('업로드');
-                
-                // 세탁물 분류 팝업 띄우기
-                showLaundryConfirmationDialog(newPhotoRef.key);
+                uploadTask.on('state_changed',
+                    function(snapshot) {
+                        // 업로드 진행 상황 모니터링
+                    },
+                    function(error) {
+                        // 업로드 실패 시 처리
+                        console.error('사진 업로드 실패:', error);
+                    },
+                    function() {
+                        // 업로드 성공 시
+                        console.log('사진 업로드 성공');
+                    }
+                );
+            }
+
+            // 세탁물 분류 팝업 닫기
+            function closeLaundryPopup() {
+                $('#myModal').css('display', 'none');
+                $('#modalImage').attr('src', '');
+                $('#laundryCheckbox').prop('checked', false);
+            }
+
+            // 사진 로드 함수
+            function loadPhotos(ward, date, viewAllWards, viewLaundry) {
+                var photosRef = database.ref('photos');
+
+                // 데이터베이스에서 사진 데이터 가져오기 예시
+                photosRef.once('value', function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        var childData = childSnapshot.val();
+                        // 여기서 사진을 UI에 추가하는 로직 추가
+                    });
+                });
+            }
+
+            // 사진 보기 함수
+            function showPhoto(index) {
+                var photos = $('.photo-container');
+                photos.removeClass('active');
+                $(photos[index]).addClass('active');
+            }
+
+            // 초기화 함수
+            function init() {
+                // 초기화 로직 추가
+            }
+
+            // 페이지 로드 시 초기화
+            $(document).ready(function() {
+                init();
             });
-        },
-        error: function() {
-            // 업로드 실패 시 처리
-            alert('사진 업로드 중 오류가 발생했습니다.');
-            
-            // 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
-            $('#cameraButton').prop('disabled', false).text('업로드');
-        }
-    });
-}
-
-function showLaundryConfirmationDialog(photoKey) {
-    if (confirm('이 사진을 세탁물로 분류하시겠습니까?')) {
-        markAsLaundry(photoKey);
-    } else {
-        loadPhotos($('#wardSelect').val(), $('#datePicker').val(), $('#viewAllWardsCheckbox').is(':checked'));
-    }
-}
-
-function markAsLaundry(photoKey) {
-    let ward = $('#wardSelect').val();
-    let photoRef = database.ref('photos/' + ward + '/' + photoKey);
-    photoRef.update({
-        isLaundry: true
-    }).then(() => {
-        // 세탁물로 분류 완료 후 로드
-        loadLaundryPhotos();
-    });
-}
-
-function loadLaundryPhotos() {
-    let ward = $('#wardSelect').val();
-    let laundryPhotosRef = database.ref('photos/' + ward).orderByChild('isLaundry').equalTo(true);
-    laundryPhotosRef.once('value', (snapshot) => {
-        let photos = [];
-        snapshot.forEach((childSnapshot) => {
-            let photo = childSnapshot.val();
-            photo.ward = ward;
-            photos.push(photo);
-        });
-
-        // 데이터를 모두 가져온 후에 화면에 표시
-        displayPhotos(photos, $('#datePicker').val());
-    });
-}
-
-$('#viewButton').on('click', function() {
-    var ward = $('#wardSelect').val();
-    var date = $('#datePicker').val();
-    var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
-    var viewLaundry = $('#viewLaundryCheckbox').is(':checked'); // 세탁물 체크박스
-
-    if ($('#viewAllCheckbox').is(':checked')) {
-        loadPhotos(ward, null, viewAllWards); // 전체 보기
-    } else if (viewLaundry) {
-        loadLaundryPhotos(); // 세탁물만 보기
-    } else if (ward && date) {
-        loadPhotos(ward, date, viewAllWards);
-    } else {
-        alert('병동과 날짜를 선택하세요.');
-    }
-});
-
-$('#viewLaundryCheckbox').on('change', function() {
-    var ward = $('#wardSelect').val();
-    var date = $('#datePicker').val();
-    var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
-    var viewLaundry = $(this).is(':checked');
-
-    if (viewLaundry) {
-        loadLaundryPhotos();
-    } else {
-        loadPhotos(ward, date, viewAllWards);
-    }
-});
+        </script>
+    </body>
+</html>
