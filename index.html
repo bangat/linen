@@ -123,7 +123,7 @@
         <div></div>
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
-        <a href="#" id="adminPageLink">세탁물관리</a>
+        <a href="#" id="adminPageLink">관리자 페이지</a>
     </div>
     <div class="content">
         <div class="header-container">
@@ -145,11 +145,15 @@
             </select>
         </div>
 
-        <div class="form-group">
+        
 
- <input type="date" id="requestDate" name="requestDate" placeholder="입고 요청일을 선택해주세요.">
-           
-        </div>
+<div class="form-group">
+    <label for="requestDate">입고 요청일을 선택해주세요.</label>
+    <input type="date" id="requestDate" name="requestDate" required>
+</div>
+
+
+
         <div class="tabs">
             <div class="tab active" data-tab="sheet">시트/기타</div>
             <div class="tab" data-tab="normal">일반 환의</div>
