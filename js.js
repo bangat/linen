@@ -215,8 +215,8 @@ function playNotificationSound() {
             .then(response => response.json())
             .then(data => {
                 if (data.ok) {
+                    playNotificationSound(); // 사운드 재
                     alert('요청이 성공적으로 전송되었습니다.');
-                    playNotificationSound(); // 사운드 재생
                     $("#linenRequestForm")[0].reset();
                     $("#preview").attr("src", "#");
                     $("#preview").hide();
@@ -251,8 +251,8 @@ function playNotificationSound() {
             .then(response => response.json())
             .then(data => {
                 if (data.ok) {
-                    alert('요청이 성공적으로 전송되었습니다.');
                     playNotificationSound(); // 사운드 재생
+                    alert('요청이 성공적으로 전송되었습니다.');
                     $("#linenRequestForm")[0].reset();
                 } else {
                     throw new Error('전송 실패');
