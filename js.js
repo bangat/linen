@@ -254,8 +254,5 @@ $(document).ready(function() {
         }
     });
 
-    // jQuery UI Datepicker 초기화 (중복 초기화 제거)
-    $("#requestDate").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
+    
 });
