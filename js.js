@@ -94,9 +94,9 @@ $(document).ready(function() {
     });
     
 // 재고사진 버튼 클릭 시 카메라 열기
-$("#inventoryPhoto").click(function() {
+$("#camera").click(function() {
     // capture 속성을 사용하여 바로 카메라를 열도록 설정
-    $("#inventoryPhoto").attr("capture", "camera").click();
+ $('#cameraInput').attr('capture', 'camera').click();
 });
     
     // 파일 업로드 시 미리보기 표시
