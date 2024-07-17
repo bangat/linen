@@ -167,7 +167,8 @@ $(document).ready(function() {
 
         // 요청이 성공적으로 전송되었을 때 사운드를 재생하는 함수
 function playNotificationSound() {
-    const audio = new Audio('https://blog.kakaocdn.net/dn/CPTpp/btsICWgDwoT/xQkXbVQPGEvLaH78F14JlK/%EC%9A%94%EC%B2%AD%EC%84%B1%EA%B3%B5.mp3');
+    const audio = new Audio('https://blog.kakaocdn.net/dn/CPTpp/btsICWgDwoT/xQkXbVQPGEvLaH78F14JlK/%EC%9A%94%EC%B2%AD%EC%84%B1%EA%B3%B5.mp3?attach=1&knm=tfile.mp3');
+    
     audio.play();
 }
         
