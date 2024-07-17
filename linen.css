@@ -7,17 +7,7 @@ body {
 
 }
 
-/* 날짜 선택기 */
-.requestDate {
-    margin-bottom: 5px;     /* 아래쪽 여백 5px 설정 */
-    padding: 5px;           /* 안쪽 여백 5px 설정 */
-    font-size: 16px;        /* 폰트 크기 16px 설정 */
-    width: calc(100% - 10px); /* 너비 계산 설정 */
-    max-width: 300px;       /* 최대 너비 300px 설정 */
-    display: block;         /* 블록 요소로 설정 */
-    margin: 0 auto;         /* 가운데 정렬 */
-    box-sizing: border-box; /* 박스 크기 설정 */
-}
+
    
 .menu-bar {
     position: absolute;
