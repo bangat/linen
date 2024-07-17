@@ -60,14 +60,18 @@ document.addEventListener('touchmove', function(event) {
 });
 
 document.addEventListener('touchend', function(event) {
-    if (startX - endX > 50) {
-        // 우측으로 스와이프 (좌에서 우로 스와이프)
-        showNextTab();
-    } else if (endX - startX > 50) {
-        // 좌측으로 스와이프 (우에서 좌로 스와이프)
-        showPreviousTab();
+    const deltaX = startX - endX;
+    if (Math.abs(deltaX) > 50) {
+        if (deltaX > 0) {
+            // 우측으로 스와이프 (좌에서 우로 스와이프)
+            showNextTab();
+        } else {
+            // 좌측으로 스와이프 (우에서 좌로 스와이프)
+            showPreviousTab();
+        }
     }
 });
+
 
 
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
