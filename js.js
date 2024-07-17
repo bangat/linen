@@ -253,6 +253,22 @@ $(document).ready(function() {
         }
     });
 
+    const dateInput = document.getElementById('requestDate');
+    const datePlaceholder = document.querySelector('.date-placeholder');
+
+    dateInput.addEventListener('input', function() {
+        if (dateInput.value) {
+            datePlaceholder.style.display = 'none';
+        } else {
+            datePlaceholder.style.display = 'block';
+        }
+    });
+
+    // 페이지 로드 시 초기 상태 설정
+    if (dateInput.value) {
+        datePlaceholder.style.display = 'none';
+    }
+
     // jQuery UI Datepicker 초기화 (중복 초기화 제거)
     $("#requestDate").datepicker({
         dateFormat: 'yy-mm-dd'
