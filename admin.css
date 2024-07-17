@@ -252,12 +252,12 @@ background-color: blue;
 
 /* 이전 버튼 설정 */
 .nav-button.previous {
-    background-color: blue; /* 배경색 설정 */
+    background-color: red; /* 배경색 설정 */
     color: white;           /* 글자 색상 설정 */
 }
 
 /* 다음 버튼 설정 */
 .nav-button.next {
-    background-color: blue; /* 배경색 설정 */
+    background-color: red; /* 배경색 설정 */
     color: white;           /* 글자 색상 설정 */
 }
