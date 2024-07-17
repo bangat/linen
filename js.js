@@ -164,6 +164,13 @@ $(document).ready(function() {
             message += `[근무복]\n${uniformItems}\n`;
         }
 
+
+        // 요청이 성공적으로 전송되었을 때 사운드를 재생하는 함수
+function playNotificationSound() {
+    const audio = new Audio('https://blog.kakaocdn.net/dn/CPTpp/btsICWgDwoT/xQkXbVQPGEvLaH78F14JlK/%EC%9A%94%EC%B2%AD%EC%84%B1%EA%B3%B5.mp3');
+    audio.play();
+}
+        
         const chatId = "5432510881"; // 텔레그램 채팅방 ID
         const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
         let url;
@@ -185,8 +192,7 @@ $(document).ready(function() {
             .then(data => {
                 if (data.ok) {
                     alert('요청이 성공적으로 전송되었습니다.');
-     // 사운드 재생
-        document.getElementById('notificationSound').play();
+        playNotificationSound(); // 사운드 재생
                     $("#linenRequestForm")[0].reset();
                     $("#preview").attr("src", "#");
                     $("#preview").hide();
@@ -222,8 +228,7 @@ $(document).ready(function() {
             .then(data => {
                 if (data.ok) {
                     alert('요청이 성공적으로 전송되었습니다.');
-                         // 사운드 재생
-        document.getElementById('notificationSound').play();
+  playNotificationSound(); // 사운드 재생
                     $("#linenRequestForm")[0].reset();
                 } else {
                     throw new Error('전송 실패');
