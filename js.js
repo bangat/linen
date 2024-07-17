@@ -1,7 +1,7 @@
 $(document).ready(function() {
  let touchStartX = 0;
     let touchEndX = 0;
-    const minSwipeDistance = 60; // 스와이프 최소 거리 설정
+    const minSwipeDistance = 60; // 스와이프 최소 거리 설정 
 
     function handleGesture() {
         const deltaX = touchEndX - touchStartX;
