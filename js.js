@@ -1,342 +1,399 @@
-$(document).ready(function() {
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>관리자 페이지</h1>
+    </header>
 
+    <main>
+        <select id="wardSelect">
+            <option value="ward93">93 병동</option>
+            <option value="ward83">83 병동</option>
+            <option value="ward73">73 병동</option>
+            <option value="ward71">71 병동</option>
+            <option value="ward63">63 병동</option>
+            <option value="ward62">62 병동</option>
+            <option value="ward61">61 병동</option>
+            <option value="HR">HR 병동</option>
+            <option value="ward52">52 병동</option>
+            <option value="ward51">51 병동</option>
+            <option value="ward42">42 병동</option>
+            <option value="ward41">41 병동</option>
+            <option value="ICU">중환자실</option>
+            <option value="dayWard">낮병동</option>
+            <option value="endoscopy">내시경실</option>
+            <option value="ER">응급실</option>
+        </select>
 
-     function uploadPhoto(file, isLaundry) {
-                let ward = $('#wardSelect').val();
-                let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
+        <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
 
-                let formData = new FormData();
-                formData.append('image', file);
-                formData.append('key', API_KEY);
+        <div class="checkbox-container">
+            <input type="checkbox" id="viewAllCheckbox">
+            <label for="viewAllCheckbox">전체 날짜</label>
+            <input type="checkbox" id="viewAllWardsCheckbox">
+            <label for="viewAllWardsCheckbox">전체 병동</label>
+        </div>
 
-                // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
-                $('#cameraButton').prop('disabled', true).text('업로드 중...');
+        <div class="button-container">
+            <div>
+                <button id="cameraButton" class="nav-button">업로드</button>
+                <button id="viewButton" class="nav-button">조회하기</button>
+            </div>
+            <div>
+                <button class="nav-button" id="prevButton">이전</button>
+                <button class="nav-button" id="nextButton">다음</button>
+            </div>
+        </div>
 
-                $.ajax({
-                    url: 'https://api.imgbb.com/1/upload',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        let photoUrl = response.data.url;
-                        let refPath = isLaundry ? 'laundryPhotos/' + ward : 'photos/' + ward;
-                        let newPhotoRef = database.ref(refPath).push();
-                        newPhotoRef.set({
-                            url: photoUrl,
-                            date: date
-                        }).then(() => {
-                            // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
-                            $('#cameraButton').prop('disabled', false).text('재고사진');
-                            
-                        });
-                    },
-                    error: function() {
-                        // 업로드 실패 시 처리
-                        alert('사진 업로드 중 오류가 발생했습니다.');
-                        
-                        // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
-                        $('#cameraButton').prop('disabled', false).text('재고사진');
+        <input type="file" id="cameraInput" accept="image/*" multiple style="display: none;">
+
+        <section class="ward-section" id="wardSection">
+            <div class="photo-gallery" id="photoGallery">
+                <!-- 여기에 선택된 병동의 사진을 동적으로 추가할 예정 -->
+            </div>
+        </section>
+
+    </main>
+
+    <div id="myModal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage">
+        </div>
+    </div>
+
+    <footer>
+    </footer>
+
+    <script>
+        // Firebase 설정 객체
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlzPWmeLacWdnW0we7CtfnU2szvxgdIzc",
+            authDomain: "hallymlinen.firebaseapp.com",
+            databaseURL: "https://hallymlinen-default-rtdb.firebaseio.com",
+            projectId: "hallymlinen",
+            storageBucket: "hallymlinen.appspot.com",
+            messagingSenderId: "867775830688",
+            appId: "1:867775830688:web:cef3ed4e70ae9818f347c5",
+            measurementId: "G-T02ZFK18L3"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+
+        // Firebase Realtime Database 참조
+        const database = firebase.database();
+
+        const API_KEY = '197c02787b4764d219198f8c2a68656a';
+
+        $(document).ready(function() {
+            let currentPhotoIndex = 0;
+
+            $('#viewButton').on('click', function() {
+                var ward = $('#wardSelect').val();
+                var date = $('#datePicker').val();
+                var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
+
+                if ($('#viewAllCheckbox').is(':checked')) {
+                    loadPhotos(ward, null, viewAllWards); // 전체 보기
+                } else if (ward && date) {
+                    loadPhotos(ward, date, viewAllWards);
+                } else {
+                    alert('병동과 날짜를 선택하세요.');
+                }
+            });
+
+            $('#wardSelect').on('change', function() {
+                var ward = $(this).val();
+                var date = $('#datePicker').val();
+                if (ward && date) {
+                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'));
+                }
+            });
+
+            $('#datePicker').on('change', function() {
+                var ward = $('#wardSelect').val();
+                var date = $(this).val();
+                if (ward && date) {
+                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'));
+                }
+            });
+
+            $('#cameraButton').on('click', function() {
+                if ($('#wardSelect').val()) {
+                    $('#cameraInput').click();
+                } else {
+                    alert('병동을 선택하세요.');
+                }
+            });
+
+            $('#cameraInput').on('change', function() {
+                var files = this.files;
+                if (files.length > 0) {
+                    Array.from(files).forEach(file => uploadPhoto(file));
+                }
+            });
+
+            $('#prevButton').on('click', function() {
+                if (currentPhotoIndex > 0) {
+                    currentPhotoIndex--;
+                    showPhoto(currentPhotoIndex);
+                }
+            });
+
+            $('#nextButton').on('click', function() {
+                let photos = $('.photo-container');
+                if (currentPhotoIndex < photos.length - 1) {
+                    currentPhotoIndex++;
+                    showPhoto(currentPhotoIndex);
+                }
+            });
+
+	
+
+            // 터치 이벤트 핸들러 추가
+            $('#photoGallery').on('touchstart', function(event) {
+                startX = event.originalEvent.touches[0].clientX;
+                startY = event.originalEvent.touches[0].clientY;
+            });
+
+            $('#photoGallery').on('touchmove', function(event) {
+                endX = event.originalEvent.touches[0].clientX;
+                endY = event.originalEvent.touches[0].clientY;
+            });
+
+            $('#photoGallery').on('touchend', function() {
+                let deltaX = endX - startX;
+                let deltaY = endY - startY;
+
+                // 좌우 스와이프 거리 차이가 상하 스와이프 거리 차이보다 크다면 좌우 스와이프로 간주
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    if (deltaX > 50) {
+                        // 오른쪽 스와이프 -> 이전 사진
+                        if (currentPhotoIndex > 0) {
+                            currentPhotoIndex--;
+                            showPhoto(currentPhotoIndex);
+                        }
+                    } else if (deltaX < -50) {
+                        // 왼쪽 스와이프 -> 다음 사진
+                        let photos = $('.photo-container');
+                        if (currentPhotoIndex < photos.length - 1) {
+                            currentPhotoIndex++;
+                            showPhoto(currentPhotoIndex);
+                        }
                     }
+                }
+            });
+
+            function loadPhotos(selectedWard, date, viewAllWards) {
+                let wards = viewAllWards ? getAllWards() : [selectedWard];
+                let photos = [];
+
+                wards.forEach(ward => {
+                    let wardPhotosRef = database.ref('photos/' + ward);
+                    wardPhotosRef.once('value', (snapshot) => {
+                        snapshot.forEach((childSnapshot) => {
+                            let photo = childSnapshot.val();
+                            photo.ward = ward;
+                            photos.push(photo);
+                        });
+
+                        // 데이터를 모두 가져온 후에 화면에 표시
+                        if (ward === wards[wards.length - 1]) {
+                            displayPhotos(photos, date);
+                        }
+                    });
                 });
             }
 
+            function displayPhotos(photos, date) {
+                $('#photoGallery').empty();
 
-    
-    let touchStartX = 0;
-    let touchEndX = 0;
-    let touchStartY = 0;
-    let touchEndY = 0;
-    const minSwipeDistance = 50; // 스와이프 최소 거리 설정 (적절히 조정)
-    
-    // 사운드 객체 미리 생성
-    const notificationSound = new Audio('https://blog.kakaocdn.net/dn/CPTpp/btsICWgDwoT/xQkXbVQPGEvLaH78F14JlK/%EC%9A%94%EC%B2%AD%EC%84%B1%EA%B3%B5.mp3?attach=1&knm=tfile.mp3');
-    
-    function handleGesture() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        
-        // X축 이동거리가 Y축 이동거리보다 크고, X축 이동거리가 일정 거리 이상일 때만 처리
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
-            if (deltaX < 0) {
-                // 스와이프 왼쪽
-                showNextTab();
-            } else {
-                // 스와이프 오른쪽
-                showPreviousTab();
-            }
-        }
-        // 스와이프 후 탭 색상 변경
-        updateTabIndicator();
-    }
-    
-    function showNextTab() {
-        const activeTab = $('.tab.active');
-        const nextTab = activeTab.next('.tab');
-        if (nextTab.length) {
-            switchTabs(activeTab, nextTab);
-        }
-    }
-    
-    function showPreviousTab() {
-        const activeTab = $('.tab.active');
-        const prevTab = activeTab.prev('.tab');
-        if (prevTab.length) {
-            switchTabs(activeTab, prevTab);
-        }
-    }
-    
-    function switchTabs(currentTab, targetTab) {
-        currentTab.removeClass('active');
-        targetTab.addClass('active');
-        $('.form-section').removeClass('active');
-        $(`#${targetTab.data('tab')}`).addClass('active');
-        updateTabIndicator(); // 탭 변경 후 탭 색상 업데이트
-    }
-    
-    function updateTabIndicator() {
-        const activeTab = $('.tab.active');
-        $('.tab').css("background-color", ""); // 모든 탭의 배경색 초기화
-        activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
-    }
-    
-    document.addEventListener('touchstart', function(event) {
-        touchStartX = event.touches[0].clientX;
-        touchStartY = event.touches[0].clientY;
-    });
-    
-    document.addEventListener('touchmove', function(event) {
-        touchEndX = event.touches[0].clientX;
-        touchEndY = event.touches[0].clientY;
-    });
-    
-    document.addEventListener('touchend', function(event) {
-        handleGesture();
-    });
-    
-    // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
-    $("h1").click(function() {
-        $(".tab").removeClass("active");
-        $(".tab[data-tab='sheet']").addClass("active");
-        $(".form-section").removeClass("active");
-        $("#sheet").addClass("active");
-        $(".tab").css("background-color", ""); // 
-        $(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
-    });
-    
-    // 탭 클릭 시 해당 섹션으로 이동
-    $(".tab").click(function() {
-        var tabId = $(this).attr("data-tab");
-        $(".tab").removeClass("active");
-        $(this).addClass("active");
-        $(".form-section").removeClass("active");
-        $("#" + tabId).addClass("active");
-    
-        // 모든 탭의 배경색 초기화 후 클릭한 탭의 배경색을 초록색으로 변경
-        $(".tab").css("background-color", "");
-        $(this).css("background-color", "#4CAF50");
-    });
-    
-// 재고사진 버튼 클릭 시 카메라 열기
-$("#inventoryPhoto").click(function() {
-    // capture 속성을 사용하여 바로 카메라를 열도록 설정
- $('inventoryPhoto').attr('capture', 'camera').click();
-});
-    
-    // 파일 업로드 시 미리보기 표시
-    $("#inventoryPhoto").change(function(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-    
-        reader.onload = function(e) {
-            $("#preview").attr("src", e.target.result);
-            $("#preview").show();
-        };
-    
-        reader.readAsDataURL(file);
-    });
-    
-    // 메뉴바 클릭 시 드롭다운 메뉴 토글
-    $("#menuBar").click(function() {
-        $("#dropdownMenu").toggle();
-    });
-    
-    // 요청서 전송
-    $("#linenRequestForm").submit(function(event) {
-        event.preventDefault();
-        
-        const wardValue = $("#wardDropdown").val().trim(); // 드롭다운 메뉴에서 선택된 병동명 가져오기
-        const requestDate = $("#requestDate").val();
-        const photoFile = $("#inventoryPhoto")[0].files[0];
-    
-        if (!wardValue || !requestDate) {
-            alert('병동명과 입고 날짜는 필수 입력 항목입니다.');
-            return;
-        }
-    
-        $("#submitBtn").prop('disabled', true); // 요청 버튼 비활성화
-        $("#statusMessage").fadeIn(); // 요청 중 메시지 표시
-    
-        let message = `병동명 : ${wardValue}\n`;
-        message += `입고날짜 : ${requestDate}\n\n`;
-    
-        let sheetItems = '';
-        $("#sheet input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
-            const itemCount = $(this).val();
-            if (itemCount > 0) {
-                sheetItems += `${itemName} ${itemCount}장\n`;
-            }
-        });
-        if (sheetItems) {
-            message += `[시트/기타]\n${sheetItems}\n`;
-        }
-    
-        let normalItems = '';
-        $("#normal input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
-            const itemCount = $(this).val();
-            if (itemCount > 0) {
-                normalItems += `${itemName} ${itemCount}장\n`;
-            }
-        });
-        if (normalItems) {
-            message += `[일반환의]\n${normalItems}\n`;
-        }
-    
-        let orthoItems = '';
-        $("#ortho input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
-            const itemCount = $(this).val();
-            if (itemCount > 0) {
-                orthoItems += `${itemName} ${itemCount}장\n`;
-            }
-        });
-        if (orthoItems) {
-            message += `[정형환의]\n${orthoItems}\n`;
-        }
-    
-        let uniformItems = '';
-        $("#uniform input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
-            const itemCount = $(this).val();
-            if (itemCount > 0) {
-                uniformItems += `${itemName} ${itemCount}장\n`;
-            }
-        });
-        if (uniformItems) {
-            message += `[근무복]\n${uniformItems}\n`;
-        }
-    
-        const chatId = "5432510881"; // 텔레그램 채팅방 ID
-        const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
-        let url;
-        let formData;
-    
-        if (photoFile) {
-            // 사진 파일이 첨부된 경우
-            url = `https://api.telegram.org/bot${token}/sendPhoto`;
-            formData = new FormData();
-            formData.append('chat_id', chatId);
-            formData.append('photo', photoFile);
-            formData.append('caption', message);
-    
-            fetch(url, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    playNotificationSound(); // 사운드 재생
-                    alert('요청이 성공적으로 전송되었습니다.');
-                    $("#linenRequestForm")[0].reset();
-                    $("#preview").attr("src", "#");
-                    $("#preview").hide();
-                } else {
-                    throw new Error('전송 실패');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('요청을 전송하는 도중 오류가 발생했습니다.');
-            })
-            .finally(() => {
-                $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
-                $("#statusMessage").fadeOut(); // 요청 중 메시지 숨기기
-            });
-        } else {
-            // 사진 파일이 첨부되지 않은 경우
-            url = `https://api.telegram.org/bot${token}/sendMessage`;
-            formData = JSON.stringify({
-                chat_id: chatId,
-                parse_mode: 'HTML',
-                text: message
-            });
-    
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    playNotificationSound(); // 사운드 재생
-                    alert('요청이 성공적으로 전송되었습니다.');
-                    $("#linenRequestForm")[0].reset();
-                } else {
-                    throw new Error('전송 실패');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('요청을 전송하는 도중 오류가 발생했습니다.');
-            })
-            .finally(() => {
-                $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
-                $("#statusMessage").fadeOut(); // 요청 중 메시지 숨기기
-            });
-        }
-    });
-    
-    // 관리자 페이지 링크 처리
-    $('#adminPageLink').click(function(e) {
-        e.preventDefault();
-        var password = prompt("관리자 페이지 암호를 입력하세요.");
-        if (password === "9") { // 관리자 페이지 암호 설정
-            window.location.href = "admin.html";
-        } else {
-            alert("암호가 일치하지 않습니다.");
-        }
-    });
-    
-    const dateInput = document.getElementById('requestDate');
-    const datePlaceholder = document.querySelector('.date-placeholder');
-    
-    dateInput.addEventListener('input', function() {
-        if (dateInput.value) {
-            datePlaceholder.style.display = 'none';
-        } else {
-            datePlaceholder.style.display = 'block';
-        }
-    });
-    
-    // 페이지 로드 시 초기 상태 설정
-    if (dateInput.value) {
-        datePlaceholder.style.display = 'none';
-    }
-    
-    // jQuery UI Datepicker 초기화 (중복 초기화 제거)
-    $("#requestDate").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
+                let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
 
-    // 사운드를 재생하는 함수
-    function playNotificationSound() {
-        notificationSound.currentTime = 0; // 사운드를 처음으로 되감기
-        notificationSound.play(); // 사운드 재생
+                filteredPhotos.forEach(photo => {
+                    let photoContainer = $('<div>').addClass('photo-container');
+                    let formattedDate = formatDateToKorean(photo.date);
+                    let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+                    let wardLabel = $('<div>').addClass('ward-label').text(getWardLabel(photo.ward));
+                    let img = $('<img>').attr('src', photo.url);
+                    let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+
+		deleteButton.on('click', function() {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            deletePhoto(photo.ward, photo);
+                        }
+                    });
+
+                    img.on('click', function() {
+                        openModal(photo.url);
+                    });
+
+                    photoContainer.append(dateLabel, img, wardLabel, deleteButton);
+                    $('#photoGallery').append(photoContainer);
+                });
+
+                currentPhotoIndex = 0;
+                showPhoto(currentPhotoIndex);
+                toggleNavigationButtons(filteredPhotos.length);
+            }
+
+            function showPhoto(index) {
+                let photos = $('.photo-container');
+                photos.hide();
+                if (photos.length > 0) {
+                    $(photos[index]).show();
+                }
+            }
+
+            function toggleNavigationButtons(photoCount) {
+                if (photoCount <= 1) {
+                    $('#prevButton, #nextButton').hide();
+                } else {
+                    $('#prevButton, #nextButton').show();
+                }
+            }
+
+         function uploadPhoto(file) {
+    let ward = $('#wardSelect').val();
+    let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
+
+    let formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', API_KEY);
+
+    // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
+    $('#cameraButton').prop('disabled', true).text('업로드 중...');
+
+    $.ajax({
+        url: 'https://api.imgbb.com/1/upload',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            let photoUrl = response.data.url;
+            let newPhotoRef = database.ref('photos/' + ward).push();
+            newPhotoRef.set({
+                url: photoUrl,
+                date: date
+            }).then(() => {
+                // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
+                $('#cameraButton').prop('disabled', false).text('업로드');
+                
+                // 사진 로드 함수 호출
+                loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
+            });
+        },
+        error: function() {
+            // 업로드 실패 시 처리
+            alert('사진 업로드 중 오류가 발생했습니다.');
+            
+            // 업로드 버튼을 다시 활성화하고 텍스트를 "사진 촬영"으로 변경
+            $('#cameraButton').prop('disabled', false).text('업로드');
+        }
+    });
+}
+
+            function deletePhoto(ward, photo) {
+                let photoRef = database.ref('photos/' + ward).orderByChild('url').equalTo(photo.url);
+                photoRef.once('value', function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        childSnapshot.ref.remove().then(() => {
+                            loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'));
+                        });
+                    });
+                });
+            }
+
+            function openModal(imageUrl) {
+                var modal = document.getElementById("myModal");
+                var modalImg = document.getElementById("modalImage");
+
+                modal.style.display = "block";
+                modalImg.src = imageUrl;
+
+                var span = document.getElementsByClassName("close")[0];
+                span.onclick = function() {
+                    modal.style.display = "none";
+                }
+            }
+
+function formatDateToKorean(dateString) {
+    var date = new Date(dateString);
+    var year = ('' + date.getFullYear()); // .slice(-2); // 년도를 두 자리 숫자로 표시
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var day = ('0' + date.getDate()).slice(-2);
+    var hours = date.getHours();
+    var minutes = ('0' + date.getMinutes()).slice(-2);
+    var period = hours >= 12 ? '오후' : '오전'; // 오후/오전 구분
+
+    // 12시간제로 변경 및 오전/오후 표시
+    if (hours === 0) {
+        hours = 12; // 자정을 12시로 표시
+    } else if (hours > 12) {
+        hours -= 12; // 오후 시간을 12시간제로 변환
     }
-});
+
+    return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
+}
+
+
+
+            function getWardLabel(wardCode) {
+                var wardLabels = {
+                    'ward93': '93 병동',
+                    'ward83': '83 병동',
+                    'ward73': '73 병동',
+                    'ward71': '71 병동',
+                    'ward63': '63 병동',
+                    'ward62': '62 병동',
+                    'ward61': '61 병동',
+                    'HR': 'HR 병동',
+                    'ward52': '52 병동',
+                    'ward51': '51 병동',
+                    'ward42': '42 병동',
+                    'ward41': '41 병동',
+                    'ICU': '중환자실',
+                    'dayWard': '낮병동',
+                    'endoscopy': '내시경실',
+                    'ER': '응급실'
+                };
+                return wardLabels[wardCode] || wardCode;
+            }
+
+            function getAllWards() {
+                return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
+            }
+
+		 function downloadPhoto(photoUrl) {
+                var link = document.createElement('a');
+                link.href = photoUrl;
+                link.download = 'photo.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+		
+            // 초기 로드 시 현재 날짜를 한국 시간으로 설정
+let today = new Date();
+today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
+$('#datePicker').val(today.toISOString().slice(0, 10));
+		 // "관리자 페이지" 클릭 시 index.html로 이동
+            $('header h1').on('click', function() {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
