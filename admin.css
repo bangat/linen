@@ -106,7 +106,7 @@ footer {
 
 /* 카메라 버튼 및 뷰 버튼 설정 */
 #cameraButton,
-#viewButton
+#viewButton,
 #uploadbutton {
     margin-top: 1px;        /* 위쪽 여백 2px 설정 */
     padding: 7px 13px;      /* 안쪽 여백 설정 */
