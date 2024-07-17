@@ -1,74 +1,77 @@
 $(document).ready(function() {
     let touchStartX = 0;
-    let touchEndX = 0;
-    let touchStartY = 0;
-    let touchEndY = 0;
-    const minSwipeDistance = 50; // 스와이프 최소 거리 설정 (적절히 조정)
-    
-    // 사운드 객체 미리 생성
-    const notificationSound = new Audio('https://blog.kakaocdn.net/dn/CPTpp/btsICWgDwoT/xQkXbVQPGEvLaH78F14JlK/%EC%9A%94%EC%B2%AD%EC%84%B1%EA%B3%B5.mp3?attach=1&knm=tfile.mp3');
-    
-    function handleGesture() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        
-        // X축 이동거리가 Y축 이동거리보다 크고, X축 이동거리가 일정 거리 이상일 때만 처리
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
-            if (deltaX < 0) {
-                // 스와이프 왼쪽
-                showNextTab();
-            } else {
-                // 스와이프 오른쪽
-                showPreviousTab();
-            }
+let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
+const minSwipeDistance = 60; // 스와이프 최소 거리 설정 (적절히 조정)
+
+// 사운드 객체 미리 생성
+const notificationSound = new Audio('https://blog.kakaocdn.net/dn/CPTpp/btsICWgDwoT/xQkXbVQPGEvLaH78F14JlK/%EC%9A%94%EC%B2%AD%EC%84%B1%EA%B3%B5.mp3?attach=1&knm=tfile.mp3');
+
+function handleGesture() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+
+    // X축 이동거리가 Y축 이동거리보다 크고, X축 이동거리가 일정 거리 이상일 때만 처리
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+        if (deltaX < 0) {
+            // 스와이프 왼쪽
+            showNextTab();
+        } else {
+            // 스와이프 오른쪽
+            showPreviousTab();
         }
         // 스와이프 후 탭 색상 변경
         updateTabIndicator();
     }
-    
-    function showNextTab() {
-        const activeTab = $('.tab.active');
-        const nextTab = activeTab.next('.tab');
-        if (nextTab.length) {
-            switchTabs(activeTab, nextTab);
-        }
+}
+
+function showNextTab() {
+    const activeTab = $('.tab.active');
+    const nextTab = activeTab.next('.tab');
+    if (nextTab.length) {
+        switchTabs(activeTab, nextTab);
     }
-    
-    function showPreviousTab() {
-        const activeTab = $('.tab.active');
-        const prevTab = activeTab.prev('.tab');
-        if (prevTab.length) {
-            switchTabs(activeTab, prevTab);
-        }
+}
+
+function showPreviousTab() {
+    const activeTab = $('.tab.active');
+    const prevTab = activeTab.prev('.tab');
+    if (prevTab.length) {
+        switchTabs(activeTab, prevTab);
     }
-    
-    function switchTabs(currentTab, targetTab) {
-        currentTab.removeClass('active');
-        targetTab.addClass('active');
-        $('.form-section').removeClass('active');
-        $(`#${targetTab.data('tab')}`).addClass('active');
-        updateTabIndicator(); // 탭 변경 후 탭 색상 업데이트
-    }
-    
-    function updateTabIndicator() {
-        const activeTab = $('.tab.active');
-        $('.tab').css("background-color", ""); // 모든 탭의 배경색 초기화
-        activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
-    }
-    
-    document.addEventListener('touchstart', function(event) {
-        touchStartX = event.touches[0].clientX;
-        touchStartY = event.touches[0].clientY;
-    });
-    
-    document.addEventListener('touchmove', function(event) {
-        touchEndX = event.touches[0].clientX;
-        touchEndY = event.touches[0].clientY;
-    });
-    
-    document.addEventListener('touchend', function(event) {
+}
+
+function switchTabs(currentTab, targetTab) {
+    currentTab.removeClass('active');
+    targetTab.addClass('active');
+    $('.form-section').removeClass('active');
+    $(`#${targetTab.data('tab')}`).addClass('active');
+    updateTabIndicator(); // 탭 변경 후 탭 색상 업데이트
+}
+
+function updateTabIndicator() {
+    const activeTab = $('.tab.active');
+    $('.tab').css("background-color", ""); // 모든 탭의 배경색 초기화
+    activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
+}
+
+document.addEventListener('touchstart', function(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+});
+
+document.addEventListener('touchmove', function(event) {
+    touchEndX = event.touches[0].clientX;
+    touchEndY = event.touches[0].clientY;
+});
+
+document.addEventListener('touchend', function(event) {
+    // 터치의 시작과 끝 사이의 거리가 최소 스와이프 거리 이상일 때만 탭을 변경하도록 조건 추가
+    if (Math.abs(touchEndX - touchStartX) > minSwipeDistance || Math.abs(touchEndY - touchStartY) > minSwipeDistance) {
         handleGesture();
-    });
+    }
+});
     
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
