@@ -106,9 +106,10 @@ footer {
 
 /* 카메라 버튼 및 뷰 버튼 설정 */
 #cameraButton,
-#viewButton {
+#viewButton
+#uploadbutton {
     margin-top: 1px;        /* 위쪽 여백 2px 설정 */
-    padding: 8px 15px;      /* 안쪽 여백 설정 */
+    padding: 7px 13px;      /* 안쪽 여백 설정 */
     font-size: 12px;        /* 폰트 크기 12px 설정 */
     cursor: pointer;        /* 커서 포인터 설정 */
     background-color: dodgerblue; /* 배경색 설정 */
