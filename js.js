@@ -102,10 +102,6 @@ $(document).ready(function() {
     // 요청서 전송
     $("#linenRequestForm").submit(function(event) {
         event.preventDefault();
-
-             // 사운드 재생
-        var notificationSound = document.getElementById("notificationSound");
-        notificationSound.play();
         
         const wardValue = $("#wardDropdown").val().trim(); // 드롭다운 메뉴에서 선택된 병동명 가져오기
         const requestDate = $("#requestDate").val();
@@ -191,6 +187,8 @@ $(document).ready(function() {
             .then(data => {
                 if (data.ok) {
                     alert('요청이 성공적으로 전송되었습니다.');
+     // 사운드 재생
+        document.getElementById('notificationSound').play();
                     $("#linenRequestForm")[0].reset();
                     $("#preview").attr("src", "#");
                     $("#preview").hide();
@@ -226,6 +224,8 @@ $(document).ready(function() {
             .then(data => {
                 if (data.ok) {
                     alert('요청이 성공적으로 전송되었습니다.');
+                         // 사운드 재생
+        document.getElementById('notificationSound').play();
                     $("#linenRequestForm")[0].reset();
                 } else {
                     throw new Error('전송 실패');
