@@ -1,4 +1,51 @@
 $(document).ready(function() {
+  
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function handleGesture() {
+        if (touchEndX < touchStartX) {
+            // 스와이프 왼쪽
+            showNextTab();
+        }
+        if (touchEndX > touchStartX) {
+            // 스와이프 오른쪽
+            showPreviousTab();
+        }
+    }
+
+    function showNextTab() {
+        const activeTab = $('.tab.active');
+        const nextTab = activeTab.next('.tab');
+        if (nextTab.length) {
+            activeTab.removeClass('active');
+            nextTab.addClass('active');
+            $('.form-section').removeClass('active');
+            $(`#${nextTab.data('tab')}`).addClass('active');
+        }
+    }
+
+    function showPreviousTab() {
+        const activeTab = $('.tab.active');
+        const prevTab = activeTab.prev('.tab');
+        if (prevTab.length) {
+            activeTab.removeClass('active');
+            prevTab.addClass('active');
+            $('.form-section').removeClass('active');
+            $(`#${prevTab.data('tab')}`).addClass('active');
+        }
+    }
+
+    document.addEventListener('touchstart', function(event) {
+        touchStartX = event.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', function(event) {
+        touchEndX = event.changedTouches[0].screenX;
+        handleGesture();
+    });
+
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
         $(".tab").removeClass("active");
