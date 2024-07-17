@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="린넨실">
-    <meta property="og:description" content="일일 사용량에 맞게 요청 바랍니다:D">
-    <meta property="og:image" content="https://i.ibb.co/TKrjqyL/001-2.png">
-    <meta property="og:url" content="https://hallymlinen.netlify.app/">
-    <meta property="og:type" content="website">
+<meta property="og:title" content="린넨실">
+<meta property="og:description" content="일일 사용량에 맞게 요청 바랍니다:D">
+<meta property="og:image" content="https://i.ibb.co/TKrjqyL/001-2.png">
+<meta property="og:url" content="https://hallymlinen.netlify.app/">
+<meta property="og:type" content="website">
     <title>린넨실 요청서</title>
     <link rel="stylesheet" href="linen.css">
+href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -123,7 +124,7 @@
         <div></div>
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
-        <a href="#" id="adminPageLink">관리자 페이지</a>
+        <a href="#" id="adminPageLink">세탁물관리</a>
     </div>
     <div class="content">
         <div class="header-container">
@@ -145,14 +146,9 @@
             </select>
         </div>
 
-        
-
-<div class="form-group">
-    <label for="requestDate">입고 요청일을 선택해주세요.</label>
-    <input type="date" id="requestDate" name="requestDate" required>
-</div>
-
-
+        <div class="form-group">
+  <input type="date" id="requestDate"  class="date-picker" name="requestDate" placeholder="입고 요청일을 선택해주세요.">
+        </div>
 
         <div class="tabs">
             <div class="tab active" data-tab="sheet">시트/기타</div>
