@@ -75,7 +75,7 @@ $(document).ready(function() {
         $(this).css("background-color", "#4CAF50");
     });
 
-    // 날짜 선택기 초기화 (이 부분을 한 번만 초기화하도록 수정)
+    // 날짜 선택기 초기화
     $("#requestDate").datepicker({
         dateFormat: 'yy-mm-dd'
     });
@@ -234,12 +234,11 @@ $(document).ready(function() {
             .catch(error => {
                 console.error('Error:', error);
                 alert('요청을 전송하는 도중 오류가 발생했습니다.');
-
-                })
-                .finally(() => {
-                    $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
-                    $("#statusMessage").fadeOut(); // 요청 중 메시지 숨기기
-                });
+            })
+            .finally(() => {
+                $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화
+                $("#statusMessage").fadeOut(); // 요청 중 메시지 숨기기
+            });
         }
     });
 
@@ -254,5 +253,8 @@ $(document).ready(function() {
         }
     });
 
-    
+    // jQuery UI Datepicker 초기화 (중복 초기화 제거)
+    $("#requestDate").datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
 });
