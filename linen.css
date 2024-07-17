@@ -25,7 +25,7 @@ body {
 .date-picker {
     width: 100%;
     padding: 10px;
-    font-size: 16px;
+    font-size: 15px;
     box-sizing: border-box;
 }
 
@@ -36,6 +36,11 @@ body {
     font-size: 12px;
     color: #666;
 }
+
+.date-picker.filled + .date-placeholder {
+    display: none;
+}
+
 
    
 .menu-bar {
