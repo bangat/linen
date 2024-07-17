@@ -107,7 +107,7 @@ footer {
 /* 카메라 버튼 및 뷰 버튼 설정 */
 #cameraButton,
 #viewButton,
-#uploadbutton {
+#uploadButton {
     margin-top: 1px;        /* 위쪽 여백 2px 설정 */
     padding: 7px 13px;      /* 안쪽 여백 설정 */
     font-size: 12px;        /* 폰트 크기 12px 설정 */
@@ -123,7 +123,8 @@ footer {
 
 /* 카메라 및 뷰 버튼 호버 설정 */
 #cameraButton:hover,
-#viewButton:hover {
+#viewButton:hover,
+#uploadbutton:hover {
     background-color: royalblue; /* 호버 배경색 설정 */
 }
 
