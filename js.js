@@ -1,11 +1,16 @@
 $(document).ready(function() {
 let touchStartX = 0;
 let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
 const minSwipeDistance = 50; // 스와이프 최소 거리 설정 (적절히 조정)
 
 function handleGesture() {
     const deltaX = touchEndX - touchStartX;
-    if (Math.abs(deltaX) > minSwipeDistance) {
+    const deltaY = touchEndY - touchStartY;
+    
+    // X축 이동거리가 Y축 이동거리보다 크고, X축 이동거리가 일정 거리 이상일 때만 처리
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
         if (deltaX < 0) {
             // 스와이프 왼쪽
             showNextTab();
@@ -38,7 +43,7 @@ function switchTabs(currentTab, targetTab) {
     currentTab.removeClass('active');
     targetTab.addClass('active');
     $('.form-section').removeClass('active');
-    $(#${targetTab.data('tab')}).addClass('active');
+    $(`#${targetTab.data('tab')}`).addClass('active');
     updateTabIndicator(); // 탭 변경 후 탭 색상 업데이트
 }
 
@@ -48,27 +53,19 @@ function updateTabIndicator() {
     activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
 }
 
-let startX = 0;
-let endX = 0;
-
 document.addEventListener('touchstart', function(event) {
-    startX = event.touches[0].clientX;
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
 });
 
 document.addEventListener('touchmove', function(event) {
-    endX = event.touches[0].clientX;
+    touchEndX = event.touches[0].clientX;
+    touchEndY = event.touches[0].clientY;
 });
 
 document.addEventListener('touchend', function(event) {
-    if (startX - endX > 50) {
-        // 우측으로 스와이프 (좌에서 우로 스와이프)
-        showNextTab();
-    } else if (endX - startX > 50) {
-        // 좌측으로 스와이프 (우에서 좌로 스와이프)
-        showPreviousTab();
-    }
+    handleGesture();
 });
-
 
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
