@@ -1,18 +1,15 @@
 $(document).ready(function() {
     let touchStartX = 0;
     let touchEndX = 0;
-    let touchStartY = 0;
-    let touchEndY = 0;
+    const minSwipeDistance = 50; // 스와이프 최소 거리 설정
 
     function handleGesture() {
         const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (Math.abs(deltaX) > minSwipeDistance) {
             if (deltaX < 0) {
                 // 스와이프 왼쪽
                 showNextTab();
-            }
-            if (deltaX > 0) {
+            } else {
                 // 스와이프 오른쪽
                 showPreviousTab();
             }
@@ -43,12 +40,13 @@ $(document).ready(function() {
 
     document.addEventListener('touchstart', function(event) {
         touchStartX = event.changedTouches[0].screenX;
-        touchStartY = event.changedTouches[0].screenY;
+    });
+
+    document.addEventListener('touchmove', function(event) {
+        touchEndX = event.changedTouches[0].screenX;
     });
 
     document.addEventListener('touchend', function(event) {
-        touchEndX = event.changedTouches[0].screenX;
-        touchEndY = event.changedTouches[0].screenY;
         handleGesture();
     });
 
