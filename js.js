@@ -7,7 +7,7 @@ function handleGesture() {
     const deltaX = touchEndX - touchStartX;
     if (Math.abs(deltaX) > minSwipeDistance) {
         if (deltaX < 0) {
-            // 스와이프 왼쪽 
+            // 스와이프 왼쪽
             showNextTab();
         } else {
             // 스와이프 오른쪽
@@ -48,16 +48,25 @@ function updateTabIndicator() {
     activeTab.css("background-color", "#4CAF50"); // 활성화된 탭의 배경색 변경
 }
 
+let startX = 0;
+let endX = 0;
+
 document.addEventListener('touchstart', function(event) {
-    touchStartX = event.touches[0].screenX;
+    startX = event.touches[0].clientX;
 });
 
 document.addEventListener('touchmove', function(event) {
-    touchEndX = event.touches[0].screenX;
+    endX = event.touches[0].clientX;
 });
 
 document.addEventListener('touchend', function(event) {
-    handleGesture();
+    if (startX - endX > 50) {
+        // 우측으로 스와이프 (좌에서 우로 스와이프)
+        showNextTab();
+    } else if (endX - startX > 50) {
+        // 좌측으로 스와이프 (우에서 좌로 스와이프)
+        showPreviousTab();
+    }
 });
 
 
