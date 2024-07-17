@@ -103,6 +103,10 @@ $(document).ready(function() {
     $("#linenRequestForm").submit(function(event) {
         event.preventDefault();
 
+             // 사운드 재생
+        var notificationSound = document.getElementById("notificationSound");
+        notificationSound.play();
+        
         const wardValue = $("#wardDropdown").val().trim(); // 드롭다운 메뉴에서 선택된 병동명 가져오기
         const requestDate = $("#requestDate").val();
         const photoFile = $("#inventoryPhoto")[0].files[0];
