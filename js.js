@@ -208,6 +208,9 @@ $(document).ready(function() {
                     $("#linenRequestForm")[0].reset();
                     $("#preview").attr("src", "#");
                     $("#preview").hide();
+                    
+                    // Firebase에 사진 정보 저장
+                savePhotoInfoToFirebase(photoFile.name);
                 } else {
                     throw new Error('전송 실패');
                 }
@@ -256,6 +259,15 @@ $(document).ready(function() {
             });
         }
     });
+
+    
+// 사진 정보 Firebase에 저장
+function savePhotoInfoToFirebase(fileName) {
+    // Firebase Storage에 사진 정보 저장하는 코드
+    const storageRef = firebase.storage().ref();
+    const photoRef = storageRef.child(fileName);
+    // photoRef 에 사진 정보 저장
+}
     
     // 관리자 페이지 링크 처리
     $('#adminPageLink').click(function(e) {
