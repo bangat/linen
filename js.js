@@ -75,10 +75,6 @@ $(document).ready(function() {
         $(this).css("background-color", "#4CAF50");
     });
 
-    // 날짜 선택기 초기화
-    $("#requestDate").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
 
     // 카메라 버튼 클릭 시 파일 업로드 버튼 클릭
     $("#cameraButton").click(function() {
