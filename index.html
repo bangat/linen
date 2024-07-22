@@ -215,7 +215,7 @@
     <!-- 팝업 창 -->
 <div id="popupContainer">
     <div id="popupHeader">공지사항</div>
-    <div id="popupContent"></div>
+<div id="popupContent"></div>
     <button id="closeBtn">닫기</button>
 </div>
 
@@ -267,7 +267,10 @@
             input.type = 'number';
             input.name = item.key;
             input.min = 0;
+            const unitSpan = document.createElement('span');
+            unitSpan.textContent = ' 장';
             inputCell.appendChild(input);
+            inputCell.appendChild(unitSpan);
             row.appendChild(itemCell);
             row.appendChild(inputCell);
             table.appendChild(row);
@@ -289,37 +292,33 @@
     populateTable('ortho', generateClothingItems(sizes.slice(1), types));
     populateTable('uniform', generateClothingItems(requiredSizes, types));
 
-                     // 요청서 클릭 시 초기 상태로 돌아가는 이벤트 핸들러
-            $('#noticeHeader').on('click', function() {
-                // 모든 입력 필드 초기화
-                $('input[type="number"]').val('');
-                $('#wardDropdown').val('');
-                $('#requestDate').val('');
-                
-                // "시트/기타" 탭을 활성화 상태로 설정
-                $('.tab').removeClass('active');
-                $('.form-section').removeClass('active');
-                $('[data-tab="sheet"]').addClass('active');
-                $('#sheet').addClass('active');
-            });
+    // 요청서 클릭 시 초기 상태로 돌아가는 이벤트 핸들러
+    $('#noticeHeader').on('click', function() {
+        // 모든 입력 필드 초기화
+        $('input[type="number"]').val('');
+        $('#wardDropdown').val('');
+        $('#requestDate').val('');
+        
+        // "시트/기타" 탭을 활성화 상태로 설정
+        $('.tab').removeClass('active');
+        $('.form-section').removeClass('active');
+        $('[data-tab="sheet"]').addClass('active');
+        $('#sheet').addClass('active');
+    });
 
-// 2손가락으로 동시에 터치했을 때 이벤트 핸들러
-document.addEventListener('touchstart', function(event) {
-    if (event.touches.length === 2) {
-        // 관리자 접근 버튼의 클릭 이벤트를 직접 호출하여 admin.html로 이동
-        document.getElementById('adminAccessBtn').click();
-    }
+    // 2손가락으로 동시에 터치했을 때 이벤트 핸들러
+    document.addEventListener('touchstart', function(event) {
+        if (event.touches.length === 2) {
+            // 관리자 접근 버튼의 클릭 이벤트를 직접 호출하여 admin.html로 이동
+            document.getElementById('adminAccessBtn').click();
+        }
+    });
+
+    // 관리자 접근 버튼 클릭 시 admin.html로 이동
+    document.getElementById('adminAccessBtn').addEventListener('click', function() {
+        window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
+    });
 });
-
-// 관리자 접근 버튼 클릭 시 admin.html로 이동
-document.getElementById('adminAccessBtn').addEventListener('click', function() {
-    window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
-});
-
-
-
-});
-
     </script>
 </body>
 </html>
