@@ -14,7 +14,14 @@ body {
 }
 
 .input-container input {
-    flex: 1;
+    width: 80px; /* 입력 박스의 가로 사이즈 조정 */
+    margin-right: 5px; /* 입력 박스와 '장' 사이의 간격 */
+    height: 100%; /* 입력 박스의 세로 사이즈를 컨테이너와 맞춤 */
+}
+
+.input-container span {
+    font-size: 14px; /* '장' 텍스트의 세로 사이즈를 입력 박스와 맞춤 */
+    line-height: normal; /* '장' 텍스트의 높이를 입력 박스와 맞춤 */
 }
 
 .date-wrapper {
