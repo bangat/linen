@@ -7,6 +7,16 @@ body {
 
 }
 
+/* Flexbox를 사용하여 input과 span을 정렬 */
+.input-container {
+    display: flex;
+    align-items: center;
+}
+
+.input-container input {
+    flex: 1;
+}
+
 .date-wrapper {
     position: relative;
     width: 100%;
