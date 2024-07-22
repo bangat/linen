@@ -257,40 +257,48 @@
     const types = ['상의', '하의'];
 
     function populateTable(sectionId, items) {
-        const table = document.querySelector(`#${sectionId} table`);
-        items.forEach(item => {
-            const row = document.createElement('tr');
-            const itemCell = document.createElement('td');
-            itemCell.textContent = item.name;
-            const inputCell = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.name = item.key;
-            input.min = 0;
-            const unitSpan = document.createElement('span');
-            unitSpan.textContent = ' 장';
-            inputCell.appendChild(input);
-            inputCell.appendChild(unitSpan);
-            row.appendChild(itemCell);
-            row.appendChild(inputCell);
-            table.appendChild(row);
-        });
-    }
+    const table = document.querySelector(`#${sectionId} table`);
+    items.forEach(item => {
+        const row = document.createElement('tr');
+        const itemCell = document.createElement('td');
+        itemCell.textContent = item.name;
 
-    populateTable('sheet', sheetItems);
+        const inputCell = document.createElement('td');
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'input-container';
 
-    function generateClothingItems(sizes, types) {
-        return sizes.flatMap(size => 
-            types.map(type => ({
-                name: `${size} ${type}`,
-                key: `${size}_${type}_요청수량`
-            }))
-        );
-    }
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.name = item.key;
+        input.min = 0;
 
-    populateTable('normal', generateClothingItems(sizes, types));
-    populateTable('ortho', generateClothingItems(sizes.slice(1), types));
-    populateTable('uniform', generateClothingItems(requiredSizes, types));
+        const unitSpan = document.createElement('span');
+        unitSpan.textContent = ' 장';
+
+        inputContainer.appendChild(input);
+        inputContainer.appendChild(unitSpan);
+        inputCell.appendChild(inputContainer);
+
+        row.appendChild(itemCell);
+        row.appendChild(inputCell);
+        table.appendChild(row);
+    });
+}
+
+populateTable('sheet', sheetItems);
+
+function generateClothingItems(sizes, types) {
+    return sizes.flatMap(size => 
+        types.map(type => ({
+            name: `${size} ${type}`,
+            key: `${size}_${type}_요청수량`
+        }))
+    );
+}
+
+populateTable('normal', generateClothingItems(sizes, types));
+populateTable('ortho', generateClothingItems(sizes.slice(1), types));
+populateTable('uniform', generateClothingItems(requiredSizes, types));
 
     // 요청서 클릭 시 초기 상태로 돌아가는 이벤트 핸들러
     $('#noticeHeader').on('click', function() {
