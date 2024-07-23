@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    
-    
     // 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
     $("h1").click(function() {
         $(".tab").removeClass("active");
