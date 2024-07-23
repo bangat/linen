@@ -66,7 +66,7 @@ $(document).ready(function() {
     
         let sheetItems = '';
         $("#sheet input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
+            const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기
             const itemCount = $(this).val();
             if (itemCount > 0) {
                 sheetItems += `${itemName} ${itemCount}장\n`;
@@ -78,7 +78,7 @@ $(document).ready(function() {
     
         let normalItems = '';
         $("#normal input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
+            const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기
             const itemCount = $(this).val();
             if (itemCount > 0) {
                 normalItems += `${itemName} ${itemCount}장\n`;
@@ -90,7 +90,7 @@ $(document).ready(function() {
     
         let orthoItems = '';
         $("#ortho input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
+            const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기
             const itemCount = $(this).val();
             if (itemCount > 0) {
                 orthoItems += `${itemName} ${itemCount}장\n`;
@@ -102,7 +102,7 @@ $(document).ready(function() {
     
         let uniformItems = '';
         $("#uniform input[type='number']").each(function() {
-            const itemName = $(this).parent().prev().text().trim();
+            const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기
             const itemCount = $(this).val();
             if (itemCount > 0) {
                 uniformItems += `${itemName} ${itemCount}장\n`;
