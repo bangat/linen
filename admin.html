@@ -56,7 +56,13 @@
                 <button id="viewButton" class="nav-button">조회하기</button>
 
 <button id="uploadButton" class="nav-button">사진첨부</button>
-  <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+<input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+
+<script>
+    $('#uploadButton').on('click', function() {
+        $('#fileInput').click();
+    });
+</script>
           
             </div>
             <div>
