@@ -62,6 +62,58 @@
     $('#uploadButton').on('click', function() {
         $('#fileInput').click();
     });
+
+    $('#fileInput').on('change', function() {
+        var files = this.files;
+        if (files.length > 0) {
+            Array.from(files).forEach(file => {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        if (confirm('세탁물로 분류하시겠습니까?')) {
+                            uploadPhoto(file, true);
+                        } else {
+                            uploadPhoto(file, false);
+                        }
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    });
+
+    function uploadPhoto(file, isLaundry) {
+        let ward = $('#wardSelect').val();
+        let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
+
+        let formData = new FormData();
+        formData.append('image', file);
+        formData.append('key', API_KEY);
+
+        $.ajax({
+            url: 'https://api.imgbb.com/1/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                let photoUrl = response.data.url;
+                let refPath = isLaundry ? 'laundryPhotos/' + ward : 'photos/' + ward;
+                let newPhotoRef = database.ref(refPath).push();
+                newPhotoRef.set({
+                    url: photoUrl,
+                    date: date
+                }).then(() => {
+                    loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
+                });
+            },
+            error: function() {
+                alert('사진 업로드 중 오류가 발생했습니다.');
+            }
+        });
+    }
 </script>
           
             </div>
