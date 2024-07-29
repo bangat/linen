@@ -9,16 +9,19 @@ body {
 
 .comment-form {
     margin-top: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
-.comment-input {
-    width: 70%;
+.comment-author, .comment-input {
+    width: 100%;
     padding: 5px;
-    margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 .comment-form button {
     padding: 5px 10px;
+    align-self: flex-end;
 }
 
 .comment-list {
@@ -29,9 +32,23 @@ body {
 }
 
 .comment-list li {
-    padding: 5px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
 }
+
+.comment-list p {
+    margin: 0;
+}
+
+.comment-list .delete-comment {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+}
+
 
 
 
