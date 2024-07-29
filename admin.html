@@ -139,13 +139,13 @@
                 }
             });
 
-            $('#cameraButton').on('click', function() {
-                if ($('#wardSelect').val()) {
-                    $('#cameraInput').attr('capture', 'camera').click();
-                } else {
-                    alert('병동을 선택하세요.');
-                }
-            });
+           $('#cameraButton').on('click', function() {
+    if ($('#wardSelect').val()) {
+        $('#cameraInput').click();  // 'capture' 속성 삭제
+    } else {
+        alert('병동을 선택하세요.');
+    }
+});
 
             $('#cameraInput').on('change', function() {
                 var files = this.files;
