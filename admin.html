@@ -254,10 +254,11 @@
                         });
                         photoContainer.append(img);
                         photoContainer.append('<p>병동: ' + photo.ward + '</p>');
-                        photoContainer.append('<p>날짜: ' + photo.date + '</p>');
+                        photoContainer.append('<p>' + formatDate(photo.date) + '</p>');
 
                         // 댓글 작성 및 표시를 위한 HTML 추가
                         let commentForm = $('<form>').addClass('comment-form').attr('data-photo-id', photo.id);
+                        commentForm.append('<input type="text" class="comment-author" placeholder="작성자">');
                         commentForm.append('<input type="text" class="comment-input" placeholder="댓글을 입력하세요">');
                         commentForm.append('<button type="submit">댓글 작성</button>');
                         photoContainer.append(commentForm);
@@ -272,6 +273,18 @@
                     });
                     showPhoto(0); // 첫 번째 사진을 표시
                 }
+            }
+
+            function formatDate(dateStr) {
+                let date = new Date(dateStr);
+                let year = date.getFullYear().toString().substr(-2);
+                let month = ('0' + (date.getMonth() + 1)).slice(-2);
+                let day = ('0' + date.getDate()).slice(-2);
+                let hours = date.getHours();
+                let minutes = ('0' + date.getMinutes()).slice(-2);
+                let period = hours >= 12 ? '오후' : '오전';
+                hours = hours % 12 || 12;
+                return `<${month}-${day}-${year} ${period}${hours}시 ${minutes}분>`;
             }
 
             function showPhoto(index) {
@@ -319,7 +332,7 @@
 
             function savePhotoData(url, isLaundry) {
                 var ward = $('#wardSelect').val();
-                var date = new Date().toISOString().slice(0, 10);
+                var date = new Date().toISOString();
 
                 var newPhotoKey = database.ref().child('photos/' + ward).push().key;
 
@@ -351,7 +364,10 @@
                 commentsRef.once('value', function(snapshot) {
                     snapshot.forEach(function(childSnapshot) {
                         var comment = childSnapshot.val();
-                        var listItem = $('<li>').text(comment.text);
+                        var listItem = $('<li>');
+                        listItem.append('<p><strong>작성자:</strong> ' + comment.author + '</p>');
+                        listItem.append('<p>' + comment.text + '</p>');
+                        listItem.append('<button class="delete-comment" data-comment-id="' + comment.id + '">삭제</button>');
                         commentList.append(listItem);
                     });
                 });
@@ -360,12 +376,14 @@
             $(document).on('submit', '.comment-form', function(event) {
                 event.preventDefault();
                 var photoId = $(this).data('photo-id');
+                var author = $(this).find('.comment-author').val();
                 var commentText = $(this).find('.comment-input').val();
 
-                if (commentText) {
+                if (author && commentText) {
                     var newCommentKey = database.ref('comments/' + photoId).push().key;
                     var commentData = {
                         id: newCommentKey,
+                        author: author,
                         text: commentText
                     };
 
@@ -378,14 +396,20 @@
                         } else {
                             console.log('Comment saved successfully');
                             var commentList = $('.comment-list[data-photo-id="' + photoId + '"]');
-                            commentList.append($('<li>').text(commentText));
+                            var listItem = $('<li>');
+                            listItem.append('<p><strong>작성자:</strong> ' + author + '</p>');
+                            listItem.append('<p>' + commentText + '</p>');
+                            listItem.append('<button class="delete-comment" data-comment-id="' + newCommentKey + '">삭제</button>');
+                            commentList.append(listItem);
                         }
                     });
 
+                    $(this).find('.comment-author').val('');
                     $(this).find('.comment-input').val('');
                 }
             });
-                        // 초기 로드 시 현재 날짜를 한국 시간으로 설정
+
+                      // 초기 로드 시 현재 날짜를 한국 시간으로 설정
             let today = new Date();
             today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
             $('#datePicker').val(today.toISOString().slice(0, 10));
@@ -393,6 +417,21 @@
             // "관리자 페이지" 클릭 시 index.html로 이동
             $('header h1').on('click', function() {
                 window.location.href = 'index.html';
+            });
+    
+
+            $(document).on('click', '.delete-comment', function() {
+                var commentId = $(this).data('comment-id');
+                var photoId = $(this).closest('.comment-list').data('photo-id');
+
+                database.ref('comments/' + photoId + '/' + commentId).remove(function(error) {
+                    if (error) {
+                        console.error('Error deleting comment:', error);
+                    } else {
+                        console.log('Comment deleted successfully');
+                        loadComments(photoId, $('.comment-list[data-photo-id="' + photoId + '"]'));
+                    }
+                });
             });
         });
     </script>
