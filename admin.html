@@ -75,7 +75,8 @@
         </div>
     </div>
 
-    <footer></footer>
+    <footer>
+    </footer>
 
     <script>
         // Firebase 설정 객체
@@ -132,7 +133,7 @@
                 }
             });
 
-            $('#cameraButton').on('click', function() {
+           $('#cameraButton').on('click', function() {
                 if ($('#wardSelect').val()) {
                     $('#cameraInput').click();
                 } else {
@@ -191,16 +192,13 @@
                 let deltaX = endX - startX;
                 let deltaY = endY - startY;
 
-                // 좌우 스와이프 거리 차이가 상하 스와이프 거리 차이보다 크다면 좌우 스와이프로 간주
                 if (Math.abs(deltaX) > Math.abs(deltaY)) {
                     if (deltaX > 50) {
-                        // 오른쪽 스와이프 -> 이전 사진
                         if (currentPhotoIndex > 0) {
                             currentPhotoIndex--;
                             showPhoto(currentPhotoIndex);
                         }
                     } else if (deltaX < -50) {
-                        // 왼쪽 스와이프 -> 다음 사진
                         let photos = $('.photo-container');
                         if (currentPhotoIndex < photos.length - 1) {
                             currentPhotoIndex++;
@@ -223,193 +221,151 @@
                             photos.push(photo);
                         });
 
-                        // 데이터를 모두 가져온 후에 화면에 표시
-                        if (wards.indexOf(ward) === wards.length - 1) {
+                        if (ward === wards[wards.length - 1]) {
                             displayPhotos(photos, date);
                         }
                     });
                 });
             }
 
-            function getAllWards() {
-                return $('#wardSelect option').map(function() {
-                    return this.value;
-                }).get();
-            }
-
             function displayPhotos(photos, date) {
-                let photoGallery = $('#photoGallery');
-                photoGallery.empty();
+                $('#photoGallery').empty();
 
-                let filteredPhotos = date ? photos.filter(photo => photo.date === date) : photos;
+                let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
 
-                if (filteredPhotos.length === 0) {
-                    photoGallery.append('<p>선택한 날짜와 병동에 대한 사진이 없습니다.</p>');
-                } else {
-                    filteredPhotos.forEach((photo, index) => {
-                        let photoContainer = $('<div>').addClass('photo-container');
-                        let img = $('<img>').attr('src', photo.url).addClass('photo');
-                        img.on('click', function() {
-                            showModal(photo.url);
-                        });
-                        photoContainer.append(img);
-                        photoContainer.append('<p>병동: ' + photo.ward + '</p>');
-                        photoContainer.append('<p>' + formatDate(photo.date) + '</p>');
+                filteredPhotos.forEach(photo => {
+                    let photoContainer = $('<div>').addClass('photo-container');
+                    let wardInfo = $('<p>').text(`병동: ${photo.ward} <${photo.date}>`).addClass('ward-info');
+                    let img = $('<img>').attr('src', photo.url).addClass('photo');
 
-                        // 댓글 작성 및 표시를 위한 HTML 추가
-                        let commentForm = $('<form>').addClass('comment-form').attr('data-photo-id', photo.id);
-                        commentForm.append('<input type="text" class="comment-author" placeholder="작성자">');
-                        commentForm.append('<input type="text" class="comment-input" placeholder="댓글을 입력하세요">');
-                        commentForm.append('<button type="submit">댓글 작성</button>');
-                        photoContainer.append(commentForm);
+                    // 댓글 작성 폼과 댓글 리스트를 사진 아래에 추가
+                    let commentSection = $('<div>').addClass('comment-section');
+                    let commentForm = `
+                        <div class="comment-form">
+                            <input type="text" class="comment-author" placeholder="작성자">
+                            <textarea class="comment-input" placeholder="댓글 입력"></textarea>
+                            <button class="submit-comment">댓글 작성</button>
+                        </div>
+                    `;
 
-                        let commentList = $('<ul>').addClass('comment-list').attr('data-photo-id', photo.id);
-                        photoContainer.append(commentList);
+                    let commentList = $('<div>').addClass('comment-list');
 
-                        // 댓글 로드
-                        loadComments(photo.id, commentList);
+                    commentSection.append(commentForm);
+                    commentSection.append(commentList);
 
-                        photoGallery.append(photoContainer);
-                    });
-                    showPhoto(0); // 첫 번째 사진을 표시
+                    photoContainer.append(wardInfo);
+                    photoContainer.append(img);
+                    photoContainer.append(commentSection);
+
+                    $('#photoGallery').append(photoContainer);
+
+                    // 사진의 댓글 로드
+                    loadComments(photo.ward, photo.date, commentList);
+                });
+
+                currentPhotoIndex = 0;
+                if (filteredPhotos.length > 0) {
+                    showPhoto(currentPhotoIndex);
                 }
-            }
-
-            function formatDate(dateStr) {
-                let date = new Date(dateStr);
-                let year = date.getFullYear().toString().substr(-2);
-                let month = ('0' + (date.getMonth() + 1)).slice(-2);
-                let day = ('0' + date.getDate()).slice(-2);
-                let hours = date.getHours();
-                let minutes = ('0' + date.getMinutes()).slice(-2);
-                let period = hours >= 12 ? '오후' : '오전';
-                hours = hours % 12 || 12;
-                return `<${month}-${day}-${year} ${period}${hours}시 ${minutes}분>`;
             }
 
             function showPhoto(index) {
                 let photos = $('.photo-container');
-                if (photos.length > 0) {
-                    photos.hide();
-                    $(photos[index]).show();
-                }
+                photos.hide();
+                $(photos[index]).show();
             }
-
-            function showModal(imgSrc) {
-                $('#myModal').css('display', 'block');
-                $('#modalImage').attr('src', imgSrc);
-            }
-
-            $('.close').on('click', function() {
-                $('#myModal').css('display', 'none');
-            });
-
-            $(window).on('click', function(event) {
-                if (event.target == $('#myModal')[0]) {
-                    $('#myModal').css('display', 'none');
-                }
-            });
 
             function uploadPhoto(file, isLaundry) {
-                var storageRef = firebase.storage().ref();
-                var metadata = {
-                    contentType: file.type
-                };
+                var ward = $('#wardSelect').val();
+                var date = new Date().toISOString().replace('T', ' ').substring(0, 16);
 
-                var uploadTask = storageRef.child('images/' + file.name).put(file, metadata);
+                var storageRef = firebase.storage().ref(ward + '/' + file.name);
+                var uploadTask = storageRef.put(file);
 
                 uploadTask.on('state_changed', function(snapshot) {
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log('Upload is ' + progress + '% done');
+                    // Progress...
                 }, function(error) {
+                    // Error...
                     console.error('Upload failed:', error);
                 }, function() {
                     uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        savePhotoData(downloadURL, isLaundry);
+                        var photoData = {
+                            url: downloadURL,
+                            date: date
+                        };
+                        var newPhotoRef = isLaundry ? database.ref('laundryPhotos/' + ward).push() : database.ref('photos/' + ward).push();
+                        newPhotoRef.set(photoData, function(error) {
+                            if (error) {
+                                console.error('Failed to save photo data:', error);
+                            } else {
+                                alert('사진 업로드 성공!');
+                                $('#viewButton').click();
+                            }
+                        });
                     });
                 });
             }
 
-            function savePhotoData(url, isLaundry) {
-                var ward = $('#wardSelect').val();
-                var date = new Date().toISOString();
-
-                var newPhotoKey = database.ref().child('photos/' + ward).push().key;
-
-                var photoData = {
-                    id: newPhotoKey,
-                    url: url,
-                    date: date
-                };
-
-                var updates = {};
-                if (isLaundry) {
-                    updates['/laundryPhotos/' + ward + '/' + newPhotoKey] = photoData;
-                } else {
-                    updates['/photos/' + ward + '/' + newPhotoKey] = photoData;
-                }
-
-                database.ref().update(updates, function(error) {
-                    if (error) {
-                        console.error('Error saving photo data:', error);
-                    } else {
-                        console.log('Photo data saved successfully');
-                        loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
-                    }
-                });
+            function getAllWards() {
+                return [
+                    'ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62',
+                    'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41',
+                    'ICU', 'dayWard', 'endoscopy', 'ER'
+                ];
             }
 
-            function loadComments(photoId, commentList) {
-                var commentsRef = database.ref('comments/' + photoId);
-                commentsRef.once('value', function(snapshot) {
-                    snapshot.forEach(function(childSnapshot) {
-                        var comment = childSnapshot.val();
-                        var listItem = $('<li>');
-                        listItem.append('<p><strong>작성자:</strong> ' + comment.author + '</p>');
-                        listItem.append('<p>' + comment.text + '</p>');
-                        listItem.append('<button class="delete-comment" data-comment-id="' + comment.id + '">삭제</button>');
-                        commentList.append(listItem);
-                    });
-                });
-            }
+            // 댓글 작성 이벤트 핸들러
+            $(document).on('click', '.submit-comment', function() {
+                let commentForm = $(this).closest('.comment-form');
+                let author = commentForm.find('.comment-author').val();
+                let content = commentForm.find('.comment-input').val();
+                let photoContainer = $(this).closest('.photo-container');
+                let wardInfo = photoContainer.find('.ward-info').text().split('<')[0].replace('병동: ', '').trim();
+                let date = photoContainer.find('.ward-info').text().split('<')[1].replace('>', '').trim();
 
-            $(document).on('submit', '.comment-form', function(event) {
-                event.preventDefault();
-                var photoId = $(this).data('photo-id');
-                var author = $(this).find('.comment-author').val();
-                var commentText = $(this).find('.comment-input').val();
-
-                if (author && commentText) {
-                    var newCommentKey = database.ref('comments/' + photoId).push().key;
-                    var commentData = {
-                        id: newCommentKey,
+                if (author && content) {
+                    let commentData = {
                         author: author,
-                        text: commentText
+                        content: content,
+                        date: new Date().toISOString()
                     };
 
-                    var updates = {};
-                    updates['/comments/' + photoId + '/' + newCommentKey] = commentData;
-
-                    database.ref().update(updates, function(error) {
+                    let commentsRef = database.ref('comments/' + wardInfo + '/' + date).push();
+                    commentsRef.set(commentData, function(error) {
                         if (error) {
-                            console.error('Error saving comment:', error);
+                            console.error('Failed to save comment data:', error);
                         } else {
-                            console.log('Comment saved successfully');
-                            var commentList = $('.comment-list[data-photo-id="' + photoId + '"]');
-                            var listItem = $('<li>');
-                            listItem.append('<p><strong>작성자:</strong> ' + author + '</p>');
-                            listItem.append('<p>' + commentText + '</p>');
-                            listItem.append('<button class="delete-comment" data-comment-id="' + newCommentKey + '">삭제</button>');
-                            commentList.append(listItem);
+                            alert('댓글 작성 성공!');
+                            loadComments(wardInfo, date, photoContainer.find('.comment-list'));
+                            commentForm.find('.comment-author').val('');
+                            commentForm.find('.comment-input').val('');
                         }
                     });
-
-                    $(this).find('.comment-author').val('');
-                    $(this).find('.comment-input').val('');
+                } else {
+                    alert('작성자와 댓글 내용을 입력하세요.');
                 }
             });
 
-                      // 초기 로드 시 현재 날짜를 한국 시간으로 설정
+            function loadComments(ward, date, commentList) {
+                commentList.empty();
+
+                let commentsRef = database.ref('comments/' + ward + '/' + date);
+                commentsRef.once('value', (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        let comment = childSnapshot.val();
+                        let commentItem = `
+                            <div class="comment-item">
+                                <p class="comment-author">${comment.author}</p>
+                                <p class="comment-content">${comment.content}</p>
+                                <p class="comment-date">${comment.date}</p>
+                            </div>
+                        `;
+                        commentList.append(commentItem);
+                    });
+                });
+            }
+
+                        // 초기 로드 시 현재 날짜를 한국 시간으로 설정
             let today = new Date();
             today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
             $('#datePicker').val(today.toISOString().slice(0, 10));
@@ -418,21 +374,7 @@
             $('header h1').on('click', function() {
                 window.location.href = 'index.html';
             });
-    
 
-            $(document).on('click', '.delete-comment', function() {
-                var commentId = $(this).data('comment-id');
-                var photoId = $(this).closest('.comment-list').data('photo-id');
-
-                database.ref('comments/' + photoId + '/' + commentId).remove(function(error) {
-                    if (error) {
-                        console.error('Error deleting comment:', error);
-                    } else {
-                        console.log('Comment deleted successfully');
-                        loadComments(photoId, $('.comment-list[data-photo-id="' + photoId + '"]'));
-                    }
-                });
-            });
         });
     </script>
 </body>
