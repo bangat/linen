@@ -228,144 +228,143 @@
                 });
             }
 
-            function displayPhotos(photos, date) {
-                $('#photoGallery').empty();
+          function displayPhotos(photos, date) {
+        $('#photoGallery').empty();
 
-                let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
+        let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
 
-                filteredPhotos.forEach(photo => {
-                    let photoContainer = $('<div>').addClass('photo-container');
-                    let wardInfo = $('<p>').text(`병동: ${photo.ward} <${photo.date}>`).addClass('ward-info');
-                    let img = $('<img>').attr('src', photo.url).addClass('photo');
+        filteredPhotos.forEach(photo => {
+            let photoContainer = $('<div>').addClass('photo-container');
+            let wardInfo = $('<p>').text(`병동: ${photo.ward} <${photo.date}>`).addClass('ward-info');
+            let img = $('<img>').attr('src', photo.url).addClass('photo');
 
-                    // 댓글 작성 폼과 댓글 리스트를 사진 아래에 추가
-                    let commentSection = $('<div>').addClass('comment-section');
-                    let commentForm = `
-                        <div class="comment-form">
-                            <input type="text" class="comment-author" placeholder="작성자">
-                            <textarea class="comment-input" placeholder="댓글 입력"></textarea>
-                            <button class="submit-comment">댓글 작성</button>
-                        </div>
-                    `;
+            // 댓글 작성 폼과 댓글 리스트를 사진 아래에 추가
+            let commentSection = $('<div>').addClass('comment-section');
+            let commentForm = `
+                <div class="comment-form">
+                    <input type="text" class="comment-author" placeholder="작성자">
+                    <textarea class="comment-input" placeholder="댓글 입력"></textarea>
+                    <button class="submit-comment">댓글 작성</button>
+                </div>
+            `;
 
-                    let commentList = $('<div>').addClass('comment-list');
+            let commentList = $('<div>').addClass('comment-list');
 
-                    commentSection.append(commentForm);
-                    commentSection.append(commentList);
+            commentSection.append(commentForm);
+            commentSection.append(commentList);
 
-                    photoContainer.append(wardInfo);
-                    photoContainer.append(img);
-                    photoContainer.append(commentSection);
+            photoContainer.append(wardInfo);
+            photoContainer.append(img);
+            photoContainer.append(commentSection);
 
-                    $('#photoGallery').append(photoContainer);
+            $('#photoGallery').append(photoContainer);
 
-                    // 사진의 댓글 로드
-                    loadComments(photo.ward, photo.date, commentList);
+            // 사진의 댓글 로드
+            loadComments(photo.ward, photo.date, commentList);
+        });
+
+        currentPhotoIndex = 0;
+        if (filteredPhotos.length > 0) {
+            showPhoto(currentPhotoIndex);
+        }
+    }
+
+    function showPhoto(index) {
+        let photos = $('.photo-container');
+        photos.hide();
+        $(photos[index]).show();
+    }
+
+    function uploadPhoto(file, isLaundry) {
+        var ward = $('#wardSelect').val();
+        var date = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+        var storageRef = firebase.storage().ref(ward + '/' + file.name);
+        var uploadTask = storageRef.put(file);
+
+        uploadTask.on('state_changed', function(snapshot) {
+            // Progress...
+        }, function(error) {
+            // Error...
+            console.error('Upload failed:', error);
+        }, function() {
+            uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                var photoData = {
+                    url: downloadURL,
+                    date: date
+                };
+                var newPhotoRef = isLaundry ? database.ref('laundryPhotos/' + ward).push() : database.ref('photos/' + ward).push();
+                newPhotoRef.set(photoData, function(error) {
+                    if (error) {
+                        console.error('Failed to save photo data:', error);
+                    } else {
+                        alert('사진 업로드 성공!');
+                        $('#viewButton').click();
+                    }
                 });
+            });
+        });
+    }
 
-                currentPhotoIndex = 0;
-                if (filteredPhotos.length > 0) {
-                    showPhoto(currentPhotoIndex);
-                }
-            }
+    function getAllWards() {
+        return [
+            'ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62',
+            'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41',
+            'ICU', 'dayWard', 'endoscopy', 'ER'
+        ];
+    }
 
-            function showPhoto(index) {
-                let photos = $('.photo-container');
-                photos.hide();
-                $(photos[index]).show();
-            }
+    // 댓글 작성 이벤트 핸들러
+    $(document).on('click', '.submit-comment', function() {
+        let commentForm = $(this).closest('.comment-form');
+        let author = commentForm.find('.comment-author').val();
+        let content = commentForm.find('.comment-input').val();
+        let photoContainer = $(this).closest('.photo-container');
+        let wardInfo = photoContainer.find('.ward-info').text().split('<')[0].replace('병동: ', '').trim();
+        let date = photoContainer.find('.ward-info').text().split('<')[1].replace('>', '').trim();
 
-            function uploadPhoto(file, isLaundry) {
-                var ward = $('#wardSelect').val();
-                var date = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        if (author && content) {
+            let commentData = {
+                author: author,
+                content: content,
+                date: new Date().toISOString()
+            };
 
-                var storageRef = firebase.storage().ref(ward + '/' + file.name);
-                var uploadTask = storageRef.put(file);
-
-                uploadTask.on('state_changed', function(snapshot) {
-                    // Progress...
-                }, function(error) {
-                    // Error...
-                    console.error('Upload failed:', error);
-                }, function() {
-                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        var photoData = {
-                            url: downloadURL,
-                            date: date
-                        };
-                        var newPhotoRef = isLaundry ? database.ref('laundryPhotos/' + ward).push() : database.ref('photos/' + ward).push();
-                        newPhotoRef.set(photoData, function(error) {
-                            if (error) {
-                                console.error('Failed to save photo data:', error);
-                            } else {
-                                alert('사진 업로드 성공!');
-                                $('#viewButton').click();
-                            }
-                        });
-                    });
-                });
-            }
-
-            function getAllWards() {
-                return [
-                    'ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62',
-                    'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41',
-                    'ICU', 'dayWard', 'endoscopy', 'ER'
-                ];
-            }
-
-            // 댓글 작성 이벤트 핸들러
-            $(document).on('click', '.submit-comment', function() {
-                let commentForm = $(this).closest('.comment-form');
-                let author = commentForm.find('.comment-author').val();
-                let content = commentForm.find('.comment-input').val();
-                let photoContainer = $(this).closest('.photo-container');
-                let wardInfo = photoContainer.find('.ward-info').text().split('<')[0].replace('병동: ', '').trim();
-                let date = photoContainer.find('.ward-info').text().split('<')[1].replace('>', '').trim();
-
-                if (author && content) {
-                    let commentData = {
-                        author: author,
-                        content: content,
-                        date: new Date().toISOString()
-                    };
-
-                    let commentsRef = database.ref('comments/' + wardInfo + '/' + date).push();
-                    commentsRef.set(commentData, function(error) {
-                        if (error) {
-                            console.error('Failed to save comment data:', error);
-                        } else {
-                            alert('댓글 작성 성공!');
-                            loadComments(wardInfo, date, photoContainer.find('.comment-list'));
-                            commentForm.find('.comment-author').val('');
-                            commentForm.find('.comment-input').val('');
-                        }
-                    });
+            let commentsRef = database.ref('comments/' + wardInfo + '/' + date).push();
+            commentsRef.set(commentData, function(error) {
+                if (error) {
+                    console.error('Failed to save comment data:', error);
                 } else {
-                    alert('작성자와 댓글 내용을 입력하세요.');
+                    alert('댓글 작성 성공!');
+                    loadComments(wardInfo, date, photoContainer.find('.comment-list'));
+                    commentForm.find('.comment-author').val('');
+                    commentForm.find('.comment-input').val('');
                 }
             });
+        } else {
+            alert('작성자와 댓글 내용을 입력하세요.');
+        }
+    });
 
-            function loadComments(ward, date, commentList) {
-                commentList.empty();
+    function loadComments(ward, date, commentList) {
+        commentList.empty();
 
-                let commentsRef = database.ref('comments/' + ward + '/' + date);
-                commentsRef.once('value', (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        let comment = childSnapshot.val();
-                        let commentItem = `
-                            <div class="comment-item">
-                                <p class="comment-author">${comment.author}</p>
-                                <p class="comment-content">${comment.content}</p>
-                                <p class="comment-date">${comment.date}</p>
-                            </div>
-                        `;
-                        commentList.append(commentItem);
-                    });
-                });
-            }
-
-                        // 초기 로드 시 현재 날짜를 한국 시간으로 설정
+        let commentsRef = database.ref('comments/' + ward + '/' + date);
+        commentsRef.once('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                let comment = childSnapshot.val();
+                let commentItem = `
+                    <div class="comment-item">
+                        <p class="comment-author">${comment.author}</p>
+                        <p class="comment-content">${comment.content}</p>
+                        <p class="comment-date">${comment.date}</p>
+                    </div>
+                `;
+                commentList.append(commentItem);
+            });
+        });
+    }
+            // 초기 로드 시 현재 날짜를 한국 시간으로 설정
             let today = new Date();
             today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
             $('#datePicker').val(today.toISOString().slice(0, 10));
@@ -374,8 +373,9 @@
             $('header h1').on('click', function() {
                 window.location.href = 'index.html';
             });
-
         });
+            
+});
     </script>
 </body>
 </html>
