@@ -226,61 +226,31 @@
                 });
             }
 
-          function displayPhotos(photos, date) {
-    $('#photoGallery').empty();
-
-    let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
-
-    filteredPhotos.forEach(photo => {
-        let photoContainer = $('<div>').addClass('photo-container');
-        let formattedDate = formatDateToKorean(photo.date);
-        let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
-        let wardLabel = $('<div>').addClass('ward-label').text(getWardLabel(photo.ward));
-        let img = $('<img>').attr('src', photo.url);
-        let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
-
-        deleteButton.on('click', function() {
-            if (confirm('정말 삭제하시겠습니까?')) {
-                deletePhoto(photo.ward, photo);
+            function displayPhotos(photos) {
+                $('#photoGallery').empty();
+                photos.forEach((photo, index) => {
+                    var photoDiv = $('<div>', { class: 'photo-container' });
+                    var img = $('<img>', { src: photo.url, class: 'photo' });
+                    photoDiv.append(img);
+                    $('#photoGallery').append(photoDiv);
+                });
+                currentPhotoIndex = 0;
+                showPhoto(currentPhotoIndex);
             }
-        });
 
-        img.on('click', function() {
-            openModal(photo.url);
-        });
+            function getAllWards() {
+                return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
+            }
 
-        photoContainer.append(dateLabel, img, wardLabel, deleteButton);
-        $('#photoGallery').append(photoContainer);
-    });
+            function showPhoto(index) {
+                let photos = $('.photo-container');
+                photos.hide();
+                if (photos.length > 0) {
+                    photos.eq(index).show();
+                }
+            }
 
-    currentPhotoIndex = 0;
-    showPhoto(currentPhotoIndex);
-    toggleNavigationButtons(filteredPhotos.length);
-}
-
-function getWardLabel(wardCode) {
-    var wardLabels = {
-        'ward93': '93 병동',
-        'ward83': '83 병동',
-        'ward73': '73 병동',
-        'ward71': '71 병동',
-        'ward63': '63 병동',
-        'ward62': '62 병동',
-        'ward61': '61 병동',
-        'HR': 'HR 병동',
-        'ward52': '52 병동',
-        'ward51': '51 병동',
-        'ward42': '42 병동',
-        'ward41': '41 병동',
-        'ICU': '중환자실',
-        'dayWard': '낮병동',
-        'endoscopy': '내시경실',
-        'ER': '응급실'
-    };
-    return wardLabels[wardCode] || wardCode;
-}
-
-function deletePhoto(ward, photo) {
+                       function deletePhoto(ward, photo) {
     let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
     let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
     photoRef.once('value', function(snapshot) {
@@ -296,17 +266,23 @@ function deletePhoto(ward, photo) {
     });
 }
 
+                        function formatDateToKorean(dateString) {
+                var date = new Date(dateString);
+                var year = ('' + date.getFullYear()); // .slice(-2); // 년도를 두 자리 숫자로 표시
+                var month = ('0' + (date.getMonth() + 1)).slice(-2);
+                var day = ('0' + date.getDate()).slice(-2);
+                var hours = date.getHours();
+                var minutes = ('0' + date.getMinutes()).slice(-2);
+                var period = hours >= 12 ? '오후' : '오전'; // 오후/오전 구분
 
-            function getAllWards() {
-                return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
-            }
-
-            function showPhoto(index) {
-                let photos = $('.photo-container');
-                photos.hide();
-                if (photos.length > 0) {
-                    photos.eq(index).show();
+                // 12시간제로 변경 및 오전/오후 표시
+                if (hours === 0) {
+                    hours = 12; // 자정을 12시로 표시
+                } else if (hours > 12) {
+                    hours -= 12; // 오후 시간을 12시간제로 변환
                 }
+
+                return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
             }
 
             function uploadPhoto(file, isLaundry) {
@@ -342,7 +318,6 @@ function deletePhoto(ward, photo) {
             $('.close').on('click', function() {
                 $('#myModal').hide();
             });
-
                         // 초기 로드 시 현재 날짜를 한국 시간으로 설정
             let today = new Date();
             today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
