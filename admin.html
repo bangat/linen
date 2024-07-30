@@ -236,27 +236,28 @@
                 });
             }
 
-            function displayPhotos(photos) {
-                $('#photoGallery').empty();
-                photos.forEach((photo) => {
-                    var photoDiv = $('<div>', { class: 'photo-container' });
-                    var img = $('<img>', { src: photo.url, class: 'photo' });
-                    var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward));
-                    var photoDate = $('<div>', { class: 'photo-date' }).text(formatDateToKorean(photo.date));
-                    var deleteButton = $('<button>', { class: 'delete-button' }).text('삭제');
+<!-- Display Photos Function -->
+function displayPhotos(photos) {
+    $('#photoGallery').empty();
+    photos.forEach((photo) => {
+        var photoDiv = $('<div>', { class: 'photo-container' });
+        var img = $('<img>', { src: photo.url, class: 'photo' });
+        var wardName = $('<button>', { class: 'ward-name' }).text(getWardName(photo.ward)); // 병동 라벨을 버튼으로 설정
+        var dateInfo = $('<div>', { class: 'date-info' }).text(formatDateToKorean(photo.date)); // 날짜 정보 추가
+        var deleteButton = $('<button>', { class: 'delete-button' }).text('삭제');
 
-                    deleteButton.on('click', function() {
-                        if (confirm('이 사진을 삭제하시겠습니까?')) {
-                            deletePhoto(photo.ward, photo);
-                        }
-                    });
-
-                    photoDiv.append(wardName).append(img).append(photoDate).append(deleteButton);
-                    $('#photoGallery').append(photoDiv);
-                });
-                currentPhotoIndex = 0;
-                showPhoto(currentPhotoIndex);
+        deleteButton.on('click', function() {
+            if (confirm('이 사진을 삭제하시겠습니까?')) {
+                deletePhoto(photo.ward, photo);
             }
+        });
+
+        photoDiv.append(wardName).append(img).append(dateInfo).append(deleteButton);
+        $('#photoGallery').append(photoDiv);
+    });
+    currentPhotoIndex = 0;
+    showPhoto(currentPhotoIndex);
+}
 
             function getWardName(wardCode) {
                 const wardNames = {
