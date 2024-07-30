@@ -103,25 +103,31 @@
         $(document).ready(function() {
             let currentPhotoIndex = 0;
 
-            $('#viewButton').on('click', function() {
-                var ward = $('#wardSelect').val();
-                var date = $('#datePicker').val();
-                var viewAllDates = $('#viewAllCheckbox').is(':checked');
-                var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
-                var isLaundry = $('#laundryCheckbox').is(':checked');
+$('#viewButton').on('click', function() {
+    var ward = $('#wardSelect').val();
+    var date = $('#datePicker').val();
+    var viewAllDates = $('#viewAllCheckbox').is(':checked');
+    var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
+    var isLaundry = $('#laundryCheckbox').is(':checked');
 
-                if (viewAllDates && viewAllWards) {
-                    loadPhotos(null, null, isLaundry); // 전체 병동, 전체 날짜
-                } else if (viewAllDates) {
-                    loadPhotos(ward, null, isLaundry); // 특정 병동, 전체 날짜
-                } else if (viewAllWards) {
-                    loadPhotos(null, date, isLaundry); // 전체 병동, 특정 날짜
-                } else if (ward && date) {
-                    loadPhotos(ward, date, isLaundry); // 특정 병동, 특정 날짜
-                } else {
-                    alert('병동과 날짜를 선택하세요.');
-                }
-            });
+    // 모든 경우를 처리하도록 수정
+    if (viewAllDates && viewAllWards) {
+        loadPhotos(null, null, isLaundry); // 전체 병동, 전체 날짜
+    } else if (viewAllDates) {
+        loadPhotos(ward, null, isLaundry); // 특정 병동, 전체 날짜
+    } else if (viewAllWards) {
+        loadPhotos(null, date, isLaundry); // 전체 병동, 특정 날짜
+    } else if (ward && date) {
+        loadPhotos(ward, date, isLaundry); // 특정 병동, 특정 날짜
+    } else if (ward) {
+        loadPhotos(ward, null, isLaundry); // 특정 병동, 날짜 없이
+    } else if (date) {
+        loadPhotos(null, date, isLaundry); // 날짜만 선택된 경우
+    } else {
+        alert('병동과 날짜를 선택하세요.');
+    }
+});
+
 
             $('#wardSelect, #datePicker').on('change', function() {
                 var ward = $('#wardSelect').val();
@@ -284,19 +290,24 @@ function getWardName(wardCode) {
                 }
             }
 
-          function deletePhoto(ward, photo) {
+function deletePhoto(ward, photo) {
     let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
     let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
+    
     photoRef.once('value', function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-            childSnapshot.ref.remove().then(() => {
-                alert('사진이 삭제되었습니다.');
-                loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
-            }).catch((error) => {
-                console.error('삭제 중 오류가 발생했습니다:', error);
-                alert('삭제 중 오류가 발생했습니다.');
+        if (snapshot.exists()) {
+            snapshot.forEach(function(childSnapshot) {
+                childSnapshot.ref.remove().then(() => {
+                    alert('사진이 삭제되었습니다.');
+                    loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+                }).catch((error) => {
+                    console.error('삭제 중 오류가 발생했습니다:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
+                });
             });
-        });
+        } else {
+            alert('해당 사진을 찾을 수 없습니다.');
+        }
     });
 }
 
