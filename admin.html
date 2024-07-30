@@ -212,33 +212,42 @@ $('#viewButton').on('click', function() {
                 }
             });
 
-            function loadPhotos(selectedWard, date, isLaundry) {
-                let wards = selectedWard ? [selectedWard] : getAllWards();
-                let photos = [];
-                wards.forEach(ward => {
-                    let refPath = isLaundry ? 'laundryPhotos/' + ward : 'photos/' + ward;
-                    let wardPhotosRef = database.ref(refPath);
-                    wardPhotosRef.once('value', snapshot => {
-                        snapshot.forEach(childSnapshot => {
-                            let photo = childSnapshot.val();
-                            if (!date || photo.date.split(' ')[0] === date) {
-                                photos.push(photo);
-                            }
-                        });
-                        if (ward === selectedWard || selectedWard === null) {
-                            displayPhotos(photos);
-                        }
-                    });
-                });
+function loadPhotos(selectedWard, date, viewAllWards, isLaundry) {
+    let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
+    let wards = viewAllWards ? getAllWards() : [selectedWard];
+    let photos = [];
+    let remainingWards = wards.length; // 모든 병동의 사진 로드를 추적하기 위한 변수
+
+    wards.forEach(ward => {
+        let wardRef = database.ref(refPath + ward);
+        wardRef.once('value', snapshot => {
+            snapshot.forEach(childSnapshot => {
+                let photo = childSnapshot.val();
+                if (!date || photo.date.split(' ')[0] === date) {
+                    photo.ward = ward; // 사진 객체에 병동 정보를 추가
+                    photos.push(photo);
+                }
+            });
+
+            remainingWards--; // 현재 병동의 사진 로드를 완료
+
+            // 모든 병동의 사진을 로드한 후 화면에 표시
+            if (remainingWards === 0) {
+                displayPhotos(photos);
             }
+        });
+    });
+}
+
+
 
 function displayPhotos(photos) {
     $('#photoGallery').empty();
     photos.forEach((photo) => {
-        console.log('사진 병동 코드:', photo.ward); // 추가한 로그
+        console.log('사진 데이터:', photo); // 추가된 로그
         var photoDiv = $('<div>', { class: 'photo-container' });
         var img = $('<img>', { src: photo.url, class: 'photo' });
-        var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward));
+        var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward)); // 병동 이름 표시
         var deleteButton = $('<button>', { class: 'delete-button' }).text('삭제');
 
         deleteButton.on('click', function() {
@@ -338,7 +347,7 @@ function deletePhoto(ward, photo) {
 
  function uploadPhoto(file, isLaundry) {
     let ward = $('#wardSelect').val();
-    let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " "); // 한국 시간으로 포맷
+    let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
 
     let formData = new FormData();
     formData.append('image', file);
@@ -355,37 +364,28 @@ function deletePhoto(ward, photo) {
         processData: false,
         success: function(response) {
             let photoUrl = response.data.url;
-            let refPath = isLaundry ? 'laundryPhotos/' + ward : 'photos/' + ward;
-
-            // Firebase Realtime Database에 사진 데이터 저장
-            let newPhotoRef = database.ref(refPath).push();
+            let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
+            let newPhotoRef = database.ref(refPath + ward).push();
             newPhotoRef.set({
                 url: photoUrl,
                 date: date,
-                ward: ward // 병동 정보 추가
+                ward: ward
             }).then(() => {
-                // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
                 $('#cameraButton').prop('disabled', false).text('카메라');
-                
-                // 사진 로드 함수 호출
-                loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
+                loadPhotos(ward, date.split(' ')[0], isLaundry);
             }).catch((error) => {
                 console.error('사진 데이터 저장 중 오류 발생:', error);
                 alert('사진 데이터 저장 중 오류가 발생했습니다.');
-
-                // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
                 $('#cameraButton').prop('disabled', false).text('카메라');
             });
         },
         error: function() {
-            // 업로드 실패 시 처리
             alert('사진 업로드 중 오류가 발생했습니다.');
-            
-            // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
             $('#cameraButton').prop('disabled', false).text('카메라');
         }
     });
 }
+
 
 
             $('.photo-gallery').on('click', 'img', function() {
