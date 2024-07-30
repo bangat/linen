@@ -284,21 +284,11 @@ function getWardName(wardCode) {
                 }
             }
 
-unction deletePhoto(ward, photo) {
+          function deletePhoto(ward, photo) {
     let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
     let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
-
     photoRef.once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
-            let storageRef = firebase.storage().ref();
-            let fileRef = storageRef.child(refPath + '/' + photo.url);
-
-            fileRef.delete().then(() => {
-                console.log('Storage에서 파일 삭제 완료');
-            }).catch((error) => {
-                console.error('Storage에서 파일 삭제 중 오류:', error);
-            });
-
             childSnapshot.ref.remove().then(() => {
                 alert('사진이 삭제되었습니다.');
                 loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
@@ -309,6 +299,7 @@ unction deletePhoto(ward, photo) {
         });
     });
 }
+
 
                         function formatDateToKorean(dateString) {
                 var date = new Date(dateString);
@@ -329,26 +320,45 @@ unction deletePhoto(ward, photo) {
                 return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
             }
 
-            function uploadPhoto(file, isLaundry) {
-                var ward = $('#wardSelect').val();
-                var date = new Date().toISOString().split('T')[0];
-                var storageRef = firebase.storage().ref();
-                var photoRef = storageRef.child((isLaundry ? 'laundryPhotos/' : 'photos/') + ward + '/' + file.name);
+ function uploadPhoto(file, isLaundry) {
+                let ward = $('#wardSelect').val();
+                let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
 
-                photoRef.put(file).then(function(snapshot) {
-                    snapshot.ref.getDownloadURL().then(function(url) {
-                        var photoData = {
-                            url: url,
-                            date: date,
-                            ward: ward
-                        };
+                let formData = new FormData();
+                formData.append('image', file);
+                formData.append('key', API_KEY);
 
-                        if (isLaundry) {
-                            database.ref('laundryPhotos/' + ward).push(photoData);
-                        } else {
-                            database.ref('photos/' + ward).push(photoData);
-                        }
-                    });
+                // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
+                $('#cameraButton').prop('disabled', true).text('업로드 중...');
+
+                $.ajax({
+                    url: 'https://api.imgbb.com/1/upload',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        let photoUrl = response.data.url;
+                        let refPath = isLaundry ? 'laundryPhotos/' + ward : 'photos/' + ward;
+                        let newPhotoRef = database.ref(refPath).push();
+                        newPhotoRef.set({
+                            url: photoUrl,
+                            date: date
+                        }).then(() => {
+                            // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
+                            $('#cameraButton').prop('disabled', false).text('카메라');
+                            
+                            // 사진 로드 함수 호출
+                            loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
+                        });
+                    },
+                    error: function() {
+                        // 업로드 실패 시 처리
+                        alert('사진 업로드 중 오류가 발생했습니다.');
+                        
+                        // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
+                        $('#cameraButton').prop('disabled', false).text('카메라');
+                    }
                 });
             }
 
