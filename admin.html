@@ -252,46 +252,45 @@
         return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
     }
 
-  function uploadPhoto(file, isLaundry) {
-    let ward = $('#wardSelect').val();
-    let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
+    function uploadPhoto(file, isLaundry) {
+        let ward = $('#wardSelect').val();
+        let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
 
-    let formData = new FormData();
-    formData.append('image', file);
-    formData.append('key', API_KEY);
+        let formData = new FormData();
+        formData.append('image', file);
+        formData.append('key', API_KEY);
 
-    $('#cameraButton').prop('disabled', true).text('업로드 중...');
+        $('#cameraButton').prop('disabled', true).text('업로드 중...');
 
-    $.ajax({
-        url: 'https://api.imgbb.com/1/upload',
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(response) {
-            let photoUrl = response.data.url;
-            let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
-            let newPhotoRef = database.ref(refPath + ward).push();
-            newPhotoRef.set({
-                url: photoUrl,
-                date: date,
-                ward: ward
-            }).then(() => {
+        $.ajax({
+            url: 'https://api.imgbb.com/1/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                let photoUrl = response.data.url;
+                let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
+                let newPhotoRef = database.ref(refPath + ward).push();
+                newPhotoRef.set({
+                    url: photoUrl,
+                    date: date,
+                    ward: ward
+                }).then(() => {
+                    $('#cameraButton').prop('disabled', false).text('카메라');
+                    loadPhotos(ward, date.split(' ')[0], isLaundry);
+                }).catch((error) => {
+                    console.error('사진 데이터 저장 중 오류 발생:', error);
+                    alert('사진 데이터 저장 중 오류가 발생했습니다.');
+                    $('#cameraButton').prop('disabled', false).text('카메라');
+                });
+            },
+            error: function() {
+                alert('사진 업로드 중 오류가 발생했습니다.');
                 $('#cameraButton').prop('disabled', false).text('카메라');
-                // 직접적으로 새로 업로드된 사진을 갤러리에 추가
-                loadPhotos(ward, date.split(' ')[0], isLaundry); // 업로드 후 즉시 갤러리 업데이트
-            }).catch((error) => {
-                console.error('사진 데이터 저장 중 오류 발생:', error);
-                alert('사진 데이터 저장 중 오류가 발생했습니다.');
-                $('#cameraButton').prop('disabled', false).text('카메라');
-            });
-        },
-        error: function() {
-            alert('사진 업로드 중 오류가 발생했습니다.');
-            $('#cameraButton').prop('disabled', false).text('카메라');
-        }
-    });
-}
+            }
+        });
+    }
 
 
     $('.photo-gallery').on('click', 'img', function() {
