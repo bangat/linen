@@ -227,16 +227,49 @@
             }
 
             function displayPhotos(photos) {
-                $('#photoGallery').empty();
-                photos.forEach((photo, index) => {
-                    var photoDiv = $('<div>', { class: 'photo-container' });
-                    var img = $('<img>', { src: photo.url, class: 'photo' });
-                    photoDiv.append(img);
-                    $('#photoGallery').append(photoDiv);
-                });
-                currentPhotoIndex = 0;
-                showPhoto(currentPhotoIndex);
+    $('#photoGallery').empty();
+    photos.forEach((photo) => {
+        var photoDiv = $('<div>', { class: 'photo-container' });
+        var img = $('<img>', { src: photo.url, class: 'photo' });
+        var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward));
+        var deleteButton = $('<button>', { class: 'delete-button' }).text('삭제');
+
+        deleteButton.on('click', function() {
+            if (confirm('이 사진을 삭제하시겠습니까?')) {
+                deletePhoto(photo.ward, photo);
             }
+        });
+
+        photoDiv.append(img).append(wardName).append(deleteButton);
+        $('#photoGallery').append(photoDiv);
+    });
+    currentPhotoIndex = 0;
+    showPhoto(currentPhotoIndex);
+}
+
+// 병동 이름을 반환하는 함수
+function getWardName(wardCode) {
+    const wardNames = {
+        'ward93': '93',
+        'ward83': '83',
+        'ward73': '73',
+        'ward71': '71',
+        'ward63': '63',
+        'ward62': '62',
+        'ward61': '61',
+        'HR': 'HR',
+        'ward52': '52',
+        'ward51': '51',
+        'ward42': '42',
+        'ward41': '41',
+        'ICU': '중환자실',
+        'dayWard': '낮병동',
+        'endoscopy': '내시경실',
+        'ER': '응급실'
+    };
+    return wardNames[wardCode] || '알 수 없음';
+}
+
 
             function getAllWards() {
                 return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
