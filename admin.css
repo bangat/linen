@@ -6,11 +6,6 @@ body {
     padding: 0;                     /* 안쪽 여백 제거 */
 }
 
-
-
-
-
-
 /* 페이지 상단 헤더(header) 설정 */
 header {
     background-color: #333; /* 배경색 설정 */
@@ -129,7 +124,7 @@ footer {
 /* 카메라 및 뷰 버튼 호버 설정 */
 #cameraButton:hover,
 #viewButton:hover,
-#uploadbutton:hover {
+#uploadButton:hover {
     background-color: royalblue; /* 호버 배경색 설정 */
 }
 
@@ -238,7 +233,6 @@ footer {
 
 /* 네비게이션 버튼 설정 */
 .nav-button {
-background-color: blue;
     padding: 7px;           /* 안쪽 여백 설정 */
     font-size: 13px;        /* 폰트 크기 13px 설정 */
     cursor: pointer;        /* 커서 포인터 설정 */
@@ -265,4 +259,47 @@ background-color: blue;
 .nav-button.next {
     background-color: red; /* 배경색 설정 */
     color: white;           /* 글자 색상 설정 */
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (min-width: 768px) {
+    /* 큰 화면 (태블릿, PC 등)에서의 스타일 조정 */
+
+    /* 사진 컨테이너 설정 */
+    .photo-container {
+        margin-bottom: 40px;    /* 하단 여백 40px */
+        padding: 10px;          /* 안쪽 여백 10px */
+        border-radius: 5px;     /* 모서리를 5px만큼 둥글게 */
+    }
+
+    /* 워드 섹션 설정 */
+    .ward-section {
+        padding: 30px;          /* 안쪽 여백 30px 설정 */
+        margin-bottom: 40px;    /* 아래쪽 여백 40px 설정 */
+    }
+
+    /* 카메라 버튼 및 뷰 버튼 설정 */
+    #cameraButton,
+    #viewButton,
+    #uploadButton {
+        padding: 10px 20px;      /* 안쪽 여백 설정 */
+        font-size: 14px;        /* 폰트 크기 14px 설정 */
+    }
+
+    /* 네비게이션 버튼 설정 */
+    .nav-button {
+        padding: 10px 15px;      /* 안쪽 여백 설정 */
+        font-size: 14px;        /* 폰트 크기 14px 설정 */
+    }
+
+    /* 모달 닫기 버튼 설정 */
+    .close {
+        font-size: 50px;        /* 폰트 크기 50px 설정 */
+        right: 45px;            /* 오른쪽 위치 45px 설정 */
+    }
+
+    /* 사진 갤러리 컨테이너 설정 */
+    .photo-gallery {
+        padding: 20px;          /* 안쪽 여백 설정 */
+    }
 }
