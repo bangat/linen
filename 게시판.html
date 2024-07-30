@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판</title>
     <style>
-   body {
+       body {
     font-family: Arial, sans-serif;
     background-color: #f8f9fa;
     margin: 0;
@@ -18,7 +18,7 @@
 
 .container {
     width: 100%;
-    max-width: 900px; /* 댓글창의 최대 너비를 넓힘 */
+    max-width: 800px;
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -32,7 +32,6 @@
     padding: 10px;
     margin-bottom: 20px;
     border-radius: 5px;
-    width: 100%; /* 댓글창의 너비를 전체로 설정 */
 }
 
 .comment {
@@ -48,27 +47,13 @@
 
 .comment-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
 .comment-author {
     font-weight: bold;
-    font-size: 0.9em; /* 작성자명 글씨 크기 조정 */
-    margin-right: 10px; /* 작성자명과 버튼 간격 조정 */
-}
-
-.delete-button {
-    background-color: #6c757d; /* 회색 버튼 */
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 0.9em; /* 폰트 크기 조정 */
-}
-
-.delete-button:hover {
-    background-color: #5a6268; /* 버튼 호버 색상 */
+    font-size: 0.8em; /* 작성자명 글씨 크기 줄임 *
 }
 
 .comment-time {
@@ -80,7 +65,21 @@
     margin-top: 5px;
     white-space: normal;
     word-break: break-word;
-    font-size: 0.9em;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+    align-self: flex-end;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
 }
 
 .input-container {
@@ -109,7 +108,6 @@
 .save-button:hover {
     background-color: #0056b3;
 }
-
 
     </style>
     <!-- Firebase CDN -->
