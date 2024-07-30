@@ -255,14 +255,18 @@
                     let img = $('<img>').attr('src', photo.src).attr('alt', `${photo.ward} - ${photo.date}`).on('click', function() {
                         openModal(photo.src);
                     });
+                    let label = $('<div>').text(`${photo.ward} - ${photo.date}`).addClass('photo-label');
+                    let deleteButton = $('<button>').text('삭제').addClass('delete-button').on('click', function() {
+                        deletePhoto(photo.ward, photo.date, photo.src);
+                    });
                     let commentForm = `
                         <div class="comment-section">
                             <input type="text" class="comment-input" placeholder="댓글을 입력하세요">
                             <button class="comment-button" data-ward="${photo.ward}" data-date="${photo.date}" data-index="${index}">저장</button>
-                            <div class="comment-list"></div>
                         </div>
+                        <div class="comment-list"></div>
                     `;
-                    photoContainer.append(img).append(commentForm);
+                    photoContainer.append(label).append(deleteButton).append(img).append(commentForm);
                     $('#photoGallery').append(photoContainer);
                 });
                 currentPhotoIndex = 0;
@@ -358,14 +362,16 @@
                     });
                 });
             }
-            
-            let today = new Date();
-            today.setHours(today.getHours() + 9);
-            $('#datePicker').val(today.toISOString().slice(0, 10));
 
-            $('header h1').on('click', function() {
-                window.location.href = 'index.html';
-            });
+            function deletePhoto(ward, date, url) {
+                let photoRef = database.ref(`photos/${ward}`).orderByChild('url').equalTo(url);
+                photoRef.once('value', snapshot => {
+                    snapshot.forEach(childSnapshot => {
+                        childSnapshot.ref.remove();
+                    });
+                });
+                loadPhotos(ward, date, $('#laundryCheckbox').is(':checked'));
+            }
         });
     </script>
 </body>
