@@ -54,6 +54,7 @@
             <div>
                 <button id="cameraButton" class="nav-button"><i class="fas fa-camera"></i> 카메라</button>
                 <button id="viewButton" class="nav-button">조회하기</button>
+                <button id="bulletinButton" class="nav-button">게시판</button>
             </div>
             <div>
                 <button class="nav-button" id="prevButton">이전</button>
@@ -219,18 +220,16 @@
                 wards.forEach(ward => {
                     let wardRef = database.ref(refPath + ward);
                     wardRef.once('value', snapshot => {
-                        let wardPhotos = snapshot.val();
-                        for (let key in wardPhotos) {
-                            if (!date || wardPhotos[key].date === date) {
-                                photos.push({
-                                    src: wardPhotos[key].url,
-                                    ward: ward,
-                                    date: wardPhotos[key].date,
-                                    isLaundry: wardPhotos[key].isLaundry
-                                });
+                        snapshot.forEach(childSnapshot => {
+                            let photo = childSnapshot.val();
+                            if (!date || photo.date.split(' ')[0] === date) {
+                                photo.ward = ward; // 사진 객체에 병동 정보를 추가
+                                photos.push(photo);
                             }
-                        }
+                        });
+
                         remainingWards--;
+
                         if (remainingWards === 0) {
                             displayPhotos(photos);
                         }
@@ -238,140 +237,159 @@
                 });
             }
 
-            function getAllWards() {
-                return [
-                    'ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'
-                ];
-            }
-
             function displayPhotos(photos) {
                 $('#photoGallery').empty();
-                if (photos.length === 0) {
-                    $('#photoGallery').append('<p>선택한 조건에 맞는 사진이 없습니다.</p>');
-                    return;
-                }
-                photos.forEach((photo, index) => {
-                    let photoContainer = $('<div class="photo-container"></div>');
-                    let img = $('<img>').attr('src', photo.src).attr('alt', `${photo.ward} - ${photo.date}`).on('click', function() {
-                        openModal(photo.src);
+                photos.forEach((photo) => {
+                    var photoDiv = $('<div>', { class: 'photo-container' });
+                    var img = $('<img>', { src: photo.url, class: 'photo' });
+                    var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward));
+                    var photoDate = $('<div>', { class: 'photo-date' }).text(formatDateToKorean(photo.date));
+                    var deleteButton = $('<button>', { class: 'delete-button' }).text('삭제');
+
+                    deleteButton.on('click', function() {
+                        if (confirm('이 사진을 삭제하시겠습니까?')) {
+                            deletePhoto(photo.ward, photo);
+                        }
                     });
-                    let label = $('<div>').text(`${photo.ward} - ${photo.date}`).addClass('photo-label');
-                    let deleteButton = $('<button>').text('삭제').addClass('delete-button').on('click', function() {
-                        deletePhoto(photo.ward, photo.date, photo.src);
-                    });
-                    let commentForm = `
-                        <div class="comment-section">
-                            <input type="text" class="comment-input" placeholder="댓글을 입력하세요">
-                            <button class="comment-button" data-ward="${photo.ward}" data-date="${photo.date}" data-index="${index}">저장</button>
-                        </div>
-                        <div class="comment-list"></div>
-                    `;
-                    photoContainer.append(label).append(deleteButton).append(img).append(commentForm);
-                    $('#photoGallery').append(photoContainer);
+
+                    photoDiv.append(img).append(wardName).append(photoDate).append(deleteButton);
+                    $('#photoGallery').append(photoDiv);
                 });
                 currentPhotoIndex = 0;
                 showPhoto(currentPhotoIndex);
             }
 
-            function showPhoto(index) {
-                $('.photo-container').hide().eq(index).show();
+            function getWardName(wardCode) {
+                const wardNames = {
+                    'ward93': '93 병동',
+                    'ward83': '83 병동',
+                    'ward73': '73 병동',
+                    'ward71': '71 병동',
+                    'ward63': '63 병동',
+                    'ward62': '62 병동',
+                    'ward61': '61 병동',
+                    'HR': 'HR 병동',
+                    'ward52': '52 병동',
+                    'ward51': '51 병동',
+                    'ward42': '42 병동',
+                    'ward41': '41 병동',
+                    'ICU': '중환자실',
+                    'dayWard': '낮병동',
+                    'endoscopy': '내시경실',
+                    'ER': '응급실'
+                };
+                return wardNames[wardCode] || '알 수 없음';
             }
 
-            function openModal(src) {
-                $('#modalImage').attr('src', src);
-                $('#myModal').show();
+            function getAllWards() {
+                return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
             }
+
+            function showPhoto(index) {
+                let photos = $('.photo-container');
+                photos.hide();
+                if (photos.length > 0) {
+                    photos.eq(index).show();
+                }
+            }
+
+            function deletePhoto(ward, photo) {
+                let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
+                let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
+
+                photoRef.once('value', function(snapshot) {
+                    if (snapshot.exists()) {
+                        snapshot.forEach(function(childSnapshot) {
+                            childSnapshot.ref.remove().then(() => {
+                                alert('사진이 삭제되었습니다.');
+                                loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+                            }).catch((error) => {
+                                console.error('삭제 중 오류가 발생했습니다:', error);
+                                alert('삭제 중 오류가 발생했습니다.');
+                            });
+                        });
+                    } else {
+                        alert('해당 사진을 찾을 수 없습니다.');
+                    }
+                });
+            }
+
+            function formatDateToKorean(dateString) {
+                var date = new Date(dateString);
+                var year = ('' + date.getFullYear());
+                var month = ('0' + (date.getMonth() + 1)).slice(-2);
+                var day = ('0' + date.getDate()).slice(-2);
+                var hours = date.getHours();
+                var minutes = ('0' + date.getMinutes()).slice(-2);
+                var period = hours >= 12 ? '오후' : '오전';
+
+                if (hours === 0) {
+                    hours = 12;
+                } else if (hours > 12) {
+                    hours -= 12;
+                }
+
+                return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
+            }
+
+            function uploadPhoto(file, isLaundry) {
+                let ward = $('#wardSelect').val();
+                let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
+
+                let formData = new FormData();
+                formData.append('image', file);
+                formData.append('key', API_KEY);
+
+                $('#cameraButton').prop('disabled', true).text('업로드 중...');
+
+                $.ajax({
+                    url: 'https://api.imgbb.com/1/upload',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        let photoUrl = response.data.url;
+                        let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
+                        let newPhotoRef = database.ref(refPath + ward).push();
+                        newPhotoRef.set({
+                            url: photoUrl,
+                            date: date,
+                            ward: ward
+                        }).then(() => {
+                            $('#cameraButton').prop('disabled', false).text('카메라');
+                            loadPhotos(ward, date.split(' ')[0], isLaundry);
+                        }).catch((error) => {
+                            console.error('사진 데이터 저장 중 오류 발생:', error);
+                            alert('사진 데이터 저장 중 오류가 발생했습니다.');
+                            $('#cameraButton').prop('disabled', false).text('카메라');
+                        });
+                    },
+                    error: function() {
+                        alert('사진 업로드 중 오류가 발생했습니다.');
+                        $('#cameraButton').prop('disabled', false).text('카메라');
+                    }
+                });
+            }
+
+            $('.photo-gallery').on('click', 'img', function() {
+                var modal = $('#myModal');
+                var modalImg = $('#modalImage');
+                modal.show();
+                modalImg.attr('src', this.src);
+            });
 
             $('.close').on('click', function() {
                 $('#myModal').hide();
             });
 
-            $(document).on('click', '.comment-button', function() {
-                let ward = $(this).data('ward');
-                let date = $(this).data('date');
-                let index = $(this).data('index');
-                let comment = $(this).siblings('.comment-input').val();
+            let today = new Date();
+            today.setHours(today.getHours() + 9);
+            $('#datePicker').val(today.toISOString().slice(0, 10));
 
-                if (comment) {
-                    saveComment(ward, date, index, comment);
-                } else {
-                    alert('댓글을 입력하세요.');
-                }
+            $('header h1').on('click', function() {
+                window.location.href = 'index.html';
             });
-
-            function saveComment(ward, date, index, comment) {
-                let photoRef = database.ref(`photos/${ward}`).orderByChild('date').equalTo(date);
-                photoRef.once('value', snapshot => {
-                    snapshot.forEach(childSnapshot => {
-                        let photoKey = childSnapshot.key;
-                        let commentRef = database.ref(`comments/${ward}/${photoKey}`);
-                        let newCommentRef = commentRef.push();
-                        newCommentRef.set({
-                            text: comment,
-                            timestamp: firebase.database.ServerValue.TIMESTAMP
-                        }, (error) => {
-                            if (error) {
-                                alert('댓글 저장에 실패했습니다.');
-                            } else {
-                                loadComments(ward, photoKey, index);
-                            }
-                        });
-                    });
-                });
-            }
-
-            function loadComments(ward, photoKey, index) {
-                let commentRef = database.ref(`comments/${ward}/${photoKey}`);
-                commentRef.orderByChild('timestamp').once('value', snapshot => {
-                    let commentList = $('.photo-container').eq(index).find('.comment-list');
-                    commentList.empty();
-                    snapshot.forEach(childSnapshot => {
-                        let commentData = childSnapshot.val();
-                        let commentItem = `<p>${commentData.text}</p>`;
-                        commentList.append(commentItem);
-                    });
-                });
-            }
-
-            function uploadPhoto(file, isLaundry) {
-                let storageRef = firebase.storage().ref();
-                let ward = $('#wardSelect').val();
-                let date = new Date().toISOString().slice(0, 10);
-                let fileName = `${ward}_${date}_${Date.now()}.jpg`;
-                let photoRef = storageRef.child(fileName);
-                let uploadTask = photoRef.put(file);
-
-                uploadTask.on('state_changed', function(snapshot) {
-                    let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log('Upload is ' + progress + '% done');
-                }, function(error) {
-                    alert('사진 업로드에 실패했습니다.');
-                }, function() {
-                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        let photoData = {
-                            url: downloadURL,
-                            ward: ward,
-                            date: date,
-                            isLaundry: isLaundry
-                        };
-                        database.ref('photos/' + ward).push(photoData);
-                        if (isLaundry) {
-                            database.ref('laundryPhotos/' + ward).push(photoData);
-                        }
-                        alert('사진이 성공적으로 업로드되었습니다.');
-                    });
-                });
-            }
-
-            function deletePhoto(ward, date, url) {
-                let photoRef = database.ref(`photos/${ward}`).orderByChild('url').equalTo(url);
-                photoRef.once('value', snapshot => {
-                    snapshot.forEach(childSnapshot => {
-                        childSnapshot.ref.remove();
-                    });
-                });
-                loadPhotos(ward, date, $('#laundryCheckbox').is(':checked'));
-            }
         });
     </script>
 </body>
