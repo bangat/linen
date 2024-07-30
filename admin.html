@@ -337,46 +337,56 @@ function deletePhoto(ward, photo) {
             }
 
  function uploadPhoto(file, isLaundry) {
-                let ward = $('#wardSelect').val();
-                let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " ");
+    let ward = $('#wardSelect').val();
+    let date = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().slice(0, 16).replace("T", " "); // 한국 시간으로 포맷
 
-                let formData = new FormData();
-                formData.append('image', file);
-                formData.append('key', API_KEY);
+    let formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', API_KEY);
 
-                // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
-                $('#cameraButton').prop('disabled', true).text('업로드 중...');
+    // 업로드 버튼을 비활성화하고 업로드 중 메시지로 변경
+    $('#cameraButton').prop('disabled', true).text('업로드 중...');
 
-                $.ajax({
-                    url: 'https://api.imgbb.com/1/upload',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        let photoUrl = response.data.url;
-                        let refPath = isLaundry ? 'laundryPhotos/' + ward : 'photos/' + ward;
-                        let newPhotoRef = database.ref(refPath).push();
-                        newPhotoRef.set({
-                            url: photoUrl,
-                            date: date
-                        }).then(() => {
-                            // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
-                            $('#cameraButton').prop('disabled', false).text('카메라');
-                            
-                            // 사진 로드 함수 호출
-                            loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
-                        });
-                    },
-                    error: function() {
-                        // 업로드 실패 시 처리
-                        alert('사진 업로드 중 오류가 발생했습니다.');
-                        
-                        // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
-                        $('#cameraButton').prop('disabled', false).text('카메라');
-                    }
-                });
-            }
+    $.ajax({
+        url: 'https://api.imgbb.com/1/upload',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            let photoUrl = response.data.url;
+            let refPath = isLaundry ? 'laundryPhotos/' + ward : 'photos/' + ward;
+
+            // Firebase Realtime Database에 사진 데이터 저장
+            let newPhotoRef = database.ref(refPath).push();
+            newPhotoRef.set({
+                url: photoUrl,
+                date: date,
+                ward: ward // 병동 정보 추가
+            }).then(() => {
+                // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
+                $('#cameraButton').prop('disabled', false).text('카메라');
+                
+                // 사진 로드 함수 호출
+                loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
+            }).catch((error) => {
+                console.error('사진 데이터 저장 중 오류 발생:', error);
+                alert('사진 데이터 저장 중 오류가 발생했습니다.');
+
+                // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
+                $('#cameraButton').prop('disabled', false).text('카메라');
+            });
+        },
+        error: function() {
+            // 업로드 실패 시 처리
+            alert('사진 업로드 중 오류가 발생했습니다.');
+            
+            // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
+            $('#cameraButton').prop('disabled', false).text('카메라');
+        }
+    });
+}
+
 
             $('.photo-gallery').on('click', 'img', function() {
                 var modal = $('#myModal');
