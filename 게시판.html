@@ -1,163 +1,30 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시판</title>
-    <style>
-       body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.container {
-    width: 100%;
-    max-width: 800px;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
-
-.comments-view {
-    max-height: 500px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-}
-
-.comment:last-child {
-    border-bottom: none;
-}
-
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.comment-author {
-    font-weight: bold;
-    font-size: 0.8em;
-    margin-right: 5px; /* 버튼과 작성자명 간의 간격 */
-}
-
-.comment-time {
-    color: #888;
-    font-size: 0.8em;
-}
-
-.comment-text {
-    margin-top: 5px;
-    white-space: normal;
-    word-break: break-word;
-     font-size: 0.8em;
-}
-
-.delete-button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-top: 10px;
-    border-radius: 5px;
-    align-self: flex-end;
-}
-
-.delete-button:hover {
-    background-color: #c82333;
-}
-
-.input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.input-container input, .input-container textarea {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 100%;
-}
-
-.save-button {
-    align-self: flex-start;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.save-button:hover {
-    background-color: #0056b3;
-}
-
-    </style>
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h1>개발중</h1>
-        <div class="comments-view" id="commentsView">
-            <!-- 여기에 댓글이 동적으로 추가될 예정 -->
-        </div>
-        <div class="input-container">
-            <input type="text" id="authorInput" placeholder="작성자">
-            <textarea id="commentInput" rows="4" placeholder="댓글 내용을 입력하세요."></textarea>
-            <button class="save-button" id="saveButton">저장</button>
-        </div>
-    </div>
-
-    <script>
-
+ <script>
         // 텔레그램 메시지 전송 함수
-async function sendTelegramMessage(message) {
-    const token = '7377526562:AAEhb8p-mld6b2tMH7TAct2Jhqg8dpP6p20'; // 텔레그램 API 토큰
-    const chatId = '5432510881'; // 채팅 ID
+        async function sendTelegramMessage(message) {
+            const token = '7377526562:AAEhb8p-mld6b2tMH7TAct2Jhqg8dpP6p20'; // 텔레그램 API 토큰
+            const chatId = '5432510881'; // 채팅 ID
 
-    const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    const params = new URLSearchParams({
-        chat_id: chatId,
-        text: message
-    });
+            const url = `https://api.telegram.org/bot${token}/sendMessage`;
+            const params = new URLSearchParams({
+                chat_id: chatId,
+                text: message
+            });
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: params.toString()
-        });
-        const result = await response.json();
-        console.log('Telegram message sent:', result);
-    } catch (error) {
-        console.error('Error sending Telegram message:', error);
-    }
-}
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: params.toString()
+                });
+                const result = await response.json();
+                console.log('Telegram message sent:', result);
+            } catch (error) {
+                console.error('Error sending Telegram message:', error);
+            }
+        }
 
-        
         // Firebase 설정 객체
         const firebaseConfig = {
             apiKey: "AIzaSyCSG2pFiTC7QupNTN79kKWKchnbbQZ1EwY",
@@ -199,70 +66,84 @@ async function sendTelegramMessage(message) {
             }
         });
 
-      function loadComments() {
-    commentsRef.orderByChild('timestamp').once('value', (snapshot) => {
-        const commentsView = document.getElementById('commentsView');
-        commentsView.innerHTML = '';
-        let comments = [];
-        snapshot.forEach((childSnapshot) => {
-            comments.push(childSnapshot);
-        });
-        
-        comments.reverse().forEach((childSnapshot) => {
-            const comment = childSnapshot.val();
-            const commentDiv = document.createElement('div');
-            commentDiv.classList.add('comment');
+        function loadComments() {
+            commentsRef.orderByChild('timestamp').once('value', (snapshot) => {
+                const commentsView = document.getElementById('commentsView');
+                commentsView.innerHTML = '';
+                let comments = [];
+                snapshot.forEach((childSnapshot) => {
+                    comments.push(childSnapshot);
+                });
+                
+                comments.reverse().forEach((childSnapshot) => {
+                    const comment = childSnapshot.val();
+                    const commentDiv = document.createElement('div');
+                    commentDiv.classList.add('comment');
 
-            const headerDiv = document.createElement('div');
-            headerDiv.classList.add('comment-header');
+                    const headerDiv = document.createElement('div');
+                    headerDiv.classList.add('comment-header');
 
-            const authorDiv = document.createElement('div');
-            authorDiv.classList.add('comment-author');
-            authorDiv.textContent = comment.author;
+                    const authorDiv = document.createElement('div');
+                    authorDiv.classList.add('comment-author');
+                    authorDiv.textContent = comment.author;
 
-            const timeDiv = document.createElement('div');
-            timeDiv.classList.add('comment-time');
-            timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
+                    const timeDiv = document.createElement('div');
+                    timeDiv.classList.add('comment-time');
+                    timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
 
-            const textDiv = document.createElement('div');
-            textDiv.classList.add('comment-text');
-            textDiv.textContent = comment.text;
+                    const textDiv = document.createElement('div');
+                    textDiv.classList.add('comment-text');
+                    textDiv.textContent = comment.text;
 
-            const deleteButton = document.createElement('button');
-            deleteButton.classList.add('delete-button');
-            deleteButton.textContent = '삭제';
-            deleteButton.addEventListener('click', () => {
-                const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
-                const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
+                    const deleteButton = document.createElement('button');
+                    deleteButton.classList.add('delete-button');
+                    deleteButton.textContent = '삭제';
+                    deleteButton.addEventListener('click', () => {
+                        const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
+                        const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
 
-                if (isAdmin) {
-                    if (confirm('정말 삭제하시겠습니까?')) {
-                        childSnapshot.ref.remove()
-                            .then(() => {
-                                loadComments();
-                            })
-                            .catch((error) => {
-                                console.error('댓글 삭제 중 오류 발생:', error);
-                            });
+                        if (isAdmin) {
+                            if (confirm('정말 삭제하시겠습니까?')) {
+                                childSnapshot.ref.remove()
+                                    .then(() => {
+                                        loadComments();
+                                    })
+                                    .catch((error) => {
+                                        console.error('댓글 삭제 중 오류 발생:', error);
+                                    });
+                            }
+                        } else {
+                            alert('비밀번호가 일치하지 않습니다.');
+                        }
+                    });
+
+                    headerDiv.appendChild(authorDiv);
+                    headerDiv.appendChild(timeDiv);
+                    commentDiv.appendChild(headerDiv);
+                    commentDiv.appendChild(textDiv);
+                    commentDiv.appendChild(deleteButton);
+                    commentsView.appendChild(commentDiv);
+
+                    // 새 댓글 표시
+                    const lastCommentTime = localStorage.getItem('lastCommentTime');
+                    const isNew = !lastCommentTime || new Date(comment.timestamp) > new Date(lastCommentTime);
+                    
+                    if (isNew) {
+                        commentDiv.classList.add('new-comment');
                     }
-                } else {
-                    alert('비밀번호가 일치하지 않습니다.');
+
+                    // 새 댓글이 추가된 경우 텔레그램으로 알림 전송
+                    const message = `새 댓글이 등록되었습니다.\n작성자: ${comment.author}\n내용: ${comment.text}`;
+                    sendTelegramMessage(message);
+                });
+
+                // 마지막 댓글 시간 저장
+                if (comments.length > 0) {
+                    const lastComment = comments[0].val();
+                    localStorage.setItem('lastCommentTime', lastComment.timestamp);
                 }
             });
-
-            headerDiv.appendChild(authorDiv);
-            headerDiv.appendChild(timeDiv);
-            commentDiv.appendChild(headerDiv);
-            commentDiv.appendChild(textDiv);
-            commentDiv.appendChild(deleteButton);
-            commentsView.appendChild(commentDiv);
-
-            // 새 댓글이 추가된 경우 텔레그램으로 알림 전송
-            const message = `새 댓글이 등록되었습니다!\n작성자: ${comment.author}\n내용: ${comment.text}`;
-            sendTelegramMessage(message);
-        });
-    });
-}
+        }
 
         // 페이지 로드 시 댓글 불러오기
         loadComments();
