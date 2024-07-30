@@ -219,18 +219,16 @@
                 wards.forEach(ward => {
                     let wardRef = database.ref(refPath + ward);
                     wardRef.once('value', snapshot => {
-                        if (snapshot.exists()) {
-                            snapshot.forEach(childSnapshot => {
-                                let photoData = childSnapshot.val();
-                                if (!date || photoData.date === date) {
-                                    photos.push({
-                                        url: photoData.url,
-                                        ward: ward,
-                                        date: photoData.date,
-                                        comments: photoData.comments || []
-                                    });
-                                }
-                            });
+                        let wardPhotos = snapshot.val();
+                        for (let key in wardPhotos) {
+                            if (!date || wardPhotos[key].date === date) {
+                                photos.push({
+                                    src: wardPhotos[key].url,
+                                    ward: ward,
+                                    date: wardPhotos[key].date,
+                                    isLaundry: wardPhotos[key].isLaundry
+                                });
+                            }
                         }
                         remainingWards--;
                         if (remainingWards === 0) {
@@ -241,101 +239,132 @@
             }
 
             function getAllWards() {
-                return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
+                return [
+                    'ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'
+                ];
             }
 
             function displayPhotos(photos) {
                 $('#photoGallery').empty();
-                photos.forEach(photo => {
-                    var photoContainer = $('<div>').addClass('photo-container');
-                    var img = $('<img>').attr('src', photo.url).attr('alt', '사진').addClass('gallery-photo');
-                    var commentContainer = $('<div>').addClass('comment-container');
-                    var commentList = $('<ul>');
-                    photo.comments.forEach(comment => {
-                        commentList.append($('<li>').text(comment));
+                if (photos.length === 0) {
+                    $('#photoGallery').append('<p>선택한 조건에 맞는 사진이 없습니다.</p>');
+                    return;
+                }
+                photos.forEach((photo, index) => {
+                    let photoContainer = $('<div class="photo-container"></div>');
+                    let img = $('<img>').attr('src', photo.src).attr('alt', `${photo.ward} - ${photo.date}`).on('click', function() {
+                        openModal(photo.src);
                     });
-                    var commentInput = $('<input>').attr('type', 'text').addClass('comment-input').attr('placeholder', '댓글을 입력하세요');
-                    var commentButton = $('<button>').text('저장').addClass('comment-button');
-                    
-                    commentButton.on('click', function() {
-                        var newComment = commentInput.val().trim();
-                        if (newComment) {
-                            var photoRef = database.ref('photos/' + photo.ward).orderByChild('url').equalTo(photo.url);
-                            photoRef.once('value', snapshot => {
-                                if (snapshot.exists()) {
-                                    var key = Object.keys(snapshot.val())[0];
-                                    var commentsRef = database.ref('photos/' + photo.ward + '/' + key + '/comments');
-                                    commentsRef.push(newComment);
-                                    commentList.append($('<li>').text(newComment));
-                                    commentInput.val('');
-                                }
-                            });
-                        }
-                    });
-
-                    commentContainer.append(commentList, commentInput, commentButton);
-                    photoContainer.append(img, commentContainer);
+                    let commentForm = `
+                        <div class="comment-section">
+                            <input type="text" class="comment-input" placeholder="댓글을 입력하세요">
+                            <button class="comment-button" data-ward="${photo.ward}" data-date="${photo.date}" data-index="${index}">저장</button>
+                            <div class="comment-list"></div>
+                        </div>
+                    `;
+                    photoContainer.append(img).append(commentForm);
                     $('#photoGallery').append(photoContainer);
                 });
-                if (photos.length > 0) {
-                    currentPhotoIndex = 0;
-                    showPhoto(currentPhotoIndex);
-                }
+                currentPhotoIndex = 0;
+                showPhoto(currentPhotoIndex);
             }
 
             function showPhoto(index) {
-                let photos = $('.photo-container');
-                photos.hide();
-                $(photos[index]).show();
+                $('.photo-container').hide().eq(index).show();
             }
 
-            function uploadPhoto(file, isLaundry) {
-                var ward = $('#wardSelect').val();
-                var date = $('#datePicker').val();
-                if (!date) {
-                    alert('날짜를 선택하세요.');
-                    return;
-                }
+            function openModal(src) {
+                $('#modalImage').attr('src', src);
+                $('#myModal').show();
+            }
 
-                var storageRef = firebase.storage().ref();
-                var timestamp = new Date().getTime();
-                var fileRef = storageRef.child((isLaundry ? 'laundryPhotos/' : 'photos/') + ward + '/' + timestamp + '_' + file.name);
-                fileRef.put(file).then(snapshot => {
-                    snapshot.ref.getDownloadURL().then(url => {
-                        var photoData = {
-                            url: url,
-                            date: date,
-                            ward: ward,
-                            comments: []
-                        };
-                        var refPath = (isLaundry ? 'laundryPhotos/' : 'photos/') + ward;
-                        var photoRef = database.ref(refPath);
-                        photoRef.push(photoData);
-                        alert('사진이 업로드 되었습니다.');
-                        loadPhotos(ward, date, isLaundry);
+            $('.close').on('click', function() {
+                $('#myModal').hide();
+            });
+
+            $(document).on('click', '.comment-button', function() {
+                let ward = $(this).data('ward');
+                let date = $(this).data('date');
+                let index = $(this).data('index');
+                let comment = $(this).siblings('.comment-input').val();
+
+                if (comment) {
+                    saveComment(ward, date, index, comment);
+                } else {
+                    alert('댓글을 입력하세요.');
+                }
+            });
+
+            function saveComment(ward, date, index, comment) {
+                let photoRef = database.ref(`photos/${ward}`).orderByChild('date').equalTo(date);
+                photoRef.once('value', snapshot => {
+                    snapshot.forEach(childSnapshot => {
+                        let photoKey = childSnapshot.key;
+                        let commentRef = database.ref(`comments/${ward}/${photoKey}`);
+                        let newCommentRef = commentRef.push();
+                        newCommentRef.set({
+                            text: comment,
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        }, (error) => {
+                            if (error) {
+                                alert('댓글 저장에 실패했습니다.');
+                            } else {
+                                loadComments(ward, photoKey, index);
+                            }
+                        });
                     });
                 });
             }
 
-            // Modal 기능
-            var modal = document.getElementById("myModal");
-            var modalImg = document.getElementById("modalImage");
-            var span = document.getElementsByClassName("close")[0];
+            function loadComments(ward, photoKey, index) {
+                let commentRef = database.ref(`comments/${ward}/${photoKey}`);
+                commentRef.orderByChild('timestamp').once('value', snapshot => {
+                    let commentList = $('.photo-container').eq(index).find('.comment-list');
+                    commentList.empty();
+                    snapshot.forEach(childSnapshot => {
+                        let commentData = childSnapshot.val();
+                        let commentItem = `<p>${commentData.text}</p>`;
+                        commentList.append(commentItem);
+                    });
+                });
+            }
 
-            $('#photoGallery').on('click', 'img', function() {
-                modal.style.display = "block";
-                modalImg.src = this.src;
+            function uploadPhoto(file, isLaundry) {
+                let storageRef = firebase.storage().ref();
+                let ward = $('#wardSelect').val();
+                let date = new Date().toISOString().slice(0, 10);
+                let fileName = `${ward}_${date}_${Date.now()}.jpg`;
+                let photoRef = storageRef.child(fileName);
+                let uploadTask = photoRef.put(file);
+
+                uploadTask.on('state_changed', function(snapshot) {
+                    let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                }, function(error) {
+                    alert('사진 업로드에 실패했습니다.');
+                }, function() {
+                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                        let photoData = {
+                            url: downloadURL,
+                            ward: ward,
+                            date: date,
+                            isLaundry: isLaundry
+                        };
+                        database.ref('photos/' + ward).push(photoData);
+                        if (isLaundry) {
+                            database.ref('laundryPhotos/' + ward).push(photoData);
+                        }
+                        alert('사진이 성공적으로 업로드되었습니다.');
+                    });
+                });
+            }
+                        let today = new Date();
+            today.setHours(today.getHours() + 9);
+            $('#datePicker').val(today.toISOString().slice(0, 10));
+
+            $('header h1').on('click', function() {
+                window.location.href = 'index.html';
             });
-
-            span.onclick = function() {
-                modal.style.display = "none";
-            };
-
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            };
         });
     </script>
 </body>
