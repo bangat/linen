@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지</title>
-<!-- Font Awesome CDN -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Firebase CDN -->
@@ -50,13 +50,8 @@
 
         <div class="button-container">
             <div>
-
-<button id="cameraButton" class="nav-button"><i class="fas fa-camera"></i> 카메라</button>
-
+                <button id="cameraButton" class="nav-button"><i class="fas fa-camera"></i> 카메라</button>
                 <button id="viewButton" class="nav-button">조회하기</button>
-
-
-          
             </div>
             <div>
                 <button class="nav-button" id="prevButton">이전</button>
@@ -139,13 +134,13 @@
                 }
             });
 
-           $('#cameraButton').on('click', function() {
-    if ($('#wardSelect').val()) {
-        $('#cameraInput').click();  // 'capture' 속성 삭제
-    } else {
-        alert('병동을 선택하세요.');
-    }
-});
+            $('#cameraButton').on('click', function() {
+                if ($('#wardSelect').val()) {
+                    $('#cameraInput').click();
+                } else {
+                    alert('병동을 선택하세요.');
+                }
+            });
 
             $('#cameraInput').on('change', function() {
                 var files = this.files;
@@ -184,6 +179,8 @@
             });
 
             // 터치 이벤트 핸들러 추가
+            let startX, startY, endX, endY;
+
             $('#photoGallery').on('touchstart', function(event) {
                 startX = event.originalEvent.touches[0].clientX;
                 startY = event.originalEvent.touches[0].clientY;
@@ -198,16 +195,13 @@
                 let deltaX = endX - startX;
                 let deltaY = endY - startY;
 
-                // 좌우 스와이프 거리 차이가 상하 스와이프 거리 차이보다 크다면 좌우 스와이프로 간주
                 if (Math.abs(deltaX) > Math.abs(deltaY)) {
                     if (deltaX > 50) {
-                        // 오른쪽 스와이프 -> 이전 사진
                         if (currentPhotoIndex > 0) {
                             currentPhotoIndex--;
                             showPhoto(currentPhotoIndex);
                         }
                     } else if (deltaX < -50) {
-                        // 왼쪽 스와이프 -> 다음 사진
                         let photos = $('.photo-container');
                         if (currentPhotoIndex < photos.length - 1) {
                             currentPhotoIndex++;
@@ -238,10 +232,15 @@
                 });
             }
 
-            function displayPhotos(photos, date) {
+            function displayPhotos(photos, selectedDate) {
                 $('#photoGallery').empty();
 
-                let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
+                let filteredPhotos = photos.filter(photo => {
+                    if (selectedDate) {
+                        return photo.date.split(' ')[0] === selectedDate; // 선택된 날짜와 일치하는지 확인
+                    }
+                    return true;
+                });
 
                 filteredPhotos.forEach(photo => {
                     let photoContainer = $('<div>').addClass('photo-container');
@@ -311,38 +310,32 @@
                             url: photoUrl,
                             date: date
                         }).then(() => {
-                            // 사진 업로드가 완료되면 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
                             $('#cameraButton').prop('disabled', false).text('카메라');
-                            
-                            // 사진 로드 함수 호출
                             loadPhotos(ward, date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), isLaundry);
                         });
                     },
                     error: function() {
-                        // 업로드 실패 시 처리
                         alert('사진 업로드 중 오류가 발생했습니다.');
-                        
-                        // 업로드 버튼을 다시 활성화하고 텍스트를 "업로드"로 변경
                         $('#cameraButton').prop('disabled', false).text('카메라');
                     }
                 });
             }
 
             function deletePhoto(ward, photo) {
-    let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
-    let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
-    photoRef.once('value', function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-            childSnapshot.ref.remove().then(() => {
-                alert('사진이 삭제되었습니다.');
-                loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
-            }).catch((error) => {
-                console.error('삭제 중 오류가 발생했습니다:', error);
-                alert('삭제 중 오류가 발생했습니다.');
-            });
-        });
-    });
-}
+                let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
+                let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
+                photoRef.once('value', function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        childSnapshot.ref.remove().then(() => {
+                            alert('사진이 삭제되었습니다.');
+                            loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+                        }).catch((error) => {
+                            console.error('삭제 중 오류가 발생했습니다:', error);
+                            alert('삭제 중 오류가 발생했습니다.');
+                        });
+                    });
+                });
+            }
 
             function openModal(imageUrl) {
                 var modal = document.getElementById("myModal");
@@ -366,7 +359,6 @@
                 var minutes = ('0' + date.getMinutes()).slice(-2);
                 var period = hours >= 12 ? '오후' : '오전'; // 오후/오전 구분
 
-                // 12시간제로 변경 및 오전/오후 표시
                 if (hours === 0) {
                     hours = 12; // 자정을 12시로 표시
                 } else if (hours > 12) {
@@ -405,7 +397,7 @@
             // 초기 로드 시 현재 날짜를 한국 시간으로 설정
             let today = new Date();
             today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
-            $('#datePicker').val(today.toISOString().slice(0, 10));
+            $('#$('#datePicker').val(today.toISOString().slice(0, 10));
 
             // "관리자 페이지" 클릭 시 index.html로 이동
             $('header h1').on('click', function() {
@@ -415,4 +407,3 @@
     </script>
 </body>
 </html>
-
