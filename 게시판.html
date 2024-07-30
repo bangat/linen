@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판</title>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        width: 100%;
+        max-width: 800px;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    .comments-view {
+        max-height: 500px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+    .comment {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+    }
+    .comment:last-child {
+        border-bottom: none;
+    }
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .comment-author {
+        font-weight: bold;
+    }
+    .comment-time {
+        color: #888;
+        font-size: 0.8em;
+    }
+    .comment-text {
+        margin-top: 5px;
+        white-space: normal;
+        word-break: break-word;
+    }
+    .delete-button {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-top: 10px;
+        border-radius: 5px;
+        align-self: flex-end;
+    }
+    .delete-button:hover {
+        background-color: #c82333;
+    }
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .input-container input, .input-container textarea {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        width: 100%;
+    }
+    .save-button {
+        align-self: flex-start;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    .save-button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>게시판</h1>
+        <div class="comments-view" id="commentsView">
+            <!-- 여기에 댓글이 동적으로 추가될 예정 -->
+        </div>
+        <div class="input-container">
+            <input type="text" id="authorInput" placeholder="작성자">
+            <textarea id="commentInput" rows="4" placeholder="댓글 내용을 입력하세요."></textarea>
+            <button class="save-button" id="saveButton">저장</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase 설정 객체
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSG2pFiTC7QupNTN79kKWKchnbbQZ1EwY",
+            authDomain: "bulletin-board-f3efb.firebaseapp.com",
+            databaseURL: "https://bulletin-board-f3efb-default-rtdb.firebaseio.com",
+            projectId: "bulletin-board-f3efb",
+            storageBucket: "bulletin-board-f3efb.appspot.com",
+            messagingSenderId: "554876044559",
+            appId: "1:554876044559:web:c4c5a10cd54b5e71f22a7a",
+            measurementId: "G-DL8SYG35SK"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+
+        // Firebase Realtime Database 참조
+        const database = firebase.database();
+        const commentsRef = database.ref('comments');
+
+        document.getElementById('saveButton').addEventListener('click', () => {
+            const author = document.getElementById('authorInput').value;
+            const commentText = document.getElementById('commentInput').value;
+
+            if (author && commentText) {
+                const newCommentRef = commentsRef.push();
+                newCommentRef.set({
+                    author: author,
+                    text: commentText,
+                    timestamp: new Date().toISOString()
+                }).then(() => {
+                    document.getElementById('authorInput').value = '';
+                    document.getElementById('commentInput').value = '';
+                    loadComments();
+                }).catch((error) => {
+                    console.error('댓글 저장 중 오류 발생:', error);
+                });
+            } else {
+                alert('작성자와 댓글 내용을 모두 입력하세요.');
+            }
+        });
+
+        function loadComments() {
+            commentsRef.orderByChild('timestamp').on('value', (snapshot) => {
+                const commentsView = document.getElementById('commentsView');
+                commentsView.innerHTML = '';
+                snapshot.forEach((childSnapshot) => {
+                    const comment = childSnapshot.val();
+                    const commentDiv = document.createElement('div');
+                    commentDiv.classList.add('comment');
+
+                    const headerDiv = document.createElement('div');
+                    headerDiv.classList.add('comment-header');
+
+                    const authorDiv = document.createElement('div');
+                    authorDiv.classList.add('comment-author');
+                    authorDiv.textContent = comment.author;
+
+                    const timeDiv = document.createElement('div');
+                    timeDiv.classList.add('comment-time');
+                    timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
+
+                    const textDiv = document.createElement('div');
+                    textDiv.classList.add('comment-text');
+                    textDiv.textContent = comment.text;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.classList.add('delete-button');
+                    deleteButton.textContent = '삭제';
+                    deleteButton.addEventListener('click', () => {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            childSnapshot.ref.remove()
+                                .then(() => {
+                                    loadComments();
+                                })
+                                .catch((error) => {
+                                    console.error('댓글 삭제 중 오류 발생:', error);
+                                });
+                        }
+                    });
+
+                    headerDiv.appendChild(authorDiv);
+                    headerDiv.appendChild(timeDiv);
+                    commentDiv.appendChild(headerDiv);
+                    commentDiv.appendChild(textDiv);
+                    commentDiv.appendChild(deleteButton);
+                    commentsView.appendChild(commentDiv);
+                });
+            });
+        }
+
+        // 페이지 로드 시 댓글 불러오기
+        loadComments();
+    </script>
+</body>
+</html>
