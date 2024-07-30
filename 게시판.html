@@ -48,13 +48,27 @@
 
 .comment-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
 .comment-author {
     font-weight: bold;
-    font-size: 0.9em; /* 작성자명 글씨 크기 줄임 */
+    font-size: 0.9em; /* 작성자명 글씨 크기 조정 */
+    margin-right: 10px; /* 작성자명과 버튼 간격 조정 */
+}
+
+.delete-button {
+    background-color: #6c757d; /* 회색 버튼 */
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 0.9em; /* 폰트 크기 조정 */
+}
+
+.delete-button:hover {
+    background-color: #5a6268; /* 버튼 호버 색상 */
 }
 
 .comment-time {
@@ -67,20 +81,6 @@
     white-space: normal;
     word-break: break-word;
     font-size: 0.9em;
-}
-
-.delete-button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 0.9em; /* 삭제 버튼 글씨 크기 설정 */
-}
-
-.delete-button:hover {
-    background-color: #c82333;
 }
 
 .input-container {
@@ -109,7 +109,6 @@
 .save-button:hover {
     background-color: #0056b3;
 }
-
 
 
     </style>
