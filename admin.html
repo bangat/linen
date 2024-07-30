@@ -284,11 +284,21 @@ function getWardName(wardCode) {
                 }
             }
 
-                       function deletePhoto(ward, photo) {
+unction deletePhoto(ward, photo) {
     let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
     let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
+
     photoRef.once('value', function(snapshot) {
         snapshot.forEach(function(childSnapshot) {
+            let storageRef = firebase.storage().ref();
+            let fileRef = storageRef.child(refPath + '/' + photo.url);
+
+            fileRef.delete().then(() => {
+                console.log('Storage에서 파일 삭제 완료');
+            }).catch((error) => {
+                console.error('Storage에서 파일 삭제 중 오류:', error);
+            });
+
             childSnapshot.ref.remove().then(() => {
                 alert('사진이 삭제되었습니다.');
                 loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
