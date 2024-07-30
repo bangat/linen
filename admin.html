@@ -20,6 +20,7 @@
 
     <main>
         <select id="wardSelect">
+            <option value="">병동 선택</option>
             <option value="ward93">93 병동</option>
             <option value="ward83">83 병동</option>
             <option value="ward73">73 병동</option>
@@ -103,29 +104,29 @@
         $(document).ready(function() {
             let currentPhotoIndex = 0;
 
-$('#viewButton').on('click', function() {
-    var ward = $('#wardSelect').val();
-    var date = $('#datePicker').val();
-    var viewAllDates = $('#viewAllCheckbox').is(':checked');
-    var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
-    var isLaundry = $('#laundryCheckbox').is(':checked');
+            $('#viewButton').on('click', function() {
+                var ward = $('#wardSelect').val();
+                var date = $('#datePicker').val();
+                var viewAllDates = $('#viewAllCheckbox').is(':checked');
+                var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
+                var isLaundry = $('#laundryCheckbox').is(':checked');
 
-    if (viewAllDates && viewAllWards) {
-        loadPhotos(null, null, isLaundry); // 전체 병동, 전체 날짜
-    } else if (viewAllDates) {
-        loadPhotos(ward, null, isLaundry); // 특정 병동, 전체 날짜
-    } else if (viewAllWards) {
-        loadPhotos(null, date, isLaundry); // 전체 병동, 특정 날짜
-    } else if (ward && date) {
-        loadPhotos(ward, date, isLaundry); // 특정 병동, 특정 날짜
-    } else if (ward) {
-        loadPhotos(ward, null, isLaundry); // 특정 병동, 날짜 없이
-    } else if (date) {
-        loadPhotos(null, date, isLaundry); // 날짜만 선택된 경우
-    } else {
-        alert('병동과 날짜를 선택하세요.');
-    }
-});
+                if (viewAllDates && viewAllWards) {
+                    loadPhotos(null, null, isLaundry); // 전체 병동, 전체 날짜
+                } else if (viewAllDates) {
+                    loadPhotos(ward, null, isLaundry); // 특정 병동, 전체 날짜
+                } else if (viewAllWards) {
+                    loadPhotos(null, date, isLaundry); // 전체 병동, 특정 날짜
+                } else if (ward && date) {
+                    loadPhotos(ward, date, isLaundry); // 특정 병동, 특정 날짜
+                } else if (ward) {
+                    loadPhotos(ward, null, isLaundry); // 특정 병동, 날짜 없이
+                } else if (date) {
+                    loadPhotos(null, date, isLaundry); // 날짜만 선택된 경우
+                } else {
+                    alert('병동과 날짜를 선택하세요.');
+                }
+            });
 
             $('#wardSelect, #datePicker').on('change', function() {
                 var ward = $('#wardSelect').val();
@@ -209,39 +210,39 @@ $('#viewButton').on('click', function() {
                 }
             });
 
-function loadPhotos(selectedWard, date, isLaundry) {
-    let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
-    let wards = selectedWard ? [selectedWard] : getAllWards();
-    let photos = [];
-    let remainingWards = wards.length;
+            function loadPhotos(selectedWard, date, isLaundry) {
+                let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
+                let wards = selectedWard ? [selectedWard] : getAllWards();
+                let photos = [];
+                let remainingWards = wards.length;
 
-    wards.forEach(ward => {
-        let wardRef = database.ref(refPath + ward);
-        wardRef.once('value', snapshot => {
-            snapshot.forEach(childSnapshot => {
-                let photo = childSnapshot.val();
-                if (!date || photo.date.split(' ')[0] === date) {
-                    photo.ward = ward;
-                    photos.push(photo);
-                }
-            });
+                wards.forEach(ward => {
+                    let wardRef = database.ref(refPath + ward);
+                    wardRef.once('value', snapshot => {
+                        snapshot.forEach(childSnapshot => {
+                            let photo = childSnapshot.val();
+                            if (!date || photo.date.split(' ')[0] === date) {
+                                photo.ward = ward; // 사진 객체에 병동 정보를 추가
+                                photos.push(photo);
+                            }
+                        });
 
-            remainingWards--;
+                        remainingWards--;
 
-            if (remainingWards === 0) {
-                displayPhotos(photos);
+                        if (remainingWards === 0) {
+                            displayPhotos(photos);
+                        }
+                    });
+                });
             }
-        });
-    });
-}
 
             function displayPhotos(photos) {
                 $('#photoGallery').empty();
                 photos.forEach((photo) => {
-                    console.log('사진 데이터:', photo);
                     var photoDiv = $('<div>', { class: 'photo-container' });
                     var img = $('<img>', { src: photo.url, class: 'photo' });
                     var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward));
+                    var photoDate = $('<div>', { class: 'photo-date' }).text(formatDateToKorean(photo.date));
                     var deleteButton = $('<button>', { class: 'delete-button' }).text('삭제');
 
                     deleteButton.on('click', function() {
@@ -250,7 +251,7 @@ function loadPhotos(selectedWard, date, isLaundry) {
                         }
                     });
 
-                    photoDiv.append(img).append(wardName).append(deleteButton);
+                    photoDiv.append(img).append(wardName).append(photoDate).append(deleteButton);
                     $('#photoGallery').append(photoDiv);
                 });
                 currentPhotoIndex = 0;
@@ -295,11 +296,7 @@ function loadPhotos(selectedWard, date, isLaundry) {
                 let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
                 let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
 
-                console.log('삭제할 사진의 URL:', photo.url);
-                console.log('삭제할 경로:', refPath);
-
                 photoRef.once('value', function(snapshot) {
-                    console.log('삭제 쿼리 결과:', snapshot.val());
                     if (snapshot.exists()) {
                         snapshot.forEach(function(childSnapshot) {
                             childSnapshot.ref.remove().then(() => {
@@ -331,7 +328,7 @@ function loadPhotos(selectedWard, date, isLaundry) {
                     hours -= 12;
                 }
 
-                return ${year}-${month}-${day} ${period}${hours}시${minutes}분;
+                return `${year}-${month}-${day} ${period}${hours}시${minutes}분`;
             }
 
             function uploadPhoto(file, isLaundry) {
