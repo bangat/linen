@@ -20,6 +20,7 @@
 
     <main>
         <select id="wardSelect">
+            <option value="">병동 선택</option>
             <option value="ward93">93 병동</option>
             <option value="ward83">83 병동</option>
             <option value="ward73">73 병동</option>
@@ -238,10 +239,10 @@
             function displayPhotos(photos) {
                 $('#photoGallery').empty();
                 photos.forEach((photo) => {
-                    console.log('사진 데이터:', photo);
                     var photoDiv = $('<div>', { class: 'photo-container' });
                     var img = $('<img>', { src: photo.url, class: 'photo' });
                     var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward));
+                    var photoDate = $('<div>', { class: 'photo-date' }).text(formatDateToKorean(photo.date));
                     var deleteButton = $('<button>', { class: 'delete-button' }).text('삭제');
 
                     deleteButton.on('click', function() {
@@ -250,7 +251,7 @@
                         }
                     });
 
-                    photoDiv.append(img).append(wardName).append(deleteButton);
+                    photoDiv.append(img).append(wardName).append(photoDate).append(deleteButton);
                     $('#photoGallery').append(photoDiv);
                 });
                 currentPhotoIndex = 0;
@@ -295,11 +296,7 @@
                 let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
                 let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
 
-                console.log('삭제할 사진의 URL:', photo.url);
-                console.log('삭제할 경로:', refPath);
-
                 photoRef.once('value', function(snapshot) {
-                    console.log('삭제 쿼리 결과:', snapshot.val());
                     if (snapshot.exists()) {
                         snapshot.forEach(function(childSnapshot) {
                             childSnapshot.ref.remove().then(() => {
