@@ -131,7 +131,7 @@
             $('#wardSelect, #datePicker').on('change', function() {
                 var ward = $('#wardSelect').val();
                 var date = $('#datePicker').val();
-                if (ward && date) {
+                if (ward || date) {
                     loadPhotos(ward, date, $('#laundryCheckbox').is(':checked'));
                 }
             });
@@ -222,7 +222,7 @@
                         snapshot.forEach(childSnapshot => {
                             let photo = childSnapshot.val();
                             if (!date || photo.date.split(' ')[0] === date) {
-                                photo.ward = ward; // 사진 객체에 병동 정보를 추가
+                                photo.ward = ward;
                                 photos.push(photo);
                             }
                         });
@@ -251,7 +251,7 @@
                         }
                     });
 
-                    photoDiv.append(img).append(wardName).append(photoDate).append(deleteButton);
+                    photoDiv.append(wardName).append(img).append(photoDate).append(deleteButton);
                     $('#photoGallery').append(photoDiv);
                 });
                 currentPhotoIndex = 0;
