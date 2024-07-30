@@ -6,124 +6,124 @@
     <title>게시판</title>
     <style>
        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
 
-        .comments-view {
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
+.comments-view {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
 
-        .comment {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-        }
+.comment {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
 
-        .comment:last-child {
-            border-bottom: none;
-        }
+.comment:last-child {
+    border-bottom: none;
+}
 
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .comment-author {
-            font-weight: bold;
-            font-size: 0.8em;
-            margin-right: 5px;
-        }
+.comment-author {
+    font-weight: bold;
+    font-size: 0.8em;
+    margin-right: 5px; /* 버튼과 작성자명 간의 간격 */
+}
 
-        .comment-time {
-            color: #888;
-            font-size: 0.8em;
-        }
+.comment-time {
+    color: #888;
+    font-size: 0.8em;
+}
 
-        .comment-text {
-            margin-top: 5px;
-            white-space: normal;
-            word-break: break-word;
-            font-size: 0.8em;
-        }
+.comment-text {
+    margin-top: 5px;
+    white-space: normal;
+    word-break: break-word;
+     font-size: 0.8em;
+}
 
-        .delete-button {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            margin-top: 10px;
-            border-radius: 5px;
-            align-self: flex-end;
-        }
+.delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+    align-self: flex-end;
+}
 
-        .delete-button:hover {
-            background-color: #c82333;
-        }
+.delete-button:hover {
+    background-color: #c82333;
+}
 
-        .input-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+.input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-        .input-container input, .input-container textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 100%;
-        }
+.input-container input, .input-container textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
 
-        .save-button {
-            align-self: flex-start;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+.save-button {
+    align-self: flex-start;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
 
         .new-comment {
-            border: 2px solid #007bff;
-            background-color: #e7f1ff;
-        }
+    border: 2px solid #007bff; /* 새로운 댓글을 강조하기 위해 테두리 색상 추가 */
+    background-color: #e7f1ff; /* 새로운 댓글 배경색상 */
+}
 
-        .save-button:hover {
-            background-color: #0056b3;
-        }
+.save-button:hover {
+    background-color: #0056b3;
+}
+
     </style>
     <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
-    <script src="apikey.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>게시판</h1>
+        <h1>개발중</h1>
         <div class="comments-view" id="commentsView">
             <!-- 여기에 댓글이 동적으로 추가될 예정 -->
         </div>
@@ -135,11 +135,12 @@
     </div>
 
 <script>
+    // 텔레그램 메시지 전송 함수
     async function sendTelegramMessage(message) {
-        const token = config.apikey; // 텔레그램 API 토큰
+        const token = '6708038500:AAEaiZF3I4Sn5u_IGlhTaV9_m6YFo6ye3iM'; // 텔레그램 API 토큰
         const chatId = '5432510881'; // 채팅 ID
 
-        const url = `https://api.telegram.org/bot${token}/sendMessage`;
+        const url = https://api.telegram.org/bot${token}/sendMessage;
         const params = new URLSearchParams({
             chat_id: chatId,
             text: message
@@ -160,19 +161,22 @@
         }
     }
 
+    // Firebase 설정 객체
     const firebaseConfig = {
-        apiKey: config.firebaseApiKey,
-        authDomain: config.firebaseAuthDomain,
-        databaseURL: config.firebaseDatabaseURL,
-        projectId: config.firebaseProjectId,
-        storageBucket: config.firebaseStorageBucket,
-        messagingSenderId: config.firebaseMessagingSenderId,
-        appId: config.firebaseAppId,
-        measurementId: config.firebaseMeasurementId
+        apiKey: "AIzaSyCSG2pFiTC7QupNTN79kKWKchnbbQZ1EwY",
+        authDomain: "bulletin-board-f3efb.firebaseapp.com",
+        databaseURL: "https://bulletin-board-f3efb-default-rtdb.firebaseio.com",
+        projectId: "bulletin-board-f3efb",
+        storageBucket: "bulletin-board-f3efb.appspot.com",
+        messagingSenderId: "554876044559",
+        appId: "1:554876044559:web:c4c5a10cd54b5e71f22a7a",
+        measurementId: "G-DL8SYG35SK"
     };
 
+    // Firebase 초기화
     firebase.initializeApp(firebaseConfig);
 
+    // Firebase Realtime Database 참조
     const database = firebase.database();
     const commentsRef = database.ref('comments');
 
@@ -188,9 +192,11 @@
                 text: commentText,
                 timestamp: timestamp
             }).then(() => {
-                const message = `새 댓글이 등록되었습니다.\n작성자: ${author}\n내용: ${commentText}`;
+                // 댓글 저장 후 알림 전송
+                const message = 새 댓글이 등록되었습니다.\n작성자: ${author}\n내용: ${commentText};
                 sendTelegramMessage(message);
 
+                // 입력 필드 초기화 및 댓글 로드
                 document.getElementById('authorInput').value = '';
                 document.getElementById('commentInput').value = '';
                 loadComments();
@@ -211,6 +217,7 @@
                 comments.push(childSnapshot);
             });
 
+            // 최신 댓글의 타임스탬프를 로컬 스토리지에 저장
             let lastCommentTimestamp = localStorage.getItem('lastCommentTimestamp');
             let newCommentAdded = false;
 
@@ -239,7 +246,7 @@
                 deleteButton.textContent = '삭제';
                 deleteButton.addEventListener('click', () => {
                     const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
-                    const isAdmin = (adminPassword === '9');
+                    const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
 
                     if (isAdmin) {
                         if (confirm('정말 삭제하시겠습니까?')) {
@@ -263,17 +270,20 @@
                 commentDiv.appendChild(deleteButton);
                 commentsView.appendChild(commentDiv);
 
+                // 최신 댓글에 "new" 표시
                 if (!lastCommentTimestamp || new Date(comment.timestamp) > new Date(lastCommentTimestamp)) {
                     commentDiv.classList.add('new-comment');
                     newCommentAdded = true;
                 }
             });
 
+            // 마지막 댓글 시간 저장
             if (comments.length > 0) {
                 const lastComment = comments[0].val();
                 localStorage.setItem('lastCommentTimestamp', lastComment.timestamp);
             }
 
+            // "new-comment" 클래스를 제거하여 표시
             if (!newCommentAdded) {
                 const existingNewComments = document.querySelectorAll('.new-comment');
                 existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
@@ -281,7 +291,8 @@
         });
     }
 
-    loadComments();
-</script>
+        // 페이지 로드 시 댓글 불러오기
+        loadComments();
+    </script>
 </body>
 </html>
