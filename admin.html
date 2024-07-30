@@ -342,6 +342,16 @@ function deletePhoto(ward, photo) {
             $('.close').on('click', function() {
                 $('#myModal').hide();
             });
+
+                        // 초기 로드 시 현재 날짜를 한국 시간으로 설정
+            let today = new Date();
+            today.setHours(today.getHours() + 9); // 한국 시간 (UTC+9)으로 조정
+            $('#datePicker').val(today.toISOString().slice(0, 10));
+
+            // "관리자 페이지" 클릭 시 index.html로 이동
+            $('header h1').on('click', function() {
+                window.location.href = 'index.html';
+            });
         });
     </script>
 </body>
