@@ -8,94 +8,109 @@
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f8f9fa;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-    }
-    .container {
-        width: 100%;
-        max-width: 800px;
-        background-color: #fff;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
-    .comments-view {
-        max-height: 500px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-    }
-    .comment {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        display: flex;
-        flex-direction: column;
-    }
-    .comment:last-child {
-        border-bottom: none;
-    }
-    .comment-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .comment-author {
-        font-weight: bold;
-    }
-    .comment-time {
-        color: #888;
-        font-size: 0.8em;
-    }
-    .comment-text {
-        margin-top: 5px;
-        white-space: normal;
-        word-break: break-word;
-    }
-    .delete-button {
-        background-color: #dc3545;
-        color: #fff;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        margin-top: 10px;
-        border-radius: 5px;
-        align-self: flex-end;
-    }
-    .delete-button:hover {
-        background-color: #c82333;
-    }
-    .input-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .input-container input, .input-container textarea {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        width: 100%;
-    }
-    .save-button {
-        align-self: flex-start;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-    .save-button:hover {
-        background-color: #0056b3;
-    }
+   body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.comments-view {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.comment {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
+
+.comment:last-child {
+    border-bottom: none;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-author {
+    font-weight: bold;
+}
+
+.comment-time {
+    color: #888;
+    font-size: 0.8em;
+}
+
+.comment-text {
+    margin-top: 5px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+    align-self: flex-end;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input-container input, .input-container textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.save-button {
+    align-self: flex-start;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
 </style>
 
 </head>
