@@ -294,7 +294,11 @@ function deletePhoto(ward, photo) {
     let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
     let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
     
+    console.log('삭제할 사진의 URL:', photo.url); // 추가된 로그
+    console.log('삭제할 경로:', refPath); // 추가된 로그
+
     photoRef.once('value', function(snapshot) {
+        console.log('삭제 쿼리 결과:', snapshot.val()); // 추가된 로그
         if (snapshot.exists()) {
             snapshot.forEach(function(childSnapshot) {
                 childSnapshot.ref.remove().then(() => {
@@ -310,6 +314,7 @@ function deletePhoto(ward, photo) {
         }
     });
 }
+
 
 
                         function formatDateToKorean(dateString) {
