@@ -103,29 +103,29 @@
         $(document).ready(function() {
             let currentPhotoIndex = 0;
 
-            $('#viewButton').on('click', function() {
-                var ward = $('#wardSelect').val();
-                var date = $('#datePicker').val();
-                var viewAllDates = $('#viewAllCheckbox').is(':checked');
-                var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
-                var isLaundry = $('#laundryCheckbox').is(':checked');
+$('#viewButton').on('click', function() {
+    var ward = $('#wardSelect').val();
+    var date = $('#datePicker').val();
+    var viewAllDates = $('#viewAllCheckbox').is(':checked');
+    var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
+    var isLaundry = $('#laundryCheckbox').is(':checked');
 
-                if (viewAllDates && viewAllWards) {
-                    loadPhotos(null, null, isLaundry); // 전체 병동, 전체 날짜
-                } else if (viewAllDates) {
-                    loadPhotos(ward, null, isLaundry); // 특정 병동, 전체 날짜
-                } else if (viewAllWards) {
-                    loadPhotos(null, date, isLaundry); // 전체 병동, 특정 날짜
-                } else if (ward && date) {
-                    loadPhotos(ward, date, isLaundry); // 특정 병동, 특정 날짜
-                } else if (ward) {
-                    loadPhotos(ward, null, isLaundry); // 특정 병동, 날짜 없이
-                } else if (date) {
-                    loadPhotos(null, date, isLaundry); // 날짜만 선택된 경우
-                } else {
-                    alert('병동과 날짜를 선택하세요.');
-                }
-            });
+    if (viewAllDates && viewAllWards) {
+        loadPhotos(null, null, isLaundry); // 전체 병동, 전체 날짜
+    } else if (viewAllDates) {
+        loadPhotos(ward, null, isLaundry); // 특정 병동, 전체 날짜
+    } else if (viewAllWards) {
+        loadPhotos(null, date, isLaundry); // 전체 병동, 특정 날짜
+    } else if (ward && date) {
+        loadPhotos(ward, date, isLaundry); // 특정 병동, 특정 날짜
+    } else if (ward) {
+        loadPhotos(ward, null, isLaundry); // 특정 병동, 날짜 없이
+    } else if (date) {
+        loadPhotos(null, date, isLaundry); // 날짜만 선택된 경우
+    } else {
+        alert('병동과 날짜를 선택하세요.');
+    }
+});
 
             $('#wardSelect, #datePicker').on('change', function() {
                 var ward = $('#wardSelect').val();
@@ -209,31 +209,31 @@
                 }
             });
 
-            function loadPhotos(selectedWard, date, isLaundry) {
-                let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
-                let wards = selectedWard ? [selectedWard] : getAllWards();
-                let photos = [];
-                let remainingWards = wards.length;
+function loadPhotos(selectedWard, date, isLaundry) {
+    let refPath = isLaundry ? 'laundryPhotos/' : 'photos/';
+    let wards = selectedWard ? [selectedWard] : getAllWards();
+    let photos = [];
+    let remainingWards = wards.length;
 
-                wards.forEach(ward => {
-                    let wardRef = database.ref(refPath + ward);
-                    wardRef.once('value', snapshot => {
-                        snapshot.forEach(childSnapshot => {
-                            let photo = childSnapshot.val();
-                            if (!date || photo.date.split(' ')[0] === date) {
-                                photo.ward = ward; // 사진 객체에 병동 정보를 추가
-                                photos.push(photo);
-                            }
-                        });
+    wards.forEach(ward => {
+        let wardRef = database.ref(refPath + ward);
+        wardRef.once('value', snapshot => {
+            snapshot.forEach(childSnapshot => {
+                let photo = childSnapshot.val();
+                if (!date || photo.date.split(' ')[0] === date) {
+                    photo.ward = ward;
+                    photos.push(photo);
+                }
+            });
 
-                        remainingWards--;
+            remainingWards--;
 
-                        if (remainingWards === 0) {
-                            displayPhotos(photos);
-                        }
-                    });
-                });
+            if (remainingWards === 0) {
+                displayPhotos(photos);
             }
+        });
+    });
+}
 
             function displayPhotos(photos) {
                 $('#photoGallery').empty();
