@@ -226,9 +226,10 @@
                 });
             }
 
-            function displayPhotos(photos) {
+function displayPhotos(photos) {
     $('#photoGallery').empty();
     photos.forEach((photo) => {
+        console.log('사진 병동 코드:', photo.ward); // 추가한 로그
         var photoDiv = $('<div>', { class: 'photo-container' });
         var img = $('<img>', { src: photo.url, class: 'photo' });
         var wardName = $('<div>', { class: 'ward-name' }).text(getWardName(photo.ward));
@@ -247,21 +248,20 @@
     showPhoto(currentPhotoIndex);
 }
 
-// 병동 이름을 반환하는 함수
 function getWardName(wardCode) {
     const wardNames = {
-        'ward93': '93',
-        'ward83': '83',
-        'ward73': '73',
-        'ward71': '71',
-        'ward63': '63',
-        'ward62': '62',
-        'ward61': '61',
-        'HR': 'HR',
-        'ward52': '52',
-        'ward51': '51',
-        'ward42': '42',
-        'ward41': '41',
+        'ward93': '93 병동',
+        'ward83': '83 병동',
+        'ward73': '73 병동',
+        'ward71': '71 병동',
+        'ward63': '63 병동',
+        'ward62': '62 병동',
+        'ward61': '61 병동',
+        'HR': 'HR 병동',
+        'ward52': '52 병동',
+        'ward51': '51 병동',
+        'ward42': '42 병동',
+        'ward41': '41 병동',
         'ICU': '중환자실',
         'dayWard': '낮병동',
         'endoscopy': '내시경실',
@@ -269,6 +269,7 @@ function getWardName(wardCode) {
     };
     return wardNames[wardCode] || '알 수 없음';
 }
+
 
 
             function getAllWards() {
