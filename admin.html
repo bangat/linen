@@ -226,17 +226,76 @@
                 });
             }
 
-            function displayPhotos(photos) {
-                $('#photoGallery').empty();
-                photos.forEach((photo, index) => {
-                    var photoDiv = $('<div>', { class: 'photo-container' });
-                    var img = $('<img>', { src: photo.url, class: 'photo' });
-                    photoDiv.append(img);
-                    $('#photoGallery').append(photoDiv);
-                });
-                currentPhotoIndex = 0;
-                showPhoto(currentPhotoIndex);
+          function displayPhotos(photos, date) {
+    $('#photoGallery').empty();
+
+    let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
+
+    filteredPhotos.forEach(photo => {
+        let photoContainer = $('<div>').addClass('photo-container');
+        let formattedDate = formatDateToKorean(photo.date);
+        let dateLabel = $('<div>').addClass('date-label').text(formattedDate);
+        let wardLabel = $('<div>').addClass('ward-label').text(getWardLabel(photo.ward));
+        let img = $('<img>').attr('src', photo.url);
+        let deleteButton = $('<button>').addClass('delete-button').text('삭제하기');
+
+        deleteButton.on('click', function() {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                deletePhoto(photo.ward, photo);
             }
+        });
+
+        img.on('click', function() {
+            openModal(photo.url);
+        });
+
+        photoContainer.append(dateLabel, img, wardLabel, deleteButton);
+        $('#photoGallery').append(photoContainer);
+    });
+
+    currentPhotoIndex = 0;
+    showPhoto(currentPhotoIndex);
+    toggleNavigationButtons(filteredPhotos.length);
+}
+
+function getWardLabel(wardCode) {
+    var wardLabels = {
+        'ward93': '93 병동',
+        'ward83': '83 병동',
+        'ward73': '73 병동',
+        'ward71': '71 병동',
+        'ward63': '63 병동',
+        'ward62': '62 병동',
+        'ward61': '61 병동',
+        'HR': 'HR 병동',
+        'ward52': '52 병동',
+        'ward51': '51 병동',
+        'ward42': '42 병동',
+        'ward41': '41 병동',
+        'ICU': '중환자실',
+        'dayWard': '낮병동',
+        'endoscopy': '내시경실',
+        'ER': '응급실'
+    };
+    return wardLabels[wardCode] || wardCode;
+}
+
+function deletePhoto(ward, photo) {
+    let refPath = $('#laundryCheckbox').is(':checked') ? 'laundryPhotos/' + ward : 'photos/' + ward;
+    let photoRef = database.ref(refPath).orderByChild('url').equalTo(photo.url);
+    photoRef.once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            childSnapshot.ref.remove().then(() => {
+                alert('사진이 삭제되었습니다.');
+                loadPhotos(ward, photo.date.split(' ')[0], $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+            }).catch((error) => {
+                console.error('삭제 중 오류가 발생했습니다:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            });
+        });
+    });
+}
+
 
             function getAllWards() {
                 return ['ward93', 'ward83', 'ward73', 'ward71', 'ward63', 'ward62', 'ward61', 'HR', 'ward52', 'ward51', 'ward42', 'ward41', 'ICU', 'dayWard', 'endoscopy', 'ER'];
