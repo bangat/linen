@@ -5,109 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판</title>
     <style>
-       body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.container {
-    width: 100%;
-    max-width: 800px;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
-
-.comments-view {
-    max-height: 500px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-}
-
-.comment:last-child {
-    border-bottom: none;
-}
-
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.comment-author {
-    font-weight: bold;
-}
-
-.comment-time {
-    color: #888;
-    font-size: 0.8em;
-}
-
-.comment-text {
-    margin-top: 5px;
-    white-space: normal;
-    word-break: break-word;
-}
-
-.delete-button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-top: 10px;
-    border-radius: 5px;
-    align-self: flex-end;
-}
-
-.delete-button:hover {
-    background-color: #c82333;
-}
-
-.input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.input-container input, .input-container textarea {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 100%;
-}
-
-.save-button {
-    align-self: flex-start;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.save-button:hover {
-    background-color: #0056b3;
-}
-
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .comments-view {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .comment {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+        .comment:last-child {
+            border-bottom: none;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .comment-author {
+            font-weight: bold;
+        }
+        .comment-time {
+            color: #888;
+            font-size: 0.8em;
+        }
+        .comment-text {
+            margin-top: 5px;
+            white-space: normal;
+            word-break: break-word;
+        }
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 2px 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+            align-self: flex-end;
+            font-size: 0.8em;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .input-container input, .input-container textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .save-button {
+            align-self: flex-start;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .save-button:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .pagination button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
     </style>
     <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
@@ -117,7 +119,11 @@
     <div class="container">
         <h1>게시판</h1>
         <div class="comments-view" id="commentsView">
-            <!-- 여기에 댓글이 동적으로 추가될 예정 -->
+            <!-- 댓글 -->
+        </div>
+        <div class="pagination">
+            <button id="prevPage">이전</button>
+            <button id="nextPage">다음</button>
         </div>
         <div class="input-container">
             <input type="text" id="authorInput" placeholder="작성자">
@@ -127,7 +133,6 @@
     </div>
 
     <script>
-        // Firebase 설정 객체
         const firebaseConfig = {
             apiKey: "AIzaSyCSG2pFiTC7QupNTN79kKWKchnbbQZ1EwY",
             authDomain: "bulletin-board-f3efb.firebaseapp.com",
@@ -146,6 +151,9 @@
         const database = firebase.database();
         const commentsRef = database.ref('comments');
 
+        let currentPage = 0;
+        const commentsPerPage = 10;
+
         document.getElementById('saveButton').addEventListener('click', () => {
             const author = document.getElementById('authorInput').value;
             const commentText = document.getElementById('commentInput').value;
@@ -159,7 +167,7 @@
                 }).then(() => {
                     document.getElementById('authorInput').value = '';
                     document.getElementById('commentInput').value = '';
-                    loadComments();
+                    loadComments(currentPage);
                 }).catch((error) => {
                     console.error('댓글 저장 중 오류 발생:', error);
                 });
@@ -168,11 +176,17 @@
             }
         });
 
-        function loadComments() {
-            commentsRef.orderByChild('timestamp').on('value', (snapshot) => {
+        function loadComments(page) {
+            const startAt = page * commentsPerPage;
+            commentsRef.orderByChild('timestamp').limitToLast(startAt + commentsPerPage).once('value', (snapshot) => {
                 const commentsView = document.getElementById('commentsView');
                 commentsView.innerHTML = '';
+                let comments = [];
                 snapshot.forEach((childSnapshot) => {
+                    comments.unshift(childSnapshot);
+                });
+
+                comments.slice(startAt, startAt + commentsPerPage).forEach((childSnapshot) => {
                     const comment = childSnapshot.val();
                     const commentDiv = document.createElement('div');
                     commentDiv.classList.add('comment');
@@ -196,14 +210,21 @@
                     deleteButton.classList.add('delete-button');
                     deleteButton.textContent = '삭제';
                     deleteButton.addEventListener('click', () => {
-                        if (confirm('정말 삭제하시겠습니까?')) {
-                            childSnapshot.ref.remove()
-                                .then(() => {
-                                    loadComments();
-                                })
-                                .catch((error) => {
-                                    console.error('댓글 삭제 중 오류 발생:', error);
-                                });
+                        const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
+                        const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
+
+                        if (isAdmin) {
+                            if (confirm('정말 삭제하시겠습니까?')) {
+                                childSnapshot.ref.remove()
+                                    .then(() => {
+                                        loadComments(currentPage);
+                                    })
+                                    .catch((error) => {
+                                        console.error('댓글 삭제 중 오류 발생:', error);
+                                    });
+                            }
+                        } else {
+                            alert('비밀번호가 일치하지 않습니다.');
                         }
                     });
 
@@ -217,8 +238,21 @@
             });
         }
 
+        // 페이지네이션 이벤트 
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                loadComments(currentPage);
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            currentPage++;
+            loadComments(currentPage);
+        });
+
         // 페이지 로드 시 댓글 불러오기
-        loadComments();
+        loadComments(currentPage);
     </script>
 </body>
 </html>
