@@ -6,15 +6,16 @@
     <title>게시판</title>
     <style>
   body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            visibility: hidden; /* 초기에는 페이지 숨김 */
+        }
 .container {
     width: 100%;
     max-width: 1000px;
@@ -217,7 +218,8 @@ margin-bottom: 3px;
         }
     });
 
-    function loadComments() {
+    // 페이지 로드 시 댓글 불러오기
+function loadComments() {
     commentsRef.orderByChild('timestamp').once('value', (snapshot) => {
         const commentsView = document.getElementById('commentsView');
         commentsView.innerHTML = '';
@@ -297,11 +299,14 @@ margin-bottom: 3px;
             const existingNewComments = document.querySelectorAll('.new-comment');
             existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
         }
+
+        // 댓글이 로드된 후 페이지를 표시
+        document.body.style.visibility = 'visible';
     });
 }
 
-    // 페이지 로드 시 댓글 불러오기
-    loadComments();
+// 페이지 로드 시 댓글 불러오기
+loadComments();
 </script>
 </body>
 </html>
