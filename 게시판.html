@@ -218,87 +218,87 @@ margin-bottom: 3px;
     });
 
     function loadComments() {
-        commentsRef.orderByChild('timestamp').once('value', (snapshot) => {
-            const commentsView = document.getElementById('commentsView');
-            commentsView.innerHTML = '';
-            let comments = [];
-            snapshot.forEach((childSnapshot) => {
-                comments.push(childSnapshot);
-            });
+    commentsRef.orderByChild('timestamp').once('value', (snapshot) => {
+        const commentsView = document.getElementById('commentsView');
+        commentsView.innerHTML = '';
+        let comments = [];
+        snapshot.forEach((childSnapshot) => {
+            comments.push(childSnapshot);
+        });
 
-            // 최신 댓글의 타임스탬프를 로컬 스토리지에 저장
-            let lastCommentTimestamp = localStorage.getItem('lastCommentTimestamp');
-            let newCommentAdded = false;
+        // 최신 댓글의 타임스탬프를 로컬 스토리지에 저장
+        let lastCommentTimestamp = localStorage.getItem('lastCommentTimestamp');
+        let newCommentAdded = false;
 
-            comments.reverse().forEach((childSnapshot) => {
-                const comment = childSnapshot.val();
-                const commentDiv = document.createElement('div');
-                commentDiv.classList.add('comment');
+        comments.reverse().forEach((childSnapshot) => {
+            const comment = childSnapshot.val();
+            const commentDiv = document.createElement('div');
+            commentDiv.classList.add('comment');
 
-                const headerDiv = document.createElement('div');
-                headerDiv.classList.add('comment-header');
+            const headerDiv = document.createElement('div');
+            headerDiv.classList.add('comment-header');
 
-                const authorDiv = document.createElement('div');
-                authorDiv.classList.add('comment-author');
-                authorDiv.textContent = comment.author;
+            const authorDiv = document.createElement('div');
+            authorDiv.classList.add('comment-author');
+            authorDiv.textContent = comment.author;
 
-                const timeDiv = document.createElement('div');
-                timeDiv.classList.add('comment-time');
-                timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
+            const timeDiv = document.createElement('div');
+            timeDiv.classList.add('comment-time');
+            timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
 
-                const textDiv = document.createElement('div');
-                textDiv.classList.add('comment-text');
-                textDiv.textContent = comment.text;
+            const textDiv = document.createElement('div');
+            textDiv.classList.add('comment-text');
+            textDiv.textContent = comment.text;
 
-                const deleteButton = document.createElement('button');
-                deleteButton.classList.add('delete-button');
-                deleteButton.textContent = '삭제';
-                deleteButton.addEventListener('click', () => {
-                    const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
-                    const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-button');
+            deleteButton.textContent = '삭제';
+            deleteButton.addEventListener('click', () => {
+                const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
+                const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
 
-                    if (isAdmin) {
-                        if (confirm('정말 삭제하시겠습니까?')) {
-                            childSnapshot.ref.remove()
-                                .then(() => {
-                                    loadComments();
-                                })
-                                .catch((error) => {
-                                    console.error('댓글 삭제 중 오류 발생:', error);
-                                });
-                        }
-                    } else {
-                        alert('비밀번호가 일치하지 않습니다.');
+                if (isAdmin) {
+                    if (confirm('정말 삭제하시겠습니까?')) {
+                        childSnapshot.ref.remove()
+                            .then(() => {
+                                loadComments();
+                            })
+                            .catch((error) => {
+                                console.error('댓글 삭제 중 오류 발생:', error);
+                            });
                     }
-                });
-
-                headerDiv.appendChild(authorDiv);
-                headerDiv.appendChild(timeDiv);
-                commentDiv.appendChild(headerDiv);
-                commentDiv.appendChild(textDiv);
-                commentDiv.appendChild(deleteButton);
-                commentsView.appendChild(commentDiv);
-
-                // 최신 댓글에 "new" 표시
-                if (!lastCommentTimestamp || new Date(comment.timestamp) > new Date(lastCommentTimestamp)) {
-                    commentDiv.classList.add('new-comment');
-                    newCommentAdded = true;
+                } else {
+                    alert('비밀번호가 일치하지 않습니다.');
                 }
             });
 
-            // 마지막 댓글 시간 저장
-            if (comments.length > 0) {
-                const lastComment = comments[0].val();
-                localStorage.setItem('lastCommentTimestamp', lastComment.timestamp);
-            }
+            headerDiv.appendChild(authorDiv);
+            headerDiv.appendChild(timeDiv);
+            commentDiv.appendChild(headerDiv);
+            commentDiv.appendChild(textDiv);
+            commentDiv.appendChild(deleteButton);
+            commentsView.appendChild(commentDiv);
 
-            // "new-comment" 클래스를 제거하여 표시
-            if (!newCommentAdded) {
-                const existingNewComments = document.querySelectorAll('.new-comment');
-                existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
+            // 최신 댓글에 "new" 표시
+            if (!lastCommentTimestamp || new Date(comment.timestamp) > new Date(lastCommentTimestamp)) {
+                commentDiv.classList.add('new-comment');
+                newCommentAdded = true;
             }
         });
-    }
+
+        // 마지막 댓글 시간 저장
+        if (comments.length > 0) {
+            const lastComment = comments[0].val();
+            localStorage.setItem('lastCommentTimestamp', lastComment.timestamp);
+        }
+
+        // "new-comment" 클래스를 제거하여 표시
+        if (!newCommentAdded) {
+            const existingNewComments = document.querySelectorAll('.new-comment');
+            existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
+        }
+    });
+}
 
     // 페이지 로드 시 댓글 불러오기
     loadComments();
