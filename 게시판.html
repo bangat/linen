@@ -5,125 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판</title>
     <style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-.container {
-    width: 100%;
-    max-width: 1000px; /* 최대 너비를 좀 더 넓게 설정 */
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
-}
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
 
-.comments-view {
-    max-height: 500px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
-}
+        h1 {
+            font-size: 1.0em; /* 타이틀 폰트 크기 줄이기 */
+            margin-bottom: 3px; /* 타이틀과 댓글 뷰 창 사이의 여백 최소화 */
+        }
 
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-}
+        .comments-view {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 3px; /* 댓글 뷰 창과 입력 창 사이의 여백 최소화 */
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
 
-.comment:last-child {
-    border-bottom: none;
-}
+        .comment {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
 
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .comment:last-child {
+            border-bottom: none;
+        }
 
-.comment-author {
-    font-weight: bold;
-    font-size: 0.9em; /* 폰트 크기 약간 확대 */
-}
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.comment-time {
-    color: #888;
-    font-size: 0.8em;
-}
+        .comment-author {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
 
-.comment-text {
-    margin-top: 5px;
-    white-space: normal;
-    word-break: break-word;
-    font-size: 0.9em; /* 폰트 크기 약간 확대 */
-}
+        .comment-time {
+            color: #888;
+            font-size: 0.8em;
+        }
 
-.delete-button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-top: 10px;
-    border-radius: 5px;
-    align-self: flex-end;
-}
+        .comment-text {
+            margin-top: 5px;
+            white-space: normal;
+            word-break: break-word;
+            font-size: 0.9em;
+        }
 
-.delete-button:hover {
-    background-color: #c82333;
-}
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 3px 6px; /* 삭제 버튼 크기 줄이기 */
+            cursor: pointer;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 0.7em; /* 삭제 버튼 폰트 크기 줄이기 */
+        }
 
-.input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+        .delete-button:hover {
+            background-color: #c82333;
+        }
 
-.input-container input, .input-container textarea {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 100%;
-    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
-}
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px; /* 입력 필드 사이의 여백 최소화 */
+        }
 
-.save-button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
-}
+        .input-container input, .input-container textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-.save-button:hover {
-    background-color: #0056b3;
-}
+        .save-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
 
-/* 모바일 반응형 디자인 추가 */
-@media (max-width: 600px) {
-    .container {
-        padding: 10px; /* 모바일에서는 패딩을 줄입니다. */
-    }
+        .save-button:hover {
+            background-color: #0056b3;
+        }
 
-    .comments-view {
-        max-height: 400px; /* 모바일에서 댓글 뷰창의 최대 높이를 줄입니다. */
-    }
-}
-        </style>
+        /* 모바일 반응형 디자인 추가 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            .comments-view {
+                max-height: 400px;
+            }
+        }
+    </style>
 
     <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
@@ -142,165 +147,162 @@
         </div>
     </div>
 
-<script>
-    // 텔레그램 메시지 전송 함수
-    async function sendTelegramMessage(message) {
-        const token = '6708038500:AAEaiZF3I4Sn5u_IGlhTaV9_m6YFo6ye3iM'; // 텔레그램 API 토큰
-        const chatId = '5432510881'; // 채팅 ID
+    <script>
+        // 텔레그램 메시지 전송 함수
+        async function sendTelegramMessage(message) {
+            const token = '6708038500:AAEaiZF3I4Sn5u_IGlhTaV9_m6YFo6ye3iM'; // 텔레그램 API 토큰
+            const chatId = '5432510881'; // 채팅 ID
 
-        const url = `https://api.telegram.org/bot${token}/sendMessage`;
-        const params = new URLSearchParams({
-            chat_id: chatId,
-            text: message
+            const url = `https://api.telegram.org/bot${token}/sendMessage`;
+            const params = new URLSearchParams({
+                chat_id: chatId,
+                text: message
+            });
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: params.toString()
+                });
+                const result = await response.json();
+                console.log('Telegram message sent:', result);
+            } catch (error) {
+                console.error('Error sending Telegram message:', error);
+            }
+        }
+
+        // Firebase 설정 객체
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSG2pFiTC7QupNTN79kKWKchnbbQZ1EwY",
+            authDomain: "bulletin-board-f3efb.firebaseapp.com",
+            databaseURL: "https://bulletin-board-f3efb-default-rtdb.firebaseio.com",
+            projectId: "bulletin-board-f3efb",
+            storageBucket: "bulletin-board-f3efb.appspot.com",
+            messagingSenderId: "554876044559",
+            appId: "1:554876044559:web:c4c5a10cd54b5e71f22a7a",
+            measurementId: "G-DL8SYG35SK"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+
+        // Firebase Realtime Database 참조
+        const database = firebase.database();
+        const commentsRef = database.ref('comments');
+
+        document.getElementById('saveButton').addEventListener('click', () => {
+            const author = document.getElementById('authorInput').value;
+            const commentText = document.getElementById('commentInput').value;
+
+            if (author && commentText) {
+                const newCommentRef = commentsRef.push();
+                const timestamp = new Date().toISOString();
+                newCommentRef.set({
+                    author: author,
+                    text: commentText,
+                    timestamp: timestamp
+                }).then(() => {
+                    // 댓글 저장 후 알림 전송
+                    const message = `새 댓글이 등록되었습니다.\n작성자: ${author}\n내용: ${commentText}`;
+                    sendTelegramMessage(message);
+
+                    // 입력 필드 초기화 및 댓글 로드
+                    document.getElementById('authorInput').value = '';
+                    document.getElementById('commentInput').value = '';
+                    loadComments();
+                }).catch((error) => {
+                    console.error('댓글 저장 중 오류 발생:', error);
+                });
+            } else {
+                alert('작성자와 댓글 내용을 모두 입력하세요.');
+            }
         });
 
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: params.toString()
-            });
-            const result = await response.json();
-            console.log('Telegram message sent:', result);
-        } catch (error) {
-            console.error('Error sending Telegram message:', error);
-        }
-    }
+        function loadComments() {
+            commentsRef.orderByChild('timestamp').once('value', (snapshot) => {
+                const commentsView = document.getElementById('commentsView');
+                commentsView.innerHTML = '';
+                let comments = [];
+                snapshot.forEach((childSnapshot) => {
+                    comments.push(childSnapshot);
+                });
 
-    // Firebase 설정 객체
-    const firebaseConfig = {
-        apiKey: "AIzaSyCSG2pFiTC7QupNTN79kKWKchnbbQZ1EwY",
-        authDomain: "bulletin-board-f3efb.firebaseapp.com",
-        databaseURL: "https://bulletin-board-f3efb-default-rtdb.firebaseio.com",
-        projectId: "bulletin-board-f3efb",
-        storageBucket: "bulletin-board-f3efb.appspot.com",
-        messagingSenderId: "554876044559",
-        appId: "1:554876044559:web:c4c5a10cd54b5e71f22a7a",
-        measurementId: "G-DL8SYG35SK"
-    };
+                // 최신 댓글의 타임스탬프를 로컬 스토리지에 저장
+                let lastCommentTimestamp = localStorage.getItem('lastCommentTimestamp');
+                let newCommentAdded = false;
 
-    // Firebase 초기화
-    firebase.initializeApp(firebaseConfig);
+                comments.reverse().forEach((childSnapshot) => {
+                    const comment = childSnapshot.val();
+                    const commentDiv = document.createElement('div');
+                    commentDiv.classList.add('comment');
 
-    // Firebase Realtime Database 참조
-    const database = firebase.database();
-    const commentsRef = database.ref('comments');
+                    const headerDiv = document.createElement('div');
+                    headerDiv.classList.add('comment-header');
 
-    document.getElementById('saveButton').addEventListener('click', () => {
-        const author = document.getElementById('authorInput').value;
-        const commentText = document.getElementById('commentInput').value;
+                    const authorDiv = document.createElement('div');
+                    authorDiv.classList.add('comment-author');
+                    authorDiv.textContent = comment.author;
 
-        if (author && commentText) {
-            const newCommentRef = commentsRef.push();
-            const timestamp = new Date().toISOString();
-            newCommentRef.set({
-                author: author,
-                text: commentText,
-                timestamp: timestamp
-            }).then(() => {
-                // 댓글 저장 후 알림 전송
-                const message = `새 댓글이 등록되었습니다.\n작성자: ${author}\n내용: ${commentText}`;
-                sendTelegramMessage(message);
+                    const deleteButton = document.createElement('button');
+                    deleteButton.classList.add('delete-button');
+                    deleteButton.textContent = '삭제';
+                    deleteButton.addEventListener('click', () => {
+                        const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
+                        const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
 
-                // 입력 필드 초기화 및 댓글 로드
-                document.getElementById('authorInput').value = '';
-                document.getElementById('commentInput').value = '';
-                loadComments();
-            }).catch((error) => {
-                console.error('댓글 저장 중 오류 발생:', error);
-            });
-        } else {
-            alert('작성자와 댓글 내용을 모두 입력하세요.');
-        }
-    });
-
-    function loadComments() {
-        commentsRef.orderByChild('timestamp').once('value', (snapshot) => {
-            const commentsView = document.getElementById('commentsView');
-            commentsView.innerHTML = '';
-            let comments = [];
-            snapshot.forEach((childSnapshot) => {
-                comments.push(childSnapshot);
-            });
-
-            // 최신 댓글의 타임스탬프를 로컬 스토리지에 저장
-            let lastCommentTimestamp = localStorage.getItem('lastCommentTimestamp');
-            let newCommentAdded = false;
-
-            comments.reverse().forEach((childSnapshot) => {
-                const comment = childSnapshot.val();
-                const commentDiv = document.createElement('div');
-                commentDiv.classList.add('comment');
-
-                const headerDiv = document.createElement('div');
-                headerDiv.classList.add('comment-header');
-
-                const authorDiv = document.createElement('div');
-                authorDiv.classList.add('comment-author');
-                authorDiv.textContent = comment.author;
-
-                const timeDiv = document.createElement('div');
-                timeDiv.classList.add('comment-time');
-                timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
-
-                const textDiv = document.createElement('div');
-                textDiv.classList.add('comment-text');
-                textDiv.textContent = comment.text;
-
-                const deleteButton = document.createElement('button');
-                deleteButton.classList.add('delete-button');
-                deleteButton.textContent = '삭제';
-                deleteButton.addEventListener('click', () => {
-                    const adminPassword = prompt("관리자 비밀번호를 입력하세요:");
-                    const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
-
-                    if (isAdmin) {
-                        if (confirm('정말 삭제하시겠습니까?')) {
-                            childSnapshot.ref.remove()
-                                .then(() => {
-                                    loadComments();
-                                })
-                                .catch((error) => {
-                                    console.error('댓글 삭제 중 오류 발생:', error);
-                                });
+                        if (isAdmin) {
+                            if (confirm('정말 삭제하시겠습니까?')) {
+                                childSnapshot.ref.remove()
+                                    .then(() => {
+                                        loadComments();
+                                    })
+                                    .catch((error) => {
+                                        console.error('댓글 삭제 중 오류 발생:', error);
+                                    });
+                            }
+                        } else {
+                            alert('비밀번호가 일치하지 않습니다.');
                         }
-                    } else {
-                        alert('비밀번호가 일치하지 않습니다.');
+                    });
+
+                    const timeDiv = document.createElement('div');
+                    timeDiv.classList.add('comment-time');
+                    timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
+
+                    headerDiv.appendChild(authorDiv);
+                    headerDiv.appendChild(timeDiv);
+                    headerDiv.appendChild(deleteButton); // 삭제 버튼을 작성자명 옆에 배치
+
+                    commentDiv.appendChild(headerDiv);
+                    commentDiv.appendChild(textDiv);
+                    commentsView.appendChild(commentDiv);
+
+                    // 최신 댓글에 "new" 표시
+                    if (!lastCommentTimestamp || new Date(comment.timestamp) > new Date(lastCommentTimestamp)) {
+                        commentDiv.classList.add('new-comment');
+                        newCommentAdded = true;
                     }
                 });
 
-                headerDiv.appendChild(authorDiv);
-                headerDiv.appendChild(timeDiv);
-                commentDiv.appendChild(headerDiv);
-                commentDiv.appendChild(textDiv);
-                commentDiv.appendChild(deleteButton);
-                commentsView.appendChild(commentDiv);
+                // 마지막 댓글 시간 저장
+                if (comments.length > 0) {
+                    const lastComment = comments[0].val();
+                    localStorage.setItem('lastCommentTimestamp', lastComment.timestamp);
+                }
 
-                // 최신 댓글에 "new" 표시
-                if (!lastCommentTimestamp || new Date(comment.timestamp) > new Date(lastCommentTimestamp)) {
-                    commentDiv.classList.add('new-comment');
-                    newCommentAdded = true;
+                // "new-comment" 클래스를 제거하여 표시
+                if (!newCommentAdded) {
+                    const existingNewComments = document.querySelectorAll('.new-comment');
+                    existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
                 }
             });
+        }
 
-            // 마지막 댓글 시간 저장
-            if (comments.length > 0) {
-                const lastComment = comments[0].val();
-                localStorage.setItem('lastCommentTimestamp', lastComment.timestamp);
-            }
-
-            // "new-comment" 클래스를 제거하여 표시
-            if (!newCommentAdded) {
-                const existingNewComments = document.querySelectorAll('.new-comment');
-                existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
-            }
-        });
-    }
-
-    // 페이지 로드 시 댓글 불러오기
-    loadComments();
-</script>
+        // 페이지 로드 시 댓글 불러오기
+        loadComments();
+    </script>
 </body>
 </html>
