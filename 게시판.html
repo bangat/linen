@@ -19,7 +19,7 @@
 
         .container {
             width: 100%;
-            max-width: 1000px; /* 최대 너비를 좀 더 넓게 설정 */
+            max-width: 1000px;
             background-color: #fff;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -27,8 +27,15 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
+            box-sizing: border-box;
             min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 1em; /* 타이틀 폰트 크기를 작게 설정 */
+            margin: 0;
+            margin-bottom: 10px; /* 타이틀과 댓글 뷰 창 사이의 여백 최소화 */
+            text-align: center;
         }
 
         .comments-view {
@@ -38,7 +45,7 @@
             padding: 10px;
             margin-bottom: 20px;
             border-radius: 5px;
-            box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
+            box-sizing: border-box;
         }
 
         .comment {
@@ -60,7 +67,9 @@
 
         .comment-author {
             font-weight: bold;
-            font-size: 0.9em; /* 폰트 크기 약간 확대 */
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
         }
 
         .comment-time {
@@ -72,18 +81,18 @@
             margin-top: 5px;
             white-space: normal;
             word-break: break-word;
-            font-size: 0.9em; /* 폰트 크기 약간 확대 */
+            font-size: 0.9em;
         }
 
         .delete-button {
             background-color: #dc3545;
             color: #fff;
             border: none;
-            padding: 5px 10px;
+            padding: 2px 5px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-left: 10px; /* 작성자명 옆에 배치 */
             border-radius: 5px;
-            align-self: flex-end;
+            font-size: 0.7em;
         }
 
         .delete-button:hover {
@@ -101,7 +110,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             width: 100%;
-            box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
+            box-sizing: border-box;
         }
 
         .save-button {
@@ -111,7 +120,7 @@
             padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
-            box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
+            box-sizing: border-box;
         }
 
         .save-button:hover {
@@ -121,11 +130,11 @@
         /* 모바일 반응형 디자인 추가 */
         @media (max-width: 600px) {
             .container {
-                padding: 10px; /* 모바일에서는 패딩을 줄입니다. */
+                padding: 10px;
             }
 
             .comments-view {
-                max-height: 400px; /* 모바일에서 댓글 뷰창의 최대 높이를 줄입니다. */
+                max-height: 400px;
             }
         }
     </style>
@@ -246,14 +255,6 @@
                     authorDiv.classList.add('comment-author');
                     authorDiv.textContent = comment.author;
 
-                    const timeDiv = document.createElement('div');
-                    timeDiv.classList.add('comment-time');
-                    timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
-
-                    const textDiv = document.createElement('div');
-                    textDiv.classList.add('comment-text');
-                    textDiv.textContent = comment.text;
-
                     const deleteButton = document.createElement('button');
                     deleteButton.classList.add('delete-button');
                     deleteButton.textContent = '삭제';
@@ -276,11 +277,15 @@
                         }
                     });
 
+                    const timeDiv = document.createElement('div');
+                    timeDiv.classList.add('comment-time');
+                    timeDiv.textContent = new Date(comment.timestamp).toLocaleString();
+
                     headerDiv.appendChild(authorDiv);
+                    authorDiv.appendChild(deleteButton); // 삭제 버튼을 작성자명 옆에 추가
                     headerDiv.appendChild(timeDiv);
                     commentDiv.appendChild(headerDiv);
                     commentDiv.appendChild(textDiv);
-                    commentDiv.appendChild(deleteButton);
                     commentsView.appendChild(commentDiv);
 
                     // 최신 댓글에 "new" 표시
