@@ -133,7 +133,9 @@ margin-bottom: 3px;
 </head>
 <body>
     <div class="container">
-        <h1>개발중</h1>
+        <div class="image-container" id="imageContainer">
+            <!-- 여기에 이미지가 동적으로 추가될 예정 -->
+        </div>
         <div class="comments-view" id="commentsView">
             <!-- 여기에 댓글이 동적으로 추가될 예정 -->
         </div>
@@ -260,53 +262,53 @@ function loadComments() {
                 const isAdmin = (adminPassword === '9'); // 관리자 비밀번호 설정
 
                 if (isAdmin) {
-                    if (confirm('정말 삭제하시겠습니까?')) {
-                        childSnapshot.ref.remove()
-                            .then(() => {
-                                loadComments();
-                            })
-                            .catch((error) => {
-                                console.error('댓글 삭제 중 오류 발생:', error);
-                            });
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            childSnapshot.ref.remove()
+                                .then(() => {
+                                    loadComments();
+                                })
+                                .catch((error) => {
+                                    console.error('댓글 삭제 중 오류 발생:', error);
+                                });
+                        }
+                    } else {
+                        alert('비밀번호가 일치하지 않습니다.');
                     }
-                } else {
-                    alert('비밀번호가 일치하지 않습니다.');
+                });
+
+                headerDiv.appendChild(authorDiv);
+                headerDiv.appendChild(timeDiv);
+                commentDiv.appendChild(headerDiv);
+                commentDiv.appendChild(textDiv);
+                commentDiv.appendChild(deleteButton);
+                commentsView.appendChild(commentDiv);
+
+                // 최신 댓글에 "new" 표시
+                if (!lastCommentTimestamp || new Date(comment.timestamp) > new Date(lastCommentTimestamp)) {
+                    commentDiv.classList.add('new-comment');
+                    newCommentAdded = true;
                 }
             });
 
-            headerDiv.appendChild(authorDiv);
-            headerDiv.appendChild(timeDiv);
-            commentDiv.appendChild(headerDiv);
-            commentDiv.appendChild(textDiv);
-            commentDiv.appendChild(deleteButton);
-            commentsView.appendChild(commentDiv);
-
-            // 최신 댓글에 "new" 표시
-            if (!lastCommentTimestamp || new Date(comment.timestamp) > new Date(lastCommentTimestamp)) {
-                commentDiv.classList.add('new-comment');
-                newCommentAdded = true;
+            // 마지막 댓글 시간 저장
+            if (comments.length > 0) {
+                const lastComment = comments[0].val();
+                localStorage.setItem('lastCommentTimestamp', lastComment.timestamp);
             }
+
+            // "new-comment" 클래스를 제거하여 표시
+            if (!newCommentAdded) {
+                const existingNewComments = document.querySelectorAll('.new-comment');
+                existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
+            }
+
+            // 댓글이 로드된 후 페이지를 표시
+            document.body.style.visibility = 'visible';
         });
+    }
 
-        // 마지막 댓글 시간 저장
-        if (comments.length > 0) {
-            const lastComment = comments[0].val();
-            localStorage.setItem('lastCommentTimestamp', lastComment.timestamp);
-        }
-
-        // "new-comment" 클래스를 제거하여 표시
-        if (!newCommentAdded) {
-            const existingNewComments = document.querySelectorAll('.new-comment');
-            existingNewComments.forEach(comment => comment.classList.remove('new-comment'));
-        }
-
-        // 댓글이 로드된 후 페이지를 표시
-        document.body.style.visibility = 'visible';
-    });
-}
-
-// 페이지 로드 시 댓글 불러오기
-loadComments();
+    // 페이지 로드 시 댓글 불러오기
+    loadComments();
 </script>
 </body>
 </html>
