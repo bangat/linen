@@ -105,39 +105,43 @@
 
         const API_KEY = '197c02787b4764d219198f8c2a68656a';
 
-        $(document).ready(function() {
-            let currentPhotoIndex = 0;
+       $(document).ready(function() {
+    let currentPhotoIndex = 0;
 
-            $('#viewButton').on('click', function() {
-                var ward = $('#wardSelect').val();
-                var date = $('#datePicker').val();
-                var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
-                var isLaundry = $('#laundryCheckbox').is(':checked');
+    $('#viewButton').on('click', function() {
+        var ward = $('#wardSelect').val();
+        var date = $('#datePicker').val();
+        var viewAllWards = $('#viewAllWardsCheckbox').is(':checked');
+        var isLaundry = $('#laundryCheckbox').is(':checked');
 
-                if ($('#viewAllCheckbox').is(':checked')) {
-                    loadPhotos(ward, null, viewAllWards, isLaundry); // 전체 보기
-                } else if (ward && date) {
-                    loadPhotos(ward, date, viewAllWards, isLaundry);
-                } else {
-                    alert('병동과 날짜를 선택하세요.');
-                }
-            });
+        if ($('#viewAllCheckbox').is(':checked') && viewAllWards) {
+            loadPhotos(null, null, viewAllWards, isLaundry); // 전체 날짜, 전체 병동
+        } else if ($('#viewAllCheckbox').is(':checked')) {
+            loadPhotos(ward, null, viewAllWards, isLaundry); // 전체 날짜, 선택된 병동
+        } else if (viewAllWards) {
+            loadPhotos(null, date, viewAllWards, isLaundry); // 전체 병동, 선택된 날짜
+        } else if (ward && date) {
+            loadPhotos(ward, date, viewAllWards, isLaundry); // 선택된 병동, 선택된 날짜
+        } else {
+            alert('병동과 날짜를 선택하세요.');
+        }
+    });
 
-            $('#wardSelect').on('change', function() {
-                var ward = $(this).val();
-                var date = $('#datePicker').val();
-                if (ward && date) {
-                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
-                }
-            });
+    $('#wardSelect').on('change', function() {
+        var ward = $(this).val();
+        var date = $('#datePicker').val();
+        if (ward && date) {
+            loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+        }
+    });
 
-            $('#datePicker').on('change', function() {
-                var ward = $('#wardSelect').val();
-                var date = $(this).val();
-                if (ward && date) {
-                    loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
-                }
-            });
+    $('#datePicker').on('change', function() {
+        var ward = $('#wardSelect').val();
+        var date = $(this).val();
+        if (ward && date) {
+            loadPhotos(ward, date, $('#viewAllWardsCheckbox').is(':checked'), $('#laundryCheckbox').is(':checked'));
+        }
+    });
 
            $('#cameraButton').on('click', function() {
     if ($('#wardSelect').val()) {
