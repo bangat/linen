@@ -35,6 +35,7 @@
             <option value="dayWard">낮병동</option>
             <option value="endoscopy">내시경실</option>
             <option value="ER">응급실</option>
+ <option value="linenroom">린넨실</option>
         </select>
 
         <input type="date" id="datePicker" class="date-picker" placeholder="조회 날짜를 선택하세요.">
@@ -431,7 +432,8 @@
                     'ICU': '중환자실',
                     'dayWard': '낮병동',
                     'endoscopy': '내시경실',
-                    'ER': '응급실'
+                    'ER': '응급실',
+                    'linenroom': '린넨실'
                 };
                 return wardLabels[wardCode] || wardCode;
             }
