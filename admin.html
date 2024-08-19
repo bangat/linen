@@ -271,15 +271,19 @@
            function displayPhotos(photos, date) {
     $('#photoGallery').empty();
 
-    // 필터링 과정 디버깅용 로그 추가
     console.log("전체 사진 개수:", photos.length);
 
+    // 날짜로 필터링
     let filteredPhotos = date ? photos.filter(photo => photo.date.split(' ')[0] === date) : photos;
 
     console.log("필터링된 사진 개수:", filteredPhotos.length);
 
+    // 시간 기준으로 내림차순 정렬 (최근 날짜가 앞에 오도록)
+    filteredPhotos.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     if (filteredPhotos.length === 0) {
         alert("조회된 사진이 없습니다.");
+        return;
     }
 
     filteredPhotos.forEach(photo => {
@@ -296,6 +300,18 @@
             }
         });
 
+        img.on('click', function() {
+            openModal(photo.url);
+        });
+
+        photoContainer.append(dateLabel, img, wardLabel, deleteButton);
+        $('#photoGallery').append(photoContainer);
+    });
+
+    currentPhotoIndex = 0;
+    showPhoto(currentPhotoIndex);
+    toggleNavigationButtons(filteredPhotos.length);
+}
         img.on('click', function() {
             openModal(photo.url);
         });
