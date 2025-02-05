@@ -224,4 +224,3 @@ $(document).ready(function() {
         notificationSound.play(); // 사운드 재생  
     }  
 });  
-내 사이트 js코드야 기억해둬 다음코드 보여주고 질문할게
