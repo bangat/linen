@@ -1,146 +1,228 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="린넨실">
-    <meta property="og:description" content="일일 사용량에 맞게 요청 바랍니다:D">
-    <meta property="og:image" content="https://i.ibb.co/TKrjqyL/001-3.png">
-    <meta property="og:url" content="https://hallymlinen.netlify.app/">
-    <meta property="og:type" content="website">
-    <title>린넨실 요청서</title>
-    <link rel="stylesheet" href="linen.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <audio id="notificationSound" src="https://drive.google.com/uc?export=download&id=1OwurEapLxRtn2I079OEjdkKxFncB35Ao"></audio>
+$(document).ready(function() {
+// 린넨실 요청서 제목 클릭 시 초기 상태로 돌아가기
+$("h1").click(function() {
+$(".tab").removeClass("active");
+$(".tab[data-tab='sheet']").addClass("active");
+$(".form-section").removeClass("active");
+$("#sheet").addClass("active");
+$(".tab").css("background-color", ""); //
+$(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
+});
 
-    <style>
-        /* 스타일 설정 */
-        #adminAccessBtn {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-    </style>
-</head>
-<body>
+// 탭 클릭 시 해당 섹션으로 이동  
+$(".tab").click(function() {  
+    var tabId = $(this).attr("data-tab");  
+    $(".tab").removeClass("active");  
+    $(this).addClass("active");  
+    $(".form-section").removeClass("active");  
+    $("#" + tabId).addClass("active");  
 
-    <div class="menu-bar" id="menuBar"></div>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <a href="#" id="adminPageLink">관리자페이지</a>
-    </div>
+    // 모든 탭의 배경색 초기화 후 클릭한 탭의 배경색을 초록색으로 변경  
+    $(".tab").css("background-color", "");  
+    $(this).css("background-color", "#4CAF50");  
+});  
 
-    <div class="content">
-        <div class="header-container">
-            <h1 id="noticeHeader">요청서</h1>
-        </div>
-    </div>
+// 카메라 버튼 클릭 시 파일 업로드 버튼 클릭  
+$("#cameraButton").click(function() {  
+    $("#inventoryPhoto").click();  
+});  
 
-    <form id="linenRequestForm">
-        <div class="form-group">
-            <select id="wardDropdown" name="ward" required>
-                <option value="" disabled selected>병동을 선택해주세요.</option>
-                <option value="낮병동">낮병동</option>
-                <option value="심혈관">심혈관</option>
-                <option value="내시경실">내시경실</option>
-                <option value="중환자실">중환자실</option>
-                <option value="인공신장실">인공신장실</option>
-                <option value="수술실">수술실</option>
-                <option value="면역치료실">면역치료실</option>
-                <option value="응급실">응급실</option>
-            </select>
-        </div>
+// 파일 업로드 시 미리보기 표시  
+$("#inventoryPhoto").change(function(event) {  
+    const file = event.target.files[0];  
+    const reader = new FileReader();  
 
-        <div class="tabs">
-            <div class="tab active" data-tab="sheet">시트/기타</div>
-            <div class="tab" data-tab="normal">일반 환의</div>
-            <div class="tab" data-tab="ortho">정형 환의</div>
-            <div class="tab" data-tab="uniform">근 무 복</div>
-            <div class="tab" data-tab="inventory">재고/요청</div>
-        </div>
+    reader.onload = function(e) {  
+        $("#preview").attr("src", e.target.result);  
+        $("#preview").show();  
+    };  
 
-        <div id="inventory" class="form-section">
-            <div class="camera-section">
-                <div class="button-container">
-                    <button type="button" id="cameraButton">
-                        <i class="fa fa-camera camera-icon"></i> 재고사진
-                    </button>
-                    <input type="file" id="inventoryPhoto" style="display:none;" accept="image/*">
-                </div>
-                <button type="submit" id="submitBtn">
-                    <i class="fas fa-paper-plane submit-icon"></i> 요청하기
-                </button>
-                <img id="preview" src="#" alt="Preview" style="max-width:100%; display:none;">
-            </div>
-        </div>
+    reader.readAsDataURL(file);  
+});  
 
-        <div id="statusMessage">요청을 전송중 입니다..잠시만 기다려주세요..</div>
-    </form>
+// 메뉴바 클릭 시 드롭다운 메뉴 토글  
+$("#menuBar").click(function() {  
+    $("#dropdownMenu").toggle();  
+});  
 
-    <div id="popupContainer">
-        <div id="popupHeader">공지사항</div>
-        <div id="popupContent"></div>
-        <button id="closeBtn">닫기</button>
-    </div>
+// 요청서 전송  
+$("#linenRequestForm").submit(function(event) {  
+    event.preventDefault();  
 
-    <button id="adminAccessBtn">관리자 접속</button>
+    const wardValue = $("#wardDropdown").val().trim(); // 드롭다운 메뉴에서 선택된 병동명 가져오기  
+    const requestDate = $("#requestDate").val();  
+    const photoFile = $("#inventoryPhoto")[0].files[0];  
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js.js"></script>
-    <script>
-        $(document).ready(function() {
-            // 📌 요청서 초기화
-            $('#noticeHeader').on('click', function() {
-                $('input[type="number"]').val('');
-                $('#wardDropdown').val('');
-                $('#requestDate').val('');
-                $('.tab').removeClass('active');
-                $('.form-section').removeClass('active');
-                $('[data-tab="sheet"]').addClass('active');
-                $('#sheet').addClass('active');
-            });
+    if (!wardValue || !requestDate) {  
+        alert('병동명과 입고 날짜는 필수 입력 항목입니다.');  
+        return;  
+    }  
 
-            // 📌 중환자실 요청 시 재고사진 필수 확인
-            $('#linenRequestForm').on('submit', function(event) {
-                const selectedWard = $('#wardDropdown').val();
-                const inventoryPhoto = $('#inventoryPhoto')[0].files.length;
+    $("#submitBtn").prop('disabled', true); // 요청 버튼 비활성화  
+    $("#statusMessage").fadeIn(); // 요청 중 메시지 표시  
 
-                if (selectedWard === '중환자실' && inventoryPhoto === 0) {
-                    event.preventDefault(); // 폼 제출 방지
-                    alert('중환자실 요청 시 재고사진을 등록해야 합니다.');
-                    $('#cameraButton').click(); // 카메라 버튼 자동 실행
-                }
-            });
+    let message = `병동명 : ${wardValue}\n`;  
+    message += `입고날짜 : ${requestDate}\n\n`;  
 
-            // 📌 카메라 버튼 클릭 시 파일 선택 창 열기
-            $('#cameraButton').on('click', function() {
-                $('#inventoryPhoto').click();
-            });
+    let sheetItems = '';  
+    $("#sheet input[type='number']").each(function() {  
+        const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기  
+        const itemCount = $(this).val();  
+        if (itemCount > 0) {  
+            sheetItems += `${itemName} ${itemCount}장\n`;  
+        }  
+    });  
+    if (sheetItems) {  
+        message += `[시트/기타]\n${sheetItems}\n`;  
+    }  
 
-            // 📌 관리자 페이지 이동 (2손가락 터치)
-            document.addEventListener('touchstart', function(event) {
-                if (event.touches.length === 2) {
-                    document.getElementById('adminAccessBtn').click();
-                }
-            });
+    let normalItems = '';  
+    $("#normal input[type='number']").each(function() {  
+        const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기  
+        const itemCount = $(this).val();  
+        if (itemCount > 0) {  
+            normalItems += `${itemName} ${itemCount}장\n`;  
+        }  
+    });  
+    if (normalItems) {  
+        message += `[일반환의]\n${normalItems}\n`;  
+    }  
 
-            // 📌 관리자 접근 버튼 클릭 시 이동
-            document.getElementById('adminAccessBtn').addEventListener('click', function() {
-                window.location.href = 'admin.html';
-            });
-        });
-    </script>
+    let orthoItems = '';  
+    $("#ortho input[type='number']").each(function() {  
+        const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기  
+        const itemCount = $(this).val();  
+        if (itemCount > 0) {  
+            orthoItems += `${itemName} ${itemCount}장\n`;  
+        }  
+    });  
+    if (orthoItems) {  
+        message += `[정형환의]\n${orthoItems}\n`;  
+    }  
 
-</body>
-</html>
+    let uniformItems = '';  
+    $("#uniform input[type='number']").each(function() {  
+        const itemName = $(this).closest('tr').find('td:first').text().trim(); // 품목명 가져오기  
+        const itemCount = $(this).val();  
+        if (itemCount > 0) {  
+            uniformItems += `${itemName} ${itemCount}장\n`;  
+        }  
+    });  
+    if (uniformItems) {  
+        message += `[근무복]\n${uniformItems}\n`;  
+    }  
+
+    const chatId = "5432510881"; // 텔레그램 채팅방 ID  
+    const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";  
+    let url;  
+    let formData;  
+
+    if (photoFile) {  
+        // 사진 파일이 첨부된 경우  
+        url = `https://api.telegram.org/bot${token}/sendPhoto`;  
+        formData = new FormData();  
+        formData.append('chat_id', chatId);  
+        formData.append('photo', photoFile);  
+        formData.append('caption', message);  
+
+        fetch(url, {  
+            method: 'POST',  
+            body: formData  
+        })  
+        .then(response => response.json())  
+        .then(data => {  
+            if (data.ok) {  
+                playNotificationSound(); // 사운드 재생  
+                alert('요청이 성공적으로 전송되었습니다.');  
+                $("#linenRequestForm")[0].reset();  
+                $("#preview").attr("src", "#");  
+                $("#preview").hide();  
+            } else {  
+                throw new Error('전송 실패');  
+            }  
+        })  
+        .catch(error => {  
+            console.error('Error:', error);  
+            alert('요청을 전송하는 도중 오류가 발생했습니다.');  
+        })  
+        .finally(() => {  
+            $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화  
+            $("#statusMessage").fadeOut(); // 요청 중 메시지 숨기기  
+        });  
+    } else {  
+        // 사진 파일이 첨부되지 않은 경우  
+        url = `https://api.telegram.org/bot${token}/sendMessage`;  
+        formData = JSON.stringify({  
+            chat_id: chatId,  
+            parse_mode: 'HTML',  
+            text: message  
+        });  
+
+        fetch(url, {  
+            method: 'POST',  
+            headers: {  
+                'Content-Type': 'application/json',  
+            },  
+            body: formData  
+        })  
+        .then(response => response.json())  
+        .then(data => {  
+            if (data.ok) {  
+                playNotificationSound(); // 사운드 재생  
+                alert('요청이 성공적으로 전송되었습니다.');  
+                $("#linenRequestForm")[0].reset();  
+            } else {  
+                throw new Error('전송 실패');  
+            }  
+        })  
+        .catch(error => {  
+            console.error('Error:', error);  
+            alert('요청을 전송하는 도중 오류가 발생했습니다.');  
+        })  
+        .finally(() => {  
+            $("#submitBtn").prop('disabled', false); // 요청 버튼 활성화  
+            $("#statusMessage").fadeOut(); // 요청 중 메시지 숨기기  
+        });  
+    }  
+});  
+
+// 관리자 페이지 링크 처리  
+$('#adminPageLink').click(function(e) {  
+    e.preventDefault();  
+    var password = prompt("관리자 페이지 암호를 입력하세요.");  
+    if (password === "9") { // 관리자 페이지 암호 설정  
+        window.location.href = "admin.html";  
+    } else {  
+        alert("암호가 일치하지 않습니다.");  
+    }  
+});  
+
+const dateInput = document.getElementById('requestDate');  
+const datePlaceholder = document.querySelector('.date-placeholder');  
+
+dateInput.addEventListener('input', function() {  
+    if (dateInput.value) {  
+        datePlaceholder.style.display = 'none';  
+    } else {  
+        datePlaceholder.style.display = 'block';  
+    }  
+});  
+
+// 페이지 로드 시 초기 상태 설정  
+if (dateInput.value) {  
+    datePlaceholder.style.display = 'none';  
+}  
+
+// jQuery UI Datepicker 초기화 (중복 초기화 제거)  
+$("#requestDate").datepicker({  
+    dateFormat: 'yy-mm-dd'  
+});  
+
+// 사운드를 재생하는 함수  
+function playNotificationSound() {  
+    notificationSound.currentTime = 0; // 사운드를 처음으로 되감기  
+    notificationSound.play(); // 사운드 재생  
+}
+
+});
+
