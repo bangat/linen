@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>드래그해서 합이 10 만들기</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; text-align: center; touch-action: none; }
+        #game-container { width: 100%; max-width: 540px; margin: auto; position: relative; }
+        #game-board { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; padding: 10px; position: relative; }
+        .apple { width: 100%; aspect-ratio: 1; background: orange; color: white; font-size: 1.5rem;
+                 display: flex; align-items: center; justify-content: center; border-radius: 50%; user-select: none; position: relative; }
+        .selected { background: red; }
+        #drag-line { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        svg { width: 100%; height: 100%; }
+        line { stroke: rgba(255, 0, 0, 0.6); stroke-width: 5; stroke-linecap: round; }
+        h1, p { margin: 10px 0; }
+        #restart-btn { margin-top: 15px; padding: 10px 20px; font-size: 1.2rem; cursor: pointer; border: none; background: blue; color: white; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>드래그해서 10 만들기</h1>
+        <p>남은 시간: <span id="timer">240</span>초</p>
+        <p>현재 점수: <span id="score">0</span> / 288</p>
+        <div id="game-board"></div>
+        <button id="restart-btn">다시하기</button>
+        <div id="drag-line">
+            <svg id="line-svg"></svg>
+        </div>
+    </div>
+
+    <!-- 효과음 추가 -->
+    <audio id="clickSound" src="click.mp3"></audio>
+    <audio id="deleteSound" src="delete.mp3"></audio>
+    <audio id="dingSound" src="ding.mp3"></audio>
+
+    <script>
+        const boardSize = 144; // 12x12 사과 개수
+        let selectedApples = [];
+        let score = 0;
+        let totalScore = 288;
+        let isDragging = false;
+        let apples = [];
+        let timer = 240;
+        let timerInterval;
+        let svgLine;
+
+        function generateSolvableNumbers() {
+            let numbers = [];
+            for (let i = 0; i < boardSize / 2; i++) {
+                let num1 = Math.floor(Math.random() * 9) + 1;
+                let num2 = 10 - num1;
+                numbers.push(num1, num2);
+            }
+            return numbers.sort(() => Math.random() - 0.5);
+        }
+
+        function createBoard() {
+            clearInterval(timerInterval);
+            document.getElementById("timer").textContent = timer = 240;
+            document.getElementById("score").textContent = "0 / " + totalScore;
+            score = 0;
+
+            const board = document.getElementById("game-board");
+            board.innerHTML = "";
+            apples = generateSolvableNumbers();
+
+            for (let i = 0; i < boardSize; i++) {
+                const apple = document.createElement("div");
+                apple.classList.add("apple");
+                apple.textContent = apples[i];
+                apple.dataset.index = i;
+
+                apple.addEventListener("touchstart", startSelection);
+                apple.addEventListener("touchmove", selectApple);
+                apple.addEventListener("touchend", endSelection);
+
+                board.appendChild(apple);
+            }
+
+            startTimer();
+        }
+
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            sound.currentTime = 0;
+            sound.play();
+        }
+
+        function startSelection(event) {
+            event.preventDefault();
+            isDragging = true;
+            selectedApples = [];
+            clearLines();
+            handleTouch(event.touches[0]);
+        }
+
+        function selectApple(event) {
+            event.preventDefault();
+            if (isDragging) {
+                handleTouch(event.touches[0]);
+            }
+        }
+
+        function handleTouch(touch) {
+            const apple = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (apple && apple.classList.contains("apple") && !selectedApples.includes(apple)) {
+                const sum = selectedApples.reduce((acc, el) => acc + Number(el.textContent), 0);
+                const newNumber = Number(apple.textContent);
+
+                if (sum + newNumber <= 10) {
+                    apple.classList.add("selected");
+                    selectedApples.push(apple);
+                    playSound("clickSound");
+                    drawLines();
+                }
+            }
+        }
+
+        function endSelection() {
+            isDragging = false;
+            const sum = selectedApples.reduce((acc, apple) => acc + Number(apple.textContent), 0);
+
+            if (sum === 10) {
+                let removedCount = selectedApples.length;
+                let gainedScore = removedCount * 2;
+                score += gainedScore;
+                
+                document.getElementById("score").textContent = `${score} / ${totalScore}`;
+                
+                selectedApples.forEach(apple => {
+                    const index = parseInt(apple.dataset.index);
+                    apples[index] = null;
+                    apple.style.visibility = "hidden";
+                });
+
+                playSound("deleteSound");
+                playSound("dingSound");
+
+                if (score >= totalScore) {
+                    clearInterval(timerInterval);
+                    setTimeout(() => alert("게임 클리어! 🎉"), 100);
+                }
+            }
+
+            clearLines();
+            selectedApples.forEach(apple => apple.classList.remove("selected"));
+            selectedApples = [];
+        }
+
+        function drawLines() {
+            const svg = document.getElementById("line-svg");
+            svg.innerHTML = ""; // 기존 선 삭제
+
+            for (let i = 0; i < selectedApples.length - 1; i++) {
+                let apple1 = selectedApples[i];
+                let apple2 = selectedApples[i + 1];
+
+                let rect1 = apple1.getBoundingClientRect();
+                let rect2 = apple2.getBoundingClientRect();
+
+                let x1 = rect1.left + rect1.width / 2;
+                let y1 = rect1.top + rect1.height / 2;
+                let x2 = rect2.left + rect2.width / 2;
+                let y2 = rect2.top + rect2.height / 2;
+
+                let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", x1);
+                line.setAttribute("y1", y1);
+                line.setAttribute("x2", x2);
+                line.setAttribute("y2", y2);
+                svg.appendChild(line);
+            }
+        }
+
+        function clearLines() {
+            document.getElementById("line-svg").innerHTML = "";
+        }
+
+        function startTimer() {
+            const timerDisplay = document.getElementById("timer");
+            timerInterval = setInterval(() => {
+                timer--;
+                timerDisplay.textContent = timer;
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    alert("시간 종료! 게임 오버!");
+                    document.getElementById("game-board").innerHTML = "";
+                }
+            }, 1000);
+        }
+
+        document.addEventListener("touchend", () => isDragging = false);
+        document.getElementById("restart-btn").addEventListener("click", createBoard);
+
+        createBoard();
+    </script>
+
+</body>
+</html>
