@@ -33,6 +33,11 @@
             z-index: 1000;
         }
 
+.tab.disabled {
+    pointer-events: none; /* 클릭 불가 */
+    opacity: 0.5;         /* 시각적 비활성화 효과 */
+}
+
                 /* 팝업 스타일 */
       #popupContainer {
         display: none;
@@ -316,7 +321,17 @@ document.getElementById('adminAccessBtn').addEventListener('click', function() {
     window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
 });
 
+$(document).ready(function() {
+    // 해당 탭들을 비활성화
+    $('[data-tab="normal"], [data-tab="ortho"], [data-tab="uniform"]').addClass('disabled');
+});
 
+$(document).ready(function() {
+    $('[data-tab="normal"], [data-tab="ortho"], [data-tab="uniform"]').on('click', function(e) {
+        e.preventDefault();
+        return false;
+    });
+});
 
 });
 
