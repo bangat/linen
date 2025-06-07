@@ -5,29 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>팡팡게임</title>
   <style>
-    html, body {
-      margin: 0; padding: 0; height: 100%;
+    body {
+      margin: 0;
       background: #fff;
       color: #555;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      user-select: none;
-      overflow: hidden;
-    }
-    body {
       height: 100vh;
+      overflow: hidden;
+      user-select: none;
     }
     .timer-bar {
       width: 90vw;
       height: 30px;
       background: #eee;
       border-radius: 15px;
-      margin: 12px 0 6px;
+      margin: 12px 0;
       position: relative;
       box-shadow: inset 0 0 8px #ccc;
-      max-width: 600px;
     }
     .timer-fill {
       position: absolute;
@@ -55,9 +52,8 @@
       grid-template-rows: repeat(10, 1fr);
       gap: 6px;
       width: 90vw;
-      max-width: 600px;
-      height: 60vh; /* 세로 높이 축소 */
-      max-height: 450px;
+      height: 70vh;
+      max-height: 520px;
     }
     .tile {
       background-color: #fafafa;
@@ -83,10 +79,9 @@
       left: 0;
       pointer-events: none;
       z-index: 10;
+      height: 70vh;
+      max-height: 520px;
       width: 90vw;
-      max-width: 600px;
-      height: 60vh;
-      max-height: 450px;
     }
     .gameover {
       position: absolute;
@@ -110,7 +105,6 @@
       color: white;
       border-radius: 8px;
       cursor: pointer;
-      user-select: none;
     }
   </style>
 </head>
@@ -134,7 +128,8 @@
   <script>
     const emojis = ['🐶','🐱','🦁','🐰','🐼','🐵','🦊','🐨','🍎','🍇','🍓','🍊','🍌','🍉','🍍'];
     const rows = 10, cols = 5;
-    let tiles = [], selected = [];
+    let tiles = [];
+    let selected = [];
     const board = document.getElementById("board");
     const canvas = document.getElementById("line-canvas");
     const ctx = canvas.getContext("2d");
@@ -145,23 +140,6 @@
       match: document.getElementById("match-sound"),
       fail: document.getElementById("fail-sound")
     };
-
-    function resizeCanvas() {
-      canvas.width = board.clientWidth * devicePixelRatio;
-      canvas.height = board.clientHeight * devicePixelRatio;
-      canvas.style.width = board.clientWidth + "px";
-      canvas.style.height = board.clientHeight + "px";
-      const rect = board.getBoundingClientRect();
-      canvas.style.top = rect.top + window.scrollY + "px";
-      canvas.style.left = rect.left + window.scrollX + "px";
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(devicePixelRatio, devicePixelRatio);
-    }
-
-    const directions = [
-      { dx: 1, dy: 0 }, { dx: -1, dy: 0 },
-      { dx: 0, dy: 1 }, { dx: 0, dy: -1 }
-    ];
 
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -175,154 +153,64 @@
       const total = rows * cols;
       let pool = [];
 
-      // 인접쌍 40% 확률로 생성
+      // 각 이모지 두개씩 넣기 (전체 짝 맞추기용)
       for (let i = 0; i < total / 2; i++) {
         const emoji = emojis[i % emojis.length];
         pool.push(emoji, emoji);
       }
 
       shuffle(pool);
-
       tiles = Array.from({ length: rows }, () => Array(cols).fill(""));
 
-      // 인접쌍 비율 약 40% 생성 (가로 인접)
       let index = 0;
-      for (let y = 0; y < rows && index < pool.length; y++) {
-        for (let x = 0; x < cols - 1 && index < pool.length - 1; x += 2) {
-          if (Math.random() < 0.4) {
-            tiles[y][x] = pool[index++];
-            tiles[y][x + 1] = pool[index++];
-          }
-        }
-      }
-      // 남은 타일 무작위 배치
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
-          if (!tiles[y][x] && index < pool.length) {
-            tiles[y][x] = pool[index++];
-          }
+          tiles[y][x] = pool[index++];
         }
       }
-    }
-
-    function isEmpty(x, y) {
-      return x < 0 || y < 0 || x >= cols || y >= rows || !tiles[y][x];
-    }
-
-    // 새로 수정된 연결 가능 여부 함수
-    // 중간 경로에 반드시 빈칸만 있어야 함.
-    function canConnect(a, b) {
-      if (a.x === b.x && a.y === b.y) return false;
-
-      const visited = Array.from({ length: rows + 2 }, () =>
-        Array.from({ length: cols + 2 }, () => Array(4).fill(false))
-      );
-      const queue = [];
-
-      for (let d = 0; d < 4; d++) {
-        const nx = a.x + directions[d].dx;
-        const ny = a.y + directions[d].dy;
-        if (isEmpty(nx, ny) || (nx === b.x && ny === b.y)) {
-          visited[ny + 1][nx + 1][d] = true;
-          queue.push({
-            x: nx, y: ny, turn: 0, dir: d,
-            path: [{ x: a.x, y: a.y }, { x: nx, y: ny }]
-          });
-        }
-      }
-
-      while (queue.length) {
-        const cur = queue.shift();
-
-        if (cur.x === b.x && cur.y === b.y && cur.turn <= 2) {
-          window.matchPath = cur.path;
-          return true;
-        }
-
-        for (let d = 0; d < 4; d++) {
-          const nx = cur.x + directions[d].dx;
-          const ny = cur.y + directions[d].dy;
-          if (nx < -1 || ny < -1 || nx > cols || ny > rows) continue;
-
-          // 중간에 반드시 빈칸이거나 도착점이어야 함
-          if (!(isEmpty(nx, ny) || (nx === b.x && ny === b.y))) continue;
-
-          let nTurn = cur.turn + (d !== cur.dir ? 1 : 0);
-          if (nTurn <= 2 && !visited[ny + 1][nx + 1][d]) {
-            visited[ny + 1][nx + 1][d] = true;
-            const newPath = cur.path.slice();
-            newPath.push({ x: nx, y: ny });
-            queue.push({ x: nx, y: ny, turn: nTurn, dir: d, path: newPath });
-          }
-        }
-      }
-      return false;
-    }
-
-    function drawLine() {
-      if (!window.matchPath || window.matchPath.length < 2) return;
-      const rect = board.getBoundingClientRect();
-      const tileWidth = rect.width / cols;
-      const tileHeight = rect.height / rows;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = "rgba(51, 153, 255, 0.9)";
-      ctx.lineWidth = 6;
-      ctx.lineJoin = "round";
-      ctx.beginPath();
-      window.matchPath.forEach((p, i) => {
-        const x = p.x * tileWidth + tileWidth / 2;
-        const y = p.y * tileHeight + tileHeight / 2;
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-      // 잔상 없애기 위해 딜레이를 매우 짧게
-      setTimeout(() => ctx.clearRect(0, 0, canvas.width, canvas.height), 200);
-    }
-
-    function updateTimer(sec) {
-      const fill = document.getElementById("timer-fill");
-      const text = document.getElementById("timer-text");
-      fill.style.width = (sec / 90) * 100 + "%";
-      text.textContent = sec + "초";
-    }
-
-    function showGameOver(message) {
-      const go = document.getElementById("gameover");
-      go.style.display = "block";
-      go.firstChild.textContent = message;
-    }
-
-    function restartGame() {
-      selected = [];
-      generateTiles();
-      renderBoard();
-      updateTimer(90);
-      document.getElementById("gameover").style.display = "none";
-      clearInterval(timerId);
-      startTimer();
     }
 
     function renderBoard() {
       board.innerHTML = "";
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
-          const tile = document.createElement("div");
-          tile.className = "tile";
-          tile.dataset.x = x;
-          tile.dataset.y = y;
-          tile.textContent = tiles[y][x] || "";
-          if (!tiles[y][x]) tile.style.visibility = "hidden";
-          tile.addEventListener("click", onTileClick);
-          board.appendChild(tile);
+          const emoji = tiles[y][x];
+          const div = document.createElement("div");
+          div.className = "tile";
+          div.dataset.x = x;
+          div.dataset.y = y;
+          div.textContent = emoji;
+          if (emoji) {
+            div.addEventListener("click", onTileClick, { passive: true });
+          }
+          board.appendChild(div);
         }
       }
-      resizeCanvas();
+    }
+
+    function clearSelection() {
+      selected.forEach(s => {
+        const el = board.querySelector(`.tile.selected`);
+        if(el) el.classList.remove("selected");
+      });
+      selected = [];
+    }
+
+    function highlightSelected() {
+      // 일단 모두 선택 해제
+      board.querySelectorAll(".tile.selected").forEach(el => el.classList.remove("selected"));
+      // 선택된 것만 선택 표시
+      selected.forEach(s => {
+        const el = board.querySelector(`.tile[data-x="${s.x}"][data-y="${s.y}"]`);
+        if (el) el.classList.add("selected");
+      });
     }
 
     function onTileClick(e) {
       const x = +e.currentTarget.dataset.x;
       const y = +e.currentTarget.dataset.y;
       if (!tiles[y][x]) return;
+
       sounds.click.currentTime = 0;
       sounds.click.play();
 
@@ -330,11 +218,12 @@
         selected.push({ x, y });
         highlightSelected();
       } else if (selected.length === 1) {
+        // 같은 타일 다시 클릭하면 선택 해제
         if (selected[0].x === x && selected[0].y === y) {
-          selected = [];
-          highlightSelected();
+          clearSelection();
           return;
         }
+        // 선택된 타일과 이번 타일이 다른 이모지면 실패음, 선택 갱신
         if (tiles[selected[0].y][selected[0].x] !== tiles[y][x]) {
           sounds.fail.currentTime = 0;
           sounds.fail.play();
@@ -342,68 +231,88 @@
           highlightSelected();
           return;
         }
-        if (canConnect(selected[0], { x, y })) {
-          sounds.match.currentTime = 0;
-          sounds.match.play();
 
-          // 타일 제거
-          tiles[selected[0].y][selected[0].x] = "";
-          tiles[y][x] = "";
-          renderBoard();
-          drawLine();
+        // 같은 이모지면 방해물 상관없이 바로 제거
+        sounds.match.currentTime = 0;
+        sounds.match.play();
 
-          selected = [];
+        tiles[selected[0].y][selected[0].x] = "";
+        tiles[y][x] = "";
+        clearSelection();
+        renderBoard();
 
-          // 클리어 체크
-          if (isCleared()) {
-            endGame(true);
-          }
-        } else {
-          sounds.fail.currentTime = 0;
-          sounds.fail.play();
-          selected = [{ x, y }];
-          highlightSelected();
+        if (isCleared()) {
+          endGame(true);
         }
       }
     }
 
-    function highlightSelected() {
-      document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
-      selected.forEach(({x, y}) => {
-        const tile = document.querySelector(`.tile[data-x="${x}"][data-y="${y}"]`);
-        if (tile) tile.classList.add("selected");
-      });
-    }
-
     function isCleared() {
-      return tiles.flat().every(v => !v);
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          if (tiles[y][x]) return false;
+        }
+      }
+      return true;
     }
 
-    function endGame(cleared) {
-      clearInterval(timerId);
-      const go = document.getElementById("gameover");
-      go.style.display = "block";
-      go.firstChild.textContent = cleared ? "축하합니다! 클리어!" : "시간 종료! 게임오버!";
-    }
+    function startTimer(duration = 90) {
+      let timeLeft = duration;
+      const fill = document.getElementById("timer-fill");
+      const text = document.getElementById("timer-text");
+      fill.style.width = "100%";
+      text.textContent = timeLeft + "초";
 
-    function startTimer() {
-      let sec = 90;
-      updateTimer(sec);
+      if (timerId) clearInterval(timerId);
       timerId = setInterval(() => {
-        sec--;
-        updateTimer(sec);
-        if (sec <= 0) {
+        timeLeft--;
+        fill.style.width = (timeLeft / duration) * 100 + "%";
+        text.textContent = timeLeft + "초";
+        if (timeLeft <= 0) {
           clearInterval(timerId);
           endGame(false);
         }
       }, 1000);
     }
 
-    window.addEventListener("resize", resizeCanvas);
+    function endGame(cleared) {
+      clearInterval(timerId);
+      const gameover = document.getElementById("gameover");
+      gameover.style.display = "block";
+      gameover.innerHTML = (cleared ? "축하합니다! 게임 클리어!<br>" : "게임오버<br>") +
+        `<button onclick="restartGame()">다시 시작</button>`;
+    }
 
+    function restartGame() {
+      const gameover = document.getElementById("gameover");
+      gameover.style.display = "none";
+      generateTiles();
+      renderBoard();
+      resizeCanvas();
+      startTimer();
+    }
+
+    function resizeCanvas() {
+      const rect = board.getBoundingClientRect();
+      canvas.width = rect.width * devicePixelRatio;
+      canvas.height = rect.height * devicePixelRatio;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+      canvas.style.top = rect.top + "px";
+      canvas.style.left = rect.left + "px";
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // 초기 실행
     generateTiles();
     renderBoard();
+    resizeCanvas();
     startTimer();
+
+    window.addEventListener("resize", resizeCanvas);
   </script>
 </body>
 </html>
