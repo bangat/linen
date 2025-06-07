@@ -121,7 +121,7 @@
   </div>
 
   <!-- 효과음 -->
-  <audio id="click-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_fa781fa9e7.mp3" preload="auto"></audio>
+  <audio id="click-sound" src="https://blog.kakaocdn.net/dn/kPq6B/btsMHdSCEoa/id4EBuKeTLDdF6iJwxhKZ0/0279-%EB%A7%88%EC%9A%B0%EC%8A%A4%20%ED%81%B4%EB%A6%AD%EC%9D%8C.mp3?attach=1&knm=tfile.mp3" preload="auto"></audio>
   <audio id="match-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8c7e5be685.mp3" preload="auto"></audio>
   <audio id="fail-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7cc4971ef9.mp3" preload="auto"></audio>
 
@@ -153,7 +153,6 @@
       const total = rows * cols;
       let pool = [];
 
-      // 각 이모지 두개씩 넣기 (전체 짝 맞추기용)
       for (let i = 0; i < total / 2; i++) {
         const emoji = emojis[i % emojis.length];
         pool.push(emoji, emoji);
@@ -197,9 +196,7 @@
     }
 
     function highlightSelected() {
-      // 일단 모두 선택 해제
       board.querySelectorAll(".tile.selected").forEach(el => el.classList.remove("selected"));
-      // 선택된 것만 선택 표시
       selected.forEach(s => {
         const el = board.querySelector(`.tile[data-x="${s.x}"][data-y="${s.y}"]`);
         if (el) el.classList.add("selected");
@@ -218,12 +215,10 @@
         selected.push({ x, y });
         highlightSelected();
       } else if (selected.length === 1) {
-        // 같은 타일 다시 클릭하면 선택 해제
         if (selected[0].x === x && selected[0].y === y) {
           clearSelection();
           return;
         }
-        // 선택된 타일과 이번 타일이 다른 이모지면 실패음, 선택 갱신
         if (tiles[selected[0].y][selected[0].x] !== tiles[y][x]) {
           sounds.fail.currentTime = 0;
           sounds.fail.play();
@@ -232,7 +227,6 @@
           return;
         }
 
-        // 같은 이모지면 방해물 상관없이 바로 제거
         sounds.match.currentTime = 0;
         sounds.match.play();
 
@@ -306,7 +300,6 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // 초기 실행
     generateTiles();
     renderBoard();
     resizeCanvas();
