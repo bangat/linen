@@ -355,3 +355,37 @@ button[disabled], #submitBtn[disabled] {
   cursor: pointer;
 }
 
+
+/* === (A) 병동/날짜 한 줄 레이아웃 === */
+.form-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  margin-bottom: 10px; /* 한 칸 올리기 효과 */
+}
+.form-row .form-group.half {
+  flex: 1 1 0;
+  margin-bottom: 0; /* 기존 form-group margin 영향 제거 */
+}
+/* 모바일에서는 다시 세로로 쌓기 */
+@media (max-width: 768px) {
+  .form-row { flex-direction: column; }
+}
+
+/* === (B) 메뉴바/드롭다운 숨김 (자리도 안 차지) === */
+.menu-bar,
+.dropdown-menu { display: none !important; }
+
+/* === (C) 공지/탭/테이블 한 칸씩 위로 당기기 & 테이블 높이 늘리기 === */
+.notice-bar { margin: 6px 0 10px 0; }  /* 위쪽 간격 살짝 줄여 한 칸 당김 */
+.tabs { margin-top: 10px; margin-bottom: 6px; } /* 탭 위쪽 간격 줄임 */
+.form-section table {
+  display: block;
+  max-height: 62vh;   /* ↑ 한 칸 늘려서 더 많이 보이게 */
+  overflow: auto;
+}
+
+/* (참고) 이미 있으나 값이 다르면 위 값 우선으로 두세요 */
+
+
+
