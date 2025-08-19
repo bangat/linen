@@ -1,339 +1,620 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta property="og:title" content="린넨실">
-<meta property="og:description" content="일일 사용량에 맞게 요청 바랍니다:D">
-<meta property="og:image" content="https://i.ibb.co/TKrjqyL/001-3.png">
-<meta property="og:url" content="https://hallymlinen.netlify.app/">
-<meta property="og:type" content="website">
-    <title>린넨실 요청서</title>
-    <link rel="stylesheet" href="linen.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta property="og:title" content="린넨실" />
+  <meta property="og:description" content="일일 사용량에 맞게 요청 바랍니다:D" />
+  <meta property="og:image" content="https://i.ibb.co/TKrjqyL/001-3.png" />
+  <meta property="og:url" content="https://hallymlinen.netlify.app/" />
+  <meta property="og:type" content="website" />
+  <title>린넨실 요청서</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-     <audio id="notificationSound" src="https://drive.google.com/uc?export=download&id=1OwurEapLxRtn2I079OEjdkKxFncB35Ao"></audio>
-    <style>
+  <!-- 외부 CSS(기존) -->
+  <link rel="stylesheet" href="linen.css" />
 
-              #adminAccessBtn {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-        }
+  <!-- 아이콘/파비콘 -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
 
-.tab.disabled {
-    pointer-events: none; /* 클릭 불가 */
-    opacity: 0.5;         /* 시각적 비활성화 효과 */
-}
+  <!-- 알림음 -->
+  <audio
+    id="notificationSound"
+    src="https://drive.google.com/uc?export=download&id=1OwurEapLxRtn2I079OEjdkKxFncB35Ao"
+  ></audio>
 
-                /* 팝업 스타일 */
-      #popupContainer {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 80%; /* 가로 길이를 화면 너비의 90%로 설정 */
-        max-width: 90%; /* 최대 너비 설정 */
-        min-width: 80%; /* 최소 너비 설정 */
-        background-color: white;
-        color: black;
-        padding: 20px;
-        border-radius: 10px;
-        height: 30%; /* 세로 크기를 화면 높이의 70%로 설정 */
-        text-align: center;
-        z-index: 999;
-        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* 그림자 효과 추가 */
-        overflow-y: auto; /* 내용이 넘칠 경우 스크롤 바 표시 */
+  <!-- 인라인 보조 스타일 (필요 최소치) -->
+  <style>
+    /* 관리자 버튼(제스처용) */
+    #adminAccessBtn {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
     }
 
-    #popupContent {
-        max-height: 70vh; /* 최대 높이 설정 및 스크롤 추가 */
-        overflow-y: auto; /* 내용이 넘칠 경우 스크롤 바 표시 */
-        text-align: left; /* 텍스트 왼쪽 정렬 */
+    /* 비활성 탭 */
+    .tab.disabled {
+      pointer-events: none;
+      opacity: 0.5;
     }
 
-    #popupHeader {
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 10px;
+    /* 전송 상태 메시지 */
+    #statusMessage {
+      position: fixed;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 999;
+      display: none;
+      white-space: normal;
+      font-size: 14px;
     }
 
-    #closeBtn {
-        position: absolute;
-        bottom: 10px; /* 테두리 아래 여백 설정 */
-        right: 10px; /* 테두리 우측 여백 설정 */
-        cursor: pointer;
-        color: white;
-        font-size: 14px;
-        background-color: dodgerblue; /* 배경색 */
-        padding: 8px 16px; /* 버튼 내부 여백 설정 */
-        border: none;
-        border-radius: 10px; /* 원형 모양으로 변경 */
-        transition: background-color 0.3s ease; /* 호버 효과를 위한 전환 효과 */
+    /* 상단 헤더 */
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+    }
+    .header-container h1 {
+      margin: 0;
+      font-size: 18px;
+      flex: 1;
+      text-align: left;
     }
 
-    #closeBtn:hover {
-        background-color: royalblue; /* 호버 시 배경색 변화 */
+    /* ===== 공지 마퀴 ===== */
+    .notice-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin: 10px 0 14px 0;
+      border-radius: 8px;
+      background: #fffbe6;
+      border: 1px solid #ffe58f;
+      overflow: hidden;
     }
- 
-        
-        #statusMessage {
-            position: fixed;
-            top: 70%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%; /* 너비를 더 넓게 설정 */
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 999;
-            display: none;
-            white-space: normal; /* 텍스트 줄 바꿈 설정 */
-            font-size: 14px; /* 필요시 글꼴 크기 조정 */
-        }
+    .notice-label {
+      font-weight: bold;
+      font-size: 13px;
+      color: #ad6800;
+      flex: 0 0 auto;
+    }
+    .notice-track {
+      position: relative;
+      white-space: nowrap;
+      flex: 1 1 auto;
+      will-change: transform;
+      animation: marquee 18s linear infinite;
+    }
+    .notice-track:hover {
+      animation-play-state: paused;
+    }
+    @keyframes marquee {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+    .notice-actions {
+      display: flex;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+    .notice-actions button {
+      background: #ffd666;
+      color: #5b3a00;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
 
-        .header-container {
-            display: flex;
-            justify-content: space-between; /* 요소를 양 끝으로 배치 */
-            align-items: center; /* 세로 중앙 정렬 */
-            padding: 10px;
-        }
+    /* 날짜 라벨(겹침 방지: JS로 show/hide) */
+    .date-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .date-placeholder {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      color: #999;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+    .date-picker {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
 
-        .header-container h1 {
-            margin: 0;
-            font-size: 18px; /* 린넨실 요청서의 글꼴 크기 */
-            flex: 1;
-            text-align: left; /* 중앙 정렬 */
-        }
-    </style>
+    /* 메뉴바 (햄버거) */
+    .menu-bar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .menu-bar div {
+      width: 30px;
+      height: 3px;
+      margin: 3px 0;
+      cursor: pointer;
+      background-color: black;
+    }
+
+    /* 드롭다운 메뉴 */
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      background-color: white;
+      border: 1px solid #ccc;
+      z-index: 999;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      width: 150px;
+    }
+    .dropdown-menu a {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: black;
+      border-bottom: 1px solid #ccc;
+    }
+    .dropdown-menu a:last-child {
+      border-bottom: none;
+    }
+
+    /* 탭 */
+    .tabs {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2px;
+      margin-top: 25px;
+      margin-bottom: 8px;
+    }
+    .tab {
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 11px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+    }
+    .tab.active {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    /* 섹션/테이블 */
+    .form-section {
+      display: none;
+    }
+    .form-section.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      display: block;         /* 헤더 고정 대비 스크롤 */
+      max-height: 55vh;       /* 화면 높이 기준 */
+      overflow: auto;
+    }
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+      position: sticky; /* 첫 행 고정 */
+      top: 0;
+      z-index: 1;
+    }
+    td:first-child {
+      width: 75%;
+    }
+    td:last-child {
+      width: 25%;
+    }
+
+    /* 입력들 */
+    input[type='number'],
+    input[type='text'] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 5px;
+    }
+
+    /* 카메라/전송 영역 */
+    .camera-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      gap: 8px;
+    }
+    #cameraButton,
+    #submitBtn {
+      background-color: #3498db;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+    }
+    .camera-icon,
+    .submit-icon {
+      font-size: 12px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    #preview {
+      max-width: 100%;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* 드롭다운 높이(모바일) */
+    select {
+      height: auto;
+      overflow-y: auto;
+    }
+    @media only screen and (max-width: 768px) {
+      select {
+        font-size: 16px;
+        max-height: 200px;
+        overflow-y: scroll;
+      }
+    }
+  </style>
 </head>
 <body>
-  
-    <div class="menu-bar" id="menuBar">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <a href="#" id="adminPageLink">관리자페이지</a>
-    </div>
-    <div class="content">
-        <div class="header-container">
-            <h1 id="noticeHeader">요청서</h1>
-        </div>
-    </div>
-    <form id="linenRequestForm">
-        <div class="form-group">
-            <select id="wardDropdown" name="ward" required>
-                <option value="" disabled selected>병동을 선택해주세요.</option>
-                <option value="낮병동">낮병동</option>
-<option value="심혈관">심혈관</option>
-                <option value="내시경실">내시경실</option>
-                <option value="중환자실">중환자실</option>
-                <option value="인공신장실">인공신장실</option>
-                <option value="수술실">수술실</option>
-                <option value="면역치료실">면역치료실</option>
-                <option value="응급실">응급실</option>
-<option value="방사선종양학과">방사선종양학과</option>
-            </select>
-        </div>
-
-<div class="form-group date-wrapper">
-    <label for="requestDate" class="date-placeholder">입고 요청일을 선택해주세요.</label>
-    <input type="date" id="requestDate" class="date-picker" name="requestDate" required>
-</div>
-
-        <!-- === 공지사항 마퀴 바 (시트 탭 위 라인) === -->
-<div class="notice-bar" id="noticeBar" aria-live="polite">
-  <div class="notice-label">공지</div>
-  <div class="notice-track" id="noticeTrack">불러오는 중...</div>
-  <div class="notice-actions">
-    <button type="button" id="noticeRefreshBtn">새로고침</button>
+  <!-- 햄버거 -->
+  <div class="menu-bar" id="menuBar">
+    <div></div>
+    <div></div>
+    <div></div>
   </div>
-</div>
+  <!-- 메뉴 -->
+  <div class="dropdown-menu" id="dropdownMenu">
+    <a href="#" id="adminPageLink">관리자페이지</a>
+  </div>
 
-        
-        <div class="tabs">
-            <div class="tab active" data-tab="sheet">시트/기타</div>
-            <div class="tab" data-tab="normal">일반 환의</div>
-            <div class="tab" data-tab="ortho">정형 환의</div>
-            <div class="tab" data-tab="uniform">근 무 복</div>
-            <div class="tab"
- data-tab="inventory">재고/요청</div>
+  <!-- 헤더 -->
+  <div class="content">
+    <div class="header-container">
+      <h1 id="noticeHeader">요청서</h1>
+    </div>
+  </div>
+
+  <!-- 폼 -->
+  <form id="linenRequestForm">
+    <div class="form-group">
+      <select id="wardDropdown" name="ward" required>
+        <option value="" disabled selected>병동을 선택해주세요.</option>
+        <option value="낮병동">낮병동</option>
+        <option value="심혈관">심혈관</option>
+        <option value="내시경실">내시경실</option>
+        <option value="중환자실">중환자실</option>
+        <option value="인공신장실">인공신장실</option>
+        <option value="수술실">수술실</option>
+        <option value="면역치료실">면역치료실</option>
+        <option value="응급실">응급실</option>
+        <option value="방사선종양학과">방사선종양학과</option>
+      </select>
+    </div>
+
+    <div class="form-group date-wrapper">
+      <label for="requestDate" class="date-placeholder">입고 요청일을 선택해주세요.</label>
+      <input
+        type="date"
+        id="requestDate"
+        class="date-picker"
+        name="requestDate"
+        required
+      />
+    </div>
+
+    <!-- 공지 마퀴 -->
+    <div class="notice-bar" id="noticeBar" aria-live="polite">
+      <div class="notice-label">공지</div>
+      <div class="notice-track" id="noticeTrack">불러오는 중...</div>
+      <div class="notice-actions">
+        <button type="button" id="noticeRefreshBtn">새로고침</button>
+      </div>
+    </div>
+
+    <!-- 탭 -->
+    <div class="tabs">
+      <div class="tab active" data-tab="sheet">시트/기타</div>
+      <div class="tab" data-tab="normal">일반 환의</div>
+      <div class="tab" data-tab="ortho">정형 환의</div>
+      <div class="tab" data-tab="uniform">근 무 복</div>
+      <div class="tab" data-tab="inventory">재고/요청</div>
+    </div>
+
+    <!-- 섹션들 -->
+    <div id="sheet" class="form-section active">
+      <table>
+        <tr>
+          <th>품목</th>
+          <th>요청수량</th>
+        </tr>
+      </table>
+    </div>
+
+    <div id="normal" class="form-section">
+      <table>
+        <tr>
+          <th>품목</th>
+          <th>요청수량</th>
+        </tr>
+      </table>
+    </div>
+
+    <div id="ortho" class="form-section">
+      <table>
+        <tr>
+          <th>품목</th>
+          <th>요청수량</th>
+        </tr>
+      </table>
+    </div>
+
+    <div id="uniform" class="form-section">
+      <table>
+        <tr>
+          <th>품목</th>
+          <th>요청수량</th>
+        </tr>
+      </table>
+    </div>
+
+    <div id="inventory" class="form-section">
+      <div class="camera-section">
+        <div class="button-container">
+          <button type="button" id="cameraButton">
+            <i class="fa fa-camera camera-icon"></i> 재고사진
+          </button>
+          <input
+            type="file"
+            id="inventoryPhoto"
+            style="display: none"
+            accept="image/*"
+          />
         </div>
-        <div id="sheet" class="form-section active">
-            <table>
-                <tr>
-                    <th>품목</th>
-                    <th>요청수량</th>
-                </tr>
-            </table>
-        </div>
-        <div id="normal" class="form-section">
-            <table>
-                <tr>
-                    <th>품목</th>
-                    <th>요청수량</th>
-                </tr>
-            </table>
-        </div>
-        <div id="ortho" class="form-section">
-            <table>
-                <tr>
-                    <th>품목</th>
-                    <th>요청수량</th>
-                </tr>
-            </table>
-        </div>
-        <div id="uniform" class="form-section">
-            <table>
-                <tr>
-                    <th>품목</th>
-                    <th>요청수량</th>
-                </tr>
-            </table>
-        </div>
-        <div id="inventory" class="form-section">
-            <div class="camera-section">
-                <div class="button-container">
-                    <button type="button" id="cameraButton">
-                        <i class="fa fa-camera camera-icon"></i> 재고사진
-                    </button>
-                    <input type="file" id="inventoryPhoto" style="display:none;" accept="image/*">
-                </div>
-                <button type="submit" id="submitBtn">
-                    <i class="fas fa-paper-plane submit-icon"></i> 요청하기
-                </button>
-                <img id="preview" src="#" alt="Preview" style="max-width:100%; display:none;">
-            </div>
-        </div>
-        <div id="statusMessage">요청을 전송중 입니다..잠시만 기다려주세요..</div>
-    </form>
+        <button type="submit" id="submitBtn">
+          <i class="fas fa-paper-plane submit-icon"></i> 요청하기
+        </button>
+        <img
+          id="preview"
+          src="#"
+          alt="Preview"
+          style="max-width: 100%; display: none"
+        />
+      </div>
+    </div>
 
-    <div id="responseMessage"></div>
+    <div id="statusMessage">요청을 전송중 입니다..잠시만 기다려주세요..</div>
+  </form>
 
-    
-    <!-- 팝업 창 -->
-<div id="popupContainer">
-    <div id="popupHeader">공지사항</div>
-    <div id="popupContent"></div>
-    <button id="closeBtn">닫기</button>
-</div>
+  <div id="responseMessage"></div>
 
-   <button id="adminAccessBtn">관리자 접속</button>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js.js"></script>
-    <script>
-        // 페이지 로드 후 실행될 함수
- $(document).ready(function() {
-        const githubUrl = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt';
+  <button id="adminAccessBtn">관리자 접속</button>
 
-       
-    const sheetItems = [
-        { name: '대 시 트', key: '대시트_요청수량' },
-        { name: '반 시 트', key: '반시트_요청수량' },
-        { name: '베 갯 잇', key: '베갯잇_요청수량' },
-        { name: '중 환 의', key: '중환의_요청수량' },
-        { name: '이 불', key: '이불_요청수량' },
-        { name: '얼음주머니', key: '얼음포_요청수량' },
-        { name: '억 제 대', key: '억제대_요청수량' },
-        { name: '수 건', key: '수건_요청수량' },
-{ name: '검진복(하의)', key: '하의_요청수량' }
-    ];
+  <!-- 스크립트 -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- 기존 js.js 유지 가능(제출/텔레그램 등 로직이 있다면). 단, 충돌 없게 최신화 필요 -->
+  <script src="js.js"></script>
 
-    const requiredSizes = ['3XL', '2XL', 'XL', 'L'];
-    const sizes = ['4XL', '3XL', '2XL', 'XL', 'L', 'M', 'S'];
-    const types = ['상의', '하의'];
+  <!-- 인라인 스크립트: 탭/공지/라벨/생성 등 핵심 동작 -->
+  <script>
+    $(document).ready(function () {
+      /* ===== 데이터/표 자동 생성 ===== */
+      const sheetItems = [
+        { name: "대 시 트", key: "대시트_요청수량" },
+        { name: "반 시 트", key: "반시트_요청수량" },
+        { name: "베 갯 잇", key: "베갯잇_요청수량" },
+        { name: "중 환 의", key: "중환의_요청수량" },
+        { name: "이 불", key: "이불_요청수량" },
+        { name: "얼음주머니", key: "얼음포_요청수량" },
+        { name: "억 제 대", key: "억제대_요청수량" },
+        { name: "수 건", key: "수건_요청수량" },
+        { name: "검진복(하의)", key: "하의_요청수량" },
+      ];
+      const requiredSizes = ["3XL", "2XL", "XL", "L"];
+      const sizes = ["4XL", "3XL", "2XL", "XL", "L", "M", "S"];
+      const types = ["상의", "하의"];
 
-    function populateTable(sectionId, items) {
+      function populateTable(sectionId, items) {
         const table = document.querySelector(`#${sectionId} table`);
-        items.forEach(item => {
-            const row = document.createElement('tr');
-            const itemCell = document.createElement('td');
-            itemCell.textContent = item.name;
-            const inputCell = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.name = item.key;
-            input.min = 0;
-            inputCell.appendChild(input);
-            row.appendChild(itemCell);
-            row.appendChild(inputCell);
-            table.appendChild(row);
+        items.forEach((item) => {
+          const row = document.createElement("tr");
+          const itemCell = document.createElement("td");
+          itemCell.textContent = item.name;
+          const inputCell = document.createElement("td");
+          const input = document.createElement("input");
+          input.type = "number";
+          input.name = item.key;
+          input.min = 0;
+          inputCell.appendChild(input);
+          row.appendChild(itemCell);
+          row.appendChild(inputCell);
+          table.appendChild(row);
         });
-    }
+      }
 
-    populateTable('sheet', sheetItems);
-
-    function generateClothingItems(sizes, types) {
-        return sizes.flatMap(size => 
-            types.map(type => ({
-                name: `${size} ${type}`,
-                key: `${size}_${type}_요청수량`
-            }))
+      function generateClothingItems(sizes, types) {
+        return sizes.flatMap((size) =>
+          types.map((type) => ({
+            name: `${size} ${type}`,
+            key: `${size}_${type}_요청수량`,
+          }))
         );
-    }
+      }
 
-    populateTable('normal', generateClothingItems(sizes, types));
-    populateTable('ortho', generateClothingItems(sizes.slice(1), types));
-    populateTable('uniform', generateClothingItems(requiredSizes, types));
+      populateTable("sheet", sheetItems);
+      populateTable("normal", generateClothingItems(sizes, types));
+      populateTable("ortho", generateClothingItems(sizes.slice(1), types));
+      populateTable("uniform", generateClothingItems(requiredSizes, types));
 
-                     // 요청서 클릭 시 초기 상태로 돌아가는 이벤트 핸들러
-            $('#noticeHeader').on('click', function() {
-                // 모든 입력 필드 초기화
-                $('input[type="number"]').val('');
-                $('#wardDropdown').val('');
-                $('#requestDate').val('');
-                
-                // "시트/기타" 탭을 활성화 상태로 설정
-                $('.tab').removeClass('active');
-                $('.form-section').removeClass('active');
-                $('[data-tab="sheet"]').addClass('active');
-                $('#sheet').addClass('active');
-            });
+      /* ===== 헤더 클릭: 폼 초기화 & 시트 탭으로 ===== */
+      $("#noticeHeader").on("click", function () {
+        $('input[type="number"]').val("");
+        $("#wardDropdown").val("");
+        $("#requestDate").val("").trigger("change"); // 라벨 동기화
 
-// 2손가락으로 동시에 터치했을 때 이벤트 핸들러
-document.addEventListener('touchstart', function(event) {
-    if (event.touches.length === 2) {
-        // 관리자 접근 버튼의 클릭 이벤트를 직접 호출하여 admin.html로 이동
-        document.getElementById('adminAccessBtn').click();
-    }
-});
+        $(".tab").removeClass("active").css("background-color", "");
+        $(".form-section").removeClass("active");
+        $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
+        $("#sheet").addClass("active");
+      });
 
-// 관리자 접근 버튼 클릭 시 admin.html로 이동
-document.getElementById('adminAccessBtn').addEventListener('click', function() {
-    window.location.href = 'admin.html'; // 관리자 페이지 URL로 이동
-});
+      /* ===== 탭 전환(비활성 탭 무시) ===== */
+      $(".tab")
+        .off("click.linen")
+        .on("click.linen", function () {
+          if ($(this).hasClass("disabled")) return;
+          const tabId = $(this).data("tab");
 
-$(document).ready(function() {
-    // 해당 탭들을 비활성화
-    $('[data-tab="normal"], [data-tab="ortho"], [data-tab="uniform"]').addClass('disabled');
-});
+          $(".tab").removeClass("active").css("background-color", "");
+          $(this).addClass("active").css("background-color", "#4CAF50");
 
-$(document).ready(function() {
-    $('[data-tab="normal"], [data-tab="ortho"], [data-tab="uniform"]').on('click', function(e) {
-        e.preventDefault();
-        return false;
+          $(".form-section").removeClass("active");
+          $("#" + tabId).addClass("active");
+        });
+
+      /* ===== 비활성 탭(요청대로) ===== */
+      $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass(
+        "disabled"
+      );
+
+      /* ===== 카메라/미리보기 ===== */
+      $("#cameraButton").on("click", function () {
+        $("#inventoryPhoto").click();
+      });
+      $("#inventoryPhoto").on("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          $("#preview").attr("src", ev.target.result).show();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      /* ===== 메뉴 토글 ===== */
+      $("#menuBar").on("click", function () {
+        $("#dropdownMenu").toggle();
+      });
+
+      /* ===== 관리자 이동(두 손가락 제스처) ===== */
+      document.addEventListener("touchstart", function (event) {
+        if (event.touches.length === 2)
+          document.getElementById("adminAccessBtn").click();
+      });
+      document
+        .getElementById("adminAccessBtn")
+        .addEventListener("click", function () {
+          window.location.href = "admin.html";
+        });
+
+      /* ===== 날짜 라벨 겹침 해결(JS로 표시/숨김) ===== */
+      const $dateInput = $("#requestDate");
+      const $dateLabel = $(".date-placeholder");
+      function syncDatePlaceholder() {
+        if ($dateInput.val()) {
+          $dateLabel.hide();
+        } else {
+          $dateLabel.show();
+        }
+      }
+      $dateLabel.on("click", () => $dateInput.trigger("focus"));
+      $dateInput.on("input change blur", syncDatePlaceholder);
+      syncDatePlaceholder();
+
+      /* ===== 공지 마퀴 ===== */
+      const NOTICE_URL =
+        "https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
+      const GITHUB_EDIT_URL =
+        "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
+
+      function setNotice(text) {
+        const clean = (text || "").trim().replace(/\s+/g, " ");
+        const track = document.getElementById("noticeTrack");
+        if (!track) return;
+        track.textContent = clean ? `${clean}   •   ${clean}` : "공지 없음";
+      }
+
+      async function fetchNotice() {
+        try {
+          const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, {
+            cache: "no-store",
+          });
+          if (!res.ok) throw new Error("fail");
+          const txt = await res.text();
+          setNotice(txt);
+        } catch (e) {
+          setNotice("공지 로드 실패");
+        }
+      }
+
+      $("#noticeRefreshBtn").on("click", fetchNotice);
+      fetchNotice();
+      setInterval(fetchNotice, 10 * 60 * 1000);
+
+      // (선택) 관리자 모드에서 공지 수정 버튼 노출
+      window.enableNoticeEdit = function () {
+        if ($("#noticeEditBtn").length) return;
+        $(".notice-actions").append(
+          $("<button type='button' id='noticeEditBtn'>공지 수정</button>").on(
+            "click",
+            () => window.open(GITHUB_EDIT_URL, "_blank")
+          )
+        );
+      };
+      // 예) 관리자 인증 성공 지점에서 enableNoticeEdit() 호출하면 됩니다.
     });
-});
-
-});
-
-    </script>
+  </script>
 </body>
 </html>
