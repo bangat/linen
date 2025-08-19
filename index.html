@@ -70,12 +70,12 @@
       font-size: 14px;
     }
 
-    /* 상단 헤더 */
+    /* 상단 헤더 — 여백 한 칸(기존보다 컴팩트) */
     .header-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 10px 5px 10px;
+      padding: 6px 10px 4px 10px; /* 위 여백 살짝 줄임 */
     }
     .header-container h1 {
       margin: 0;
@@ -90,7 +90,7 @@
       align-items: center;
       gap: 8px;
       padding: 8px 12px;
-      margin: 8px 0 10px 0;
+      margin: 6px 0 8px 0; /* 상단으로 한 칸 당김 */
       border-radius: 8px;
       background: #fffbe6;
       border: 1px solid #ffe58f;
@@ -109,235 +109,85 @@
       will-change: transform;
       animation: marquee 18s linear infinite;
     }
-    .notice-track:hover {
-      animation-play-state: paused;
-    }
+    /* ❌ 호버 일시정지 제거 (요청사항) */
     @keyframes marquee {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
-    .notice-actions {
-      display: flex;
-      gap: 6px;
-      flex: 0 0 auto;
-    }
-    .notice-actions button {
-      background: #ffd666;
-      color: #5b3a00;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 12px;
-      cursor: pointer;
-    }
+    /* notice-actions 섹션 자체 제거됨 */
 
     /* 날짜 라벨(겹침 방지: JS로 show/hide) */
-    .date-wrapper {
-      position: relative;
-      width: 100%;
-    }
+    .date-wrapper { position: relative; width: 100%; }
     .date-placeholder {
-      position: absolute;
-      top: 50%;
-      left: 10px;
-      transform: translateY(-50%);
-      color: #999;
-      pointer-events: none;
-      transition: all 0.2s ease;
+      position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+      color: #999; pointer-events: none; transition: all 0.2s ease;
     }
     .date-picker {
-      width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      box-sizing: border-box;
-    }
-
-    /* 메뉴바 (햄버거) */
-    .menu-bar {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-    .menu-bar div {
-      width: 30px;
-      height: 3px;
-      margin: 3px 0;
-      cursor: pointer;
-      background-color: black;
-    }
-
-    /* 드롭다운 메뉴 */
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 50px;
-      right: 10px;
-      background-color: white;
-      border: 1px solid #ccc;
-      z-index: 999;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-      width: 150px;
-    }
-    .dropdown-menu a {
-      display: block;
-      padding: 10px;
-      text-decoration: none;
-      color: black;
-      border-bottom: 1px solid #ccc;
-    }
-    .dropdown-menu a:last-child {
-      border-bottom: none;
+      width: 100%; padding: 10px; font-size: 15px; box-sizing: border-box;
     }
 
     /* 탭 */
     .tabs {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 2px;
-      margin-top: 10px;
-      margin-bottom: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 2px; margin-top: 8px; margin-bottom: 6px; /* 살짝 위로 */
     }
     .tab {
-      cursor: pointer;
-      padding: 4px 8px;
-      font-size: 11px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: #f0f0f0;
+      cursor: pointer; padding: 4px 8px; font-size: 11px;
+      border: 1px solid #ddd; border-radius: 5px; background-color: #f0f0f0;
     }
-    .tab.active {
-      background-color: #4caf50;
-      color: white;
-    }
+    .tab.active { background-color: #4caf50; color: white; }
 
     /* 섹션/테이블 */
-    .form-section {
-      display: none;
-    }
-    .form-section.active {
-      display: block;
-    }
+    .form-section { display: none; }
+    .form-section.active { display: block; }
     table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      display: block;         /* 헤더 고정 대비 스크롤 */
-      max-height: 60vh;       /* 화면 높이 늘림 */
-      overflow: auto;
+      width: 100%; border-collapse: collapse; margin-bottom: 20px;
+      display: block; max-height: 60vh; overflow: auto; /* 스크롤 대비 */
     }
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #f2f2f2;
-      position: sticky; /* 첫 행 고정 */
-      top: 0;
-      z-index: 1;
-    }
-    td:first-child {
-      width: 75%;
-    }
-    td:last-child {
-      width: 25%;
-    }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; position: sticky; top: 0; z-index: 1; }
+    td:first-child { width: 75%; }
+    td:last-child  { width: 25%; }
 
     /* 입력들 */
-    input[type='number'],
-    input[type='text'] {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 5px;
+    input[type='number'], input[type='text'] {
+      width: 100%; box-sizing: border-box; padding: 5px;
     }
 
     /* 카메라/전송 영역 */
     .camera-section {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-      gap: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 20px; gap: 8px;
     }
-    #cameraButton,
-    #submitBtn {
-      background-color: #3498db;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      display: inline-flex;
-      align-items: center;
-      font-size: 12px;
+    #cameraButton, #submitBtn {
+      background-color: #3498db; color: white; padding: 8px 16px; border: none;
+      cursor: pointer; border-radius: 5px; display: inline-flex;
+      align-items: center; font-size: 12px;
     }
-    .camera-icon,
-    .submit-icon {
-      font-size: 12px;
-      margin-right: 8px;
-      vertical-align: middle;
+    .camera-icon, .submit-icon {
+      font-size: 12px; margin-right: 8px; vertical-align: middle;
     }
-    #preview {
-      max-width: 100%;
-      margin-top: 10px;
-      display: none;
-    }
+    #preview { max-width: 100%; margin-top: 10px; display: none; }
 
     /* 병동/날짜 그리드 레이아웃 */
-    .form-grid {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .form-grid--two {
-      grid-template-columns: 1fr 1fr;
-    }
+    .form-grid { display: grid; gap: 10px; margin-bottom: 10px; }
+    .form-grid--two { grid-template-columns: 1fr 1fr; }
     @media (max-width: 768px) {
-      .form-grid--two {
-        grid-template-columns: 1fr;
-      }
+      .form-grid--two { grid-template-columns: 1fr; }
     }
-    
+
     /* 드롭다운 높이(모바일) */
     select {
-      height: auto;
-      overflow-y: auto;
-      width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      box-sizing: border-box;
+      height: auto; overflow-y: auto; width: 100%;
+      padding: 10px; font-size: 15px; box-sizing: border-box;
     }
     @media only screen and (max-width: 768px) {
-      select {
-        font-size: 16px;
-        max-height: 200px;
-        overflow-y: scroll;
-      }
+      select { font-size: 16px; max-height: 200px; overflow-y: scroll; }
     }
   </style>
 </head>
 <body>
-  <!-- 햄버거 -->
-  <div class="menu-bar" id="menuBar">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-  <!-- 메뉴 -->
-  <div class="dropdown-menu" id="dropdownMenu">
-    <a href="#" id="adminPageLink">관리자페이지</a>
-  </div>
+  <!-- 햄버거/드롭다운 메뉴 제거 (요청사항) -->
 
   <!-- 헤더 -->
   <div class="content">
@@ -371,17 +221,12 @@
       </div>
     </div>
 
-    <!-- 공지 마퀴 -->
+    <!-- 공지 마퀴 (실시간 Firebase) -->
     <div class="notice-bar" id="noticeBar" aria-live="polite">
       <div class="notice-label">공지</div>
       <div class="notice-track" id="noticeTrack">불러오는 중...</div>
-      <div class="notice-actions">
-        <button type="button" id="noticeRefreshBtn">새로고침</button>
-      </div>
+      <!-- notice-actions 제거됨 -->
     </div>
-
-  <!-- 탭/섹션/버튼들은 그대로 이어서 -->
-
 
     <!-- 탭 -->
     <div class="tabs">
@@ -395,37 +240,25 @@
     <!-- 섹션들 -->
     <div id="sheet" class="form-section active">
       <table>
-        <tr>
-          <th>품목</th>
-          <th>요청수량</th>
-        </tr>
+        <tr><th>품목</th><th>요청수량</th></tr>
       </table>
     </div>
 
     <div id="normal" class="form-section">
       <table>
-        <tr>
-          <th>품목</th>
-          <th>요청수량</th>
-        </tr>
+        <tr><th>품목</th><th>요청수량</th></tr>
       </table>
     </div>
 
     <div id="ortho" class="form-section">
       <table>
-        <tr>
-          <th>품목</th>
-          <th>요청수량</th>
-        </tr>
+        <tr><th>품목</th><th>요청수량</th></tr>
       </table>
     </div>
 
     <div id="uniform" class="form-section">
       <table>
-        <tr>
-          <th>품목</th>
-          <th>요청수량</th>
-        </tr>
+        <tr><th>품목</th><th>요청수량</th></tr>
       </table>
     </div>
 
@@ -435,22 +268,12 @@
           <button type="button" id="cameraButton">
             <i class="fa fa-camera camera-icon"></i> 재고사진
           </button>
-          <input
-            type="file"
-            id="inventoryPhoto"
-            style="display: none"
-            accept="image/*"
-          />
+          <input type="file" id="inventoryPhoto" style="display: none" accept="image/*" />
         </div>
         <button type="submit" id="submitBtn">
           <i class="fas fa-paper-plane submit-icon"></i> 요청하기
         </button>
-        <img
-          id="preview"
-          src="#"
-          alt="Preview"
-          style="max-width: 100%; display: none"
-        />
+        <img id="preview" src="#" alt="Preview" style="max-width: 100%; display: none" />
       </div>
     </div>
 
@@ -463,10 +286,21 @@
 
   <!-- 스크립트 -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- 기존 js.js 유지 가능(제출/텔레그램 등 로직이 있다면). 단, 충돌 없게 최신화 필요 -->
+  <!-- 기존 js.js 유지(제출/텔레그램 등 로직이 있다면). 충돌 없게 최신화 필요 -->
   <script src="js.js"></script>
 
   <!-- 인라인 스크립트: 탭/공지/라벨/생성 등 핵심 동작 -->
+  <script>
+    // ===== 공지 렌더 함수(모듈에서도 호출할 수 있게 window로 노출) =====
+    window.renderNotice = function(text) {
+      const clean = (text || "").toString().trim().replace(/\s+/g, " ");
+      const track = document.getElementById("noticeTrack");
+      if (!track) return;
+      track.textContent = clean ? (clean + "   •   " + clean) : "공지 없음";
+    };
+  </script>
+
+  <!-- jQuery 초기화 (일반 스크립트) -->
   <script>
     $(document).ready(function () {
       /* ===== 데이터/표 자동 생성 ===== */
@@ -502,7 +336,6 @@
           table.appendChild(row);
         });
       }
-
       function generateClothingItems(sizes, types) {
         return sizes.flatMap((size) =>
           types.map((type) => ({
@@ -511,79 +344,60 @@
           }))
         );
       }
-
       populateTable("sheet", sheetItems);
       populateTable("normal", generateClothingItems(sizes, types));
       populateTable("ortho", generateClothingItems(sizes.slice(1), types));
       populateTable("uniform", generateClothingItems(requiredSizes, types));
 
-/* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
-$("#noticeHeader").off("click.reset").on("click.reset", function () {
-  // 수량 입력만 초기화
-  $('input[type="number"]').val('');
-
-  // 병동: 저장된 병동이 있으면 복원, 없으면 비움
-  var savedWard = localStorage.getItem(SAVED_WARD_KEY);
-  if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
-    $('#wardDropdown').val(savedWard);
-  } else {
-    $('#wardDropdown').val('');
-  }
-
-  // 날짜: 오늘 날짜로 기본 세팅
-  $('#requestDate').val(getTodayYYYYMMDD()).trigger('change'); // 라벨 숨김
-
-  // 탭 초기화(시트/기타)
-  $(".tab").removeClass("active").css("background-color", "");
-  $(".form-section").removeClass("active");
-  $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
-  $("#sheet").addClass("active");
-});
-
+      /* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
+      const SAVED_WARD_KEY = "linen_saved_ward";
+      function getTodayYYYYMMDD() {
+        const d = new Date();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${d.getFullYear()}-${m}-${day}`;
+      }
+      $("#noticeHeader").off("click.reset").on("click.reset", function () {
+        $('input[type="number"]').val('');
+        var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+        if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+          $('#wardDropdown').val(savedWard);
+        } else {
+          $('#wardDropdown').val('');
+        }
+        $('#requestDate').val(getTodayYYYYMMDD()).trigger('change');
+        $(".tab").removeClass("active").css("background-color", "");
+        $(".form-section").removeClass("active");
+        $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
+        $("#sheet").addClass("active");
+      });
 
       /* ===== 탭 전환(비활성 탭 무시) ===== */
-      $(".tab")
-        .off("click.linen")
-        .on("click.linen", function () {
-          if ($(this).hasClass("disabled")) return;
-          const tabId = $(this).data("tab");
-
-          $(".tab").removeClass("active").css("background-color", "");
-          $(this).addClass("active").css("background-color", "#4CAF50");
-
-          $(".form-section").removeClass("active");
-          $("#" + tabId).addClass("active");
-        });
+      $(".tab").off("click.linen").on("click.linen", function () {
+        if ($(this).hasClass("disabled")) return;
+        const tabId = $(this).data("tab");
+        $(".tab").removeClass("active").css("background-color", "");
+        $(this).addClass("active").css("background-color", "#4CAF50");
+        $(".form-section").removeClass("active");
+        $("#" + tabId).addClass("active");
+      });
 
       /* ===== 비활성 탭(요청대로) ===== */
-      $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass(
-        "disabled"
-      );
+      $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass("disabled");
 
-/* ===== 카메라/미리보기 ===== */
-$("#cameraButton").off("click.camera").on("click.camera", function () {
-  $("#inventoryPhoto").click();
-});
-
-$("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
-  var files = e.target && e.target.files;
-  var file = files && files[0];
-  if (!file) return;
-
-  // FileReader 대신 Object URL 사용 (호환성↑, 빠름)
-  var blobUrl = (window.URL || window.webkitURL).createObjectURL(file);
-  $("#preview").attr("src", blobUrl).show();
-
-  // 폼 리셋 시 URL 해제(메모리 누수 방지)
-  $("#linenRequestForm").one("reset", function(){
-    (window.URL || window.webkitURL).revokeObjectURL(blobUrl);
-  });
-});
-
-
-      /* ===== 메뉴 토글 ===== */
-      $("#menuBar").on("click", function () {
-        $("#dropdownMenu").toggle();
+      /* ===== 카메라/미리보기 ===== */
+      $("#cameraButton").off("click.camera").on("click.camera", function () {
+        $("#inventoryPhoto").click();
+      });
+      $("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
+        var files = e.target && e.target.files;
+        var file = files && files[0];
+        if (!file) return;
+        var blobUrl = (window.URL || window.webkitURL).createObjectURL(file);
+        $("#preview").attr("src", blobUrl).show();
+        $("#linenRequestForm").one("reset", function(){
+          (window.URL || window.webkitURL).revokeObjectURL(blobUrl);
+        });
       });
 
       /* ===== 관리자 이동(두 손가락 제스처) ===== */
@@ -591,67 +405,54 @@ $("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
         if (event.touches.length === 2)
           document.getElementById("adminAccessBtn").click();
       });
-      document
-        .getElementById("adminAccessBtn")
-        .addEventListener("click", function () {
-          window.location.href = "admin.html";
-        });
+      document.getElementById("adminAccessBtn").addEventListener("click", function () {
+        window.location.href = "admin.html";
+      });
 
-      /* ===== 날짜 라벨 겹침 해결(JS로 표시/숨김) ===== */
+      /* ===== 날짜 라벨 겹침 해결 ===== */
       const $dateInput = $("#requestDate");
       const $dateLabel = $(".date-placeholder");
-      function syncDatePlaceholder() {
-        if ($dateInput.val()) {
-          $dateLabel.hide();
-        } else {
-          $dateLabel.show();
-        }
-      }
+      function syncDatePlaceholder() { $dateLabel.toggle(!$dateInput.val()); }
       $dateLabel.on("click", () => $dateInput.trigger("focus"));
       $dateInput.on("input change blur", syncDatePlaceholder);
       syncDatePlaceholder();
 
-      /* ===== 공지 마퀴 ===== */
-      const NOTICE_URL =
-        "https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
-      const GITHUB_EDIT_URL =
-        "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
+      /* 초기 공지 UI 기본값 */
+      window.renderNotice(document.getElementById("noticeTrack").textContent);
+    });
+  </script>
 
-      function setNotice(text) {
-        const clean = (text || "").trim().replace(/\s+/g, " ");
-        const track = document.getElementById("noticeTrack");
-        if (!track) return;
-        track.textContent = clean ? `${clean}   •   ${clean}` : "공지 없음";
-      }
+  <!-- Firebase (모듈) : Realtime Database `/notice` 실시간 구독 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-      async function fetchNotice() {
-        try {
-          const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, {
-            cache: "no-store",
-          });
-          if (!res.ok) throw new Error("fail");
-          const txt = await res.text();
-          setNotice(txt);
-        } catch (e) {
-          setNotice("공지 로드 실패");
-        }
-      }
+        // Firebase 설정 객체
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlzPWmeLacWdnW0we7CtfnU2szvxgdIzc",
+            authDomain: "hallymlinen.firebaseapp.com",
+            databaseURL: "https://hallymlinen-default-rtdb.firebaseio.com",
+            projectId: "hallymlinen",
+            storageBucket: "hallymlinen.appspot.com",
+            messagingSenderId: "867775830688",
+            appId: "1:867775830688:web:cef3ed4e70ae9818f347c5",
+            measurementId: "G-T02ZFK18L3"
+        };
 
-      $("#noticeRefreshBtn").on("click", fetchNotice);
-      fetchNotice();
-      setInterval(fetchNotice, 10 * 60 * 1000);
 
-      // (선택) 관리자 모드에서 공지 수정 버튼 노출
-      window.enableNoticeEdit = function () {
-        if ($("#noticeEditBtn").length) return;
-        $(".notice-actions").append(
-          $("<button type='button' id='noticeEditBtn'>공지 수정</button>").on(
-            "click",
-            () => window.open(GITHUB_EDIT_URL, "_blank")
-          )
-        );
-      };
-      // 예) 관리자 인증 성공 지점에서 enableNoticeEdit() 호출하면 됩니다.
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const noticeRef = ref(db, "/notice");
+    onValue(noticeRef, (snapshot) => {
+      const val = snapshot.val();
+      // 문자열/객체 모두 허용: 객체면 message 필드를 우선 사용
+      const text = (val && typeof val === "object") ? (val.message ?? JSON.stringify(val)) : (val ?? "");
+      window.renderNotice(text);
+    }, (err) => {
+      // 구독 실패 시 안전 처리
+      console.error("공지 구독 오류:", err);
+      window.renderNotice("공지 로드 실패");
     });
   </script>
 </body>
