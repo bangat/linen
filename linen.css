@@ -388,4 +388,18 @@ button[disabled], #submitBtn[disabled] {
 /* (참고) 이미 있으나 값이 다르면 위 값 우선으로 두세요 */
 
 
+/* === 2열 그리드: 병동 + 날짜 한 줄 === */
+.form-grid { display: grid; gap: 8px; align-items: center; }
+.form-grid--two { grid-template-columns: 1fr 1fr; }
+.form-grid .date-wrapper { min-width: 0; }
+.form-grid select, .form-grid .date-picker { width: 100%; }
+
+/* 메뉴 완전 숨김 */
+.menu-bar, .dropdown-menu { display: none !important; }
+
+/* 공지/탭/표 여백 살짝 조정 + 표 높이 확대 */
+.notice-bar { margin: 8px 0 10px; }
+.tabs { margin-top: 12px; margin-bottom: 6px; }
+.form-section table { margin-top: 6px; max-height: 60vh; }
+
 
