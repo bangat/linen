@@ -65,15 +65,18 @@ if (!$('#requestDate').val()) {
       track.textContent = clean ? (clean + "   •   " + clean) : "공지 없음";
     }
 
-    function fetchNotice() {
-      fetch(NOTICE_URL + "?t=" + Date.now(), { cache: "no-store" })
-        .then(function(res){
-          if (!res.ok) throw new Error("fail");
-          return res.text();
-        })
-        .then(function(txt){ setNotice(txt); })
-        .catch(function(){ setNotice("공지 로드 실패"); });
+function fetchNotice() {
+  $.ajax({
+    url: "https://hallymlinen-default-rtdb.firebaseio.com/notice.json?ts=" + new Date().getTime(),
+    cache: false,
+    success: function (data) {
+      if (data && data.text) {
+        $("#noticeText").text(data.text);
+      }
     }
+  });
+}
+
 
     $("#noticeRefreshBtn").off("click.notice").on("click.notice", fetchNotice);
     fetchNotice();
