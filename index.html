@@ -612,25 +612,25 @@ $("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
       syncDatePlaceholder();
 
       /* ===== 공지 마퀴 ===== */
-  const NOTICE_URL = "https://hallymlinen-default-rtdb.firebaseio.com/notice.json";
+const NOTICE_URL = "https://hallymlinen-default-rtdb.firebaseio.com/notice.json";
+// GitHub 편집 버튼 안 쓸 거면 GITHUB_EDIT_URL은 삭제해도 됨
 
-      const GITHUB_EDIT_URL =
-        "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
 
-      function setNotice(text) {
-        const clean = (text || "").trim().replace(/\s+/g, " ");
-        const track = document.getElementById("noticeTrack");
-        if (!track) return;
-        track.textContent = clean ? `${clean}   •   ${clean}` : "공지 없음";
-      }
 
-   async function fetchNotice() {
+function setNotice(text) {
+  const clean = (text || "").trim().replace(/\s+/g, " ");
+  const track = document.getElementById("noticeTrack");
+  if (!track) return;
+  track.textContent = clean || "공지 없음";   // 한 번만 표시
+}
+
+
+async function fetchNotice() {
   try {
     const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error("fail");
-    const data = await res.json();                 // ← JSON 받음 (문자열이 아님)
+    const data = await res.json(); // { text: "...", updatedAt: ... } 형태
 
-    // DB 구조가 { text: "...", updatedAt: 123 } 라면 ↓
     const txt = (data && typeof data === "object") ? (data.text || "") : (data || "");
     setNotice(txt);
   } catch (e) {
@@ -643,16 +643,6 @@ $("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
       fetchNotice();
       setInterval(fetchNotice, 10 * 60 * 1000);
 
-      // (선택) 관리자 모드에서 공지 수정 버튼 노출
-      window.enableNoticeEdit = function () {
-        if ($("#noticeEditBtn").length) return;
-        $(".notice-actions").append(
-          $("<button type='button' id='noticeEditBtn'>공지 수정</button>").on(
-            "click",
-            () => window.open(GITHUB_EDIT_URL, "_blank")
-          )
-        );
-      };
       // 예) 관리자 인증 성공 지점에서 enableNoticeEdit() 호출하면 됩니다.
     });
   </script>
