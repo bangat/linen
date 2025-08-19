@@ -75,7 +75,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 10px 5px 10px;
+      padding: 10px;
     }
     .header-container h1 {
       margin: 0;
@@ -90,7 +90,7 @@
       align-items: center;
       gap: 8px;
       padding: 8px 12px;
-      margin: 8px 0 10px 0;
+      margin: 10px 0 14px 0;
       border-radius: 8px;
       background: #fffbe6;
       border: 1px solid #ffe58f;
@@ -203,8 +203,8 @@
       justify-content: space-between;
       align-items: center;
       gap: 2px;
-      margin-top: 10px;
-      margin-bottom: 6px;
+      margin-top: 25px;
+      margin-bottom: 8px;
     }
     .tab {
       cursor: pointer;
@@ -231,7 +231,7 @@
       border-collapse: collapse;
       margin-bottom: 20px;
       display: block;         /* 헤더 고정 대비 스크롤 */
-      max-height: 60vh;       /* 화면 높이 늘림 */
+      max-height: 55vh;       /* 화면 높이 기준 */
       overflow: auto;
     }
     th,
@@ -294,29 +294,10 @@
       display: none;
     }
 
-    /* 병동/날짜 그리드 레이아웃 */
-    .form-grid {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .form-grid--two {
-      grid-template-columns: 1fr 1fr;
-    }
-    @media (max-width: 768px) {
-      .form-grid--two {
-        grid-template-columns: 1fr;
-      }
-    }
-    
     /* 드롭다운 높이(모바일) */
     select {
       height: auto;
       overflow-y: auto;
-      width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      box-sizing: border-box;
     }
     @media only screen and (max-width: 768px) {
       select {
@@ -348,37 +329,39 @@
 
   <!-- 폼 -->
   <form id="linenRequestForm">
-    <!-- 병동 + 날짜 한 줄 (반반 나누기) -->
-    <div class="form-grid form-grid--two">
-      <div class="form-group">
-        <select id="wardDropdown" name="ward" required>
-          <option value="" disabled selected>병동을 선택해주세요.</option>
-          <option value="낮병동">낮병동</option>
-          <option value="심혈관">심혈관</option>
-          <option value="내시경실">내시경실</option>
-          <option value="중환자실">중환자실</option>
-          <option value="인공신장실">인공신장실</option>
-          <option value="수술실">수술실</option>
-          <option value="면역치료실">면역치료실</option>
-          <option value="응급실">응급실</option>
-          <option value="방사선종양학과">방사선종양학과</option>
-        </select>
-      </div>
+  <!-- 병동 + 날짜 한 줄 -->
+ <!-- ✅ 병동 + 날짜 한 줄(반반) -->
+<div class="form-grid form-grid--two">
+  <div class="form-group">
+    <select id="wardDropdown" name="ward" required>
+      <option value="" disabled selected>병동을 선택해주세요.</option>
+      <option value="낮병동">낮병동</option>
+      <option value="심혈관">심혈관</option>
+      <option value="내시경실">내시경실</option>
+      <option value="중환자실">중환자실</option>
+      <option value="인공신장실">인공신장실</option>
+      <option value="수술실">수술실</option>
+      <option value="면역치료실">면역치료실</option>
+      <option value="응급실">응급실</option>
+      <option value="방사선종양학과">방사선종양학과</option>
+    </select>
+  </div>
 
-      <div class="form-group date-wrapper">
-        <label for="requestDate" class="date-placeholder">입고 요청일을 선택해주세요.</label>
-        <input type="date" id="requestDate" class="date-picker" name="requestDate" required />
-      </div>
-    </div>
+  <div class="form-group date-wrapper">
+    <label for="requestDate" class="date-placeholder">입고 요청일을 선택해주세요.</label>
+    <input type="date" id="requestDate" class="date-picker" name="requestDate" required />
+  </div>
+</div>
 
-    <!-- 공지 마퀴 -->
-    <div class="notice-bar" id="noticeBar" aria-live="polite">
-      <div class="notice-label">공지</div>
-      <div class="notice-track" id="noticeTrack">불러오는 중...</div>
-      <div class="notice-actions">
-        <button type="button" id="noticeRefreshBtn">새로고침</button>
-      </div>
+
+  <!-- (바로 아래) 공지 마퀴: 기존 그대로 유지 -->
+  <div class="notice-bar" id="noticeBar" aria-live="polite">
+    <div class="notice-label">공지</div>
+    <div class="notice-track" id="noticeTrack">불러오는 중...</div>
+    <div class="notice-actions">
+      <button type="button" id="noticeRefreshBtn">새로고침</button>
     </div>
+  </div>
 
   <!-- 탭/섹션/버튼들은 그대로 이어서 -->
 
