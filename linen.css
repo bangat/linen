@@ -274,3 +274,84 @@ input[type="submit"]:hover {
                 overflow-y: scroll; /* 수직 스크롤 추가 */
             }
         }
+
+/* ============== 7번: 테이블 헤더 고정 & 스크롤 ============== */
+/* 섹션 내 테이블을 스크롤 가능하게 (화면 높이의 55% 한도) */
+.form-section table {
+  display: block;
+  max-height: 55vh;
+  overflow: auto;
+}
+
+/* 첫 번째 헤더 행 고정 */
+.form-section th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #f2f2f2;
+}
+
+/* 버튼 상태 표시(비활성/성공) */
+button[disabled], #submitBtn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-success { background: #2ecc71 !important; }
+
+/* ============== 필수값 시각 강조 ============== */
+.invalid {
+  outline: 2px solid #ff6b6b;
+  border-radius: 6px;
+  animation: invalidBlink 0.6s ease-in-out 0s 2;
+}
+@keyframes invalidBlink {
+  0% { outline-color: #ff6b6b; }
+  50% { outline-color: transparent; }
+  100% { outline-color: #ff6b6b; }
+}
+
+/* ============== 공지사항 바 ============== */
+.notice-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 10px 0 14px 0;
+  border-radius: 8px;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  overflow: hidden;
+}
+.notice-label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #ad6800;
+  flex: 0 0 auto;
+}
+.notice-track {
+  position: relative;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  will-change: transform;
+  animation: marquee 18s linear infinite;
+}
+.notice-track:hover { animation-play-state: paused; } /* 호버 시 멈춤 */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.notice-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.notice-actions button {
+  background: #ffd666;
+  color: #5b3a00;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
