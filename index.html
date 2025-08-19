@@ -529,19 +529,26 @@
         "disabled"
       );
 
-      /* ===== 카메라/미리보기 ===== */
-      $("#cameraButton").on("click", function () {
-        $("#inventoryPhoto").click();
-      });
-      $("#inventoryPhoto").on("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          $("#preview").attr("src", ev.target.result).show();
-        };
-        reader.readAsDataURL(file);
-      });
+/* ===== 카메라/미리보기 ===== */
+$("#cameraButton").off("click.camera").on("click.camera", function () {
+  $("#inventoryPhoto").click();
+});
+
+$("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
+  var files = e.target && e.target.files;
+  var file = files && files[0];
+  if (!file) return;
+
+  // FileReader 대신 Object URL 사용 (호환성↑, 빠름)
+  var blobUrl = (window.URL || window.webkitURL).createObjectURL(file);
+  $("#preview").attr("src", blobUrl).show();
+
+  // 폼 리셋 시 URL 해제(메모리 누수 방지)
+  $("#linenRequestForm").one("reset", function(){
+    (window.URL || window.webkitURL).revokeObjectURL(blobUrl);
+  });
+});
+
 
       /* ===== 메뉴 토글 ===== */
       $("#menuBar").on("click", function () {
