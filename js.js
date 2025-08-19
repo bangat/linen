@@ -50,37 +50,42 @@ if (!$('#requestDate').val()) {
   /* =========================
    * 2) 공지사항 마퀴 (중복 초기화 방지)
    * ========================= */
-  if (!window.__noticeInit) {
-    window.__noticeInit = true;
+ /* =========================
+ * 2) 공지사항 (Firebase RTDB 단일 소스)
+ * ========================= */
+if (!window.__noticeInit) {
+  window.__noticeInit = true;
 
-    var NOTICE_URL =
-      "https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt"; // 공지 텍스트 파일
-    var GITHUB_EDIT_URL =
-      "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt"; // 모바일에서 바로 수정
+  var NOTICE_URL = "https://hallymlinen-default-rtdb.firebaseio.com/notice.json";
 
-    function setNotice(text) {
-      var clean = (text || "").trim().replace(/\s+/g, " ");
-      var track = document.getElementById("noticeTrack");
-      if (!track) return;
-      track.textContent = clean ? (clean + "   •   " + clean) : "공지 없음";
-    }
+  function setNotice(text) {
+    var clean = (text || "").trim().replace(/\s+/g, " ");
+    var track = document.getElementById("noticeTrack");
+    if (!track) return;
+    // 깔끔하게 한 번만 표시
+    track.textContent = clean || "공지 없음";
+  }
 
-function fetchNotice() {
-  $.ajax({
-    url: "https://hallymlinen-default-rtdb.firebaseio.com/notice.json?ts=" + new Date().getTime(),
-    cache: false,
-    success: function (data) {
-      if (data && data.text) {
-        $("#noticeText").text(data.text);
+  function fetchNotice() {
+    $.ajax({
+      url: NOTICE_URL + "?ts=" + Date.now(), // 캐시 회피
+      cache: false,
+      success: function (data) {
+        // data가 { text: "...", updatedAt: ... } 형식이라고 가정
+        var txt = (data && typeof data === "object") ? (data.text || "") : (data || "");
+        setNotice(txt);
+      },
+      error: function () {
+        setNotice("공지 로드 실패");
       }
-    }
-  });
+    });
+  }
+
+  $("#noticeRefreshBtn").off("click.notice").on("click.notice", fetchNotice);
+  fetchNotice();
+  setInterval(fetchNotice, 10 * 60 * 1000);
 }
 
-
-    $("#noticeRefreshBtn").off("click.notice").on("click.notice", fetchNotice);
-    fetchNotice();
-    setInterval(fetchNotice, 10 * 60 * 1000);
 
     // (선택) 관리자면 편집 버튼 노출
     window.enableNoticeEdit = function () {
