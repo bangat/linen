@@ -612,8 +612,8 @@ $("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
       syncDatePlaceholder();
 
       /* ===== 공지 마퀴 ===== */
-      const NOTICE_URL =
-        "https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
+  const NOTICE_URL = "https://hallymlinen-default-rtdb.firebaseio.com/notice.json";
+
       const GITHUB_EDIT_URL =
         "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
 
@@ -624,18 +624,20 @@ $("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
         track.textContent = clean ? `${clean}   •   ${clean}` : "공지 없음";
       }
 
-      async function fetchNotice() {
-        try {
-          const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, {
-            cache: "no-store",
-          });
-          if (!res.ok) throw new Error("fail");
-          const txt = await res.text();
-          setNotice(txt);
-        } catch (e) {
-          setNotice("공지 로드 실패");
-        }
-      }
+   async function fetchNotice() {
+  try {
+    const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("fail");
+    const data = await res.json();                 // ← JSON 받음 (문자열이 아님)
+
+    // DB 구조가 { text: "...", updatedAt: 123 } 라면 ↓
+    const txt = (data && typeof data === "object") ? (data.text || "") : (data || "");
+    setNotice(txt);
+  } catch (e) {
+    setNotice("공지 로드 실패");
+  }
+}
+
 
       $("#noticeRefreshBtn").on("click", fetchNotice);
       fetchNotice();
