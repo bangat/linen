@@ -8,6 +8,48 @@ $(document).ready(function() {
         $(".tab").css("background-color", ""); // 
         $(".tab[data-tab='sheet']").css("background-color", "#4CAF50"); // 시트/기타 탭 배경색 초록색으로 변경
     });
+
+    const NOTICE_URL = 'https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt'; // 공지 텍스트 파일
+  const GITHUB_EDIT_URL = 'https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt'; // 모바일에서 바로 수정
+
+  function setNotice(text){
+    const clean = (text || '').trim().replace(/\s+/g,' ');
+    const track = document.getElementById('noticeTrack');
+    if (!track) return;
+    track.textContent = clean ? (`${clean}   •   ${clean}`) : '공지 없음';
+  }
+
+  async function fetchNotice(){
+    try{
+      const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, {cache:'no-store'});
+      if (!res.ok) throw new Error('fail');
+      const txt = await res.text();
+      setNotice(txt);
+    }catch(e){
+      setNotice('공지 로드 실패');
+    }
+  }
+
+  // 새로고침 버튼
+  $('#noticeRefreshBtn').on('click', fetchNotice);
+
+  // 첫 로드 + 주기 갱신(10분)
+  fetchNotice();
+  setInterval(fetchNotice, 10 * 60 * 1000);
+
+  // (선택) 관리자면 편집 버튼 노출
+  window.enableNoticeEdit = function(){
+    if ($('#noticeEditBtn').length) return;
+    $('.notice-actions').append(
+      $('<button type="button" id="noticeEditBtn">공지 수정</button>')
+        .on('click', ()=> window.open(GITHUB_EDIT_URL, '_blank'))
+    );
+  };
+
+  // 👉 관리자 인증 성공 시점에서 enableNoticeEdit() 호출해주면 됨
+  // (아래 3)번 참고)
+
+});
     
     // 탭 클릭 시 해당 섹션으로 이동
     $(".tab").click(function() {
