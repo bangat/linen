@@ -498,17 +498,29 @@
       populateTable("ortho", generateClothingItems(sizes.slice(1), types));
       populateTable("uniform", generateClothingItems(requiredSizes, types));
 
-      /* ===== 헤더 클릭: 폼 초기화 & 시트 탭으로 ===== */
-      $("#noticeHeader").on("click", function () {
-        $('input[type="number"]').val("");
-        $("#wardDropdown").val("");
-        $("#requestDate").val("").trigger("change"); // 라벨 동기화
+/* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
+$("#noticeHeader").off("click.reset").on("click.reset", function () {
+  // 수량 입력만 초기화
+  $('input[type="number"]').val('');
 
-        $(".tab").removeClass("active").css("background-color", "");
-        $(".form-section").removeClass("active");
-        $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
-        $("#sheet").addClass("active");
-      });
+  // 병동: 저장된 병동이 있으면 복원, 없으면 비움
+  var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+  if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+    $('#wardDropdown').val(savedWard);
+  } else {
+    $('#wardDropdown').val('');
+  }
+
+  // 날짜: 오늘 날짜로 기본 세팅
+  $('#requestDate').val(getTodayYYYYMMDD()).trigger('change'); // 라벨 숨김
+
+  // 탭 초기화(시트/기타)
+  $(".tab").removeClass("active").css("background-color", "");
+  $(".form-section").removeClass("active");
+  $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
+  $("#sheet").addClass("active");
+});
+
 
       /* ===== 탭 전환(비활성 탭 무시) ===== */
       $(".tab")
