@@ -13,13 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
    * 0) Firebase 초기화
    * ========================= */
   const firebaseConfig = (window.FB_CONFIG ?? {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyAlzPWmeLacWdnW0we7CtfnU2szvxgdIzc",
+            authDomain: "hallymlinen.firebaseapp.com",
+            databaseURL: "https://hallymlinen-default-rtdb.firebaseio.com",
+            projectId: "hallymlinen",
+            storageBucket: "hallymlinen.appspot.com",
+            messagingSenderId: "867775830688",
+            appId: "1:867775830688:web:cef3ed4e70ae9818f347c5",
+            measurementId: "G-T02ZFK18L3"
   });
 
   const app = initializeApp(firebaseConfig);
