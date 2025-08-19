@@ -330,27 +330,29 @@
   <!-- 폼 -->
   <form id="linenRequestForm">
   <!-- 병동 + 날짜 한 줄 -->
-  <div class="form-row">
-    <div class="form-group half">
-      <select id="wardDropdown" name="ward" required>
-        <option value="" disabled selected>병동을 선택해주세요.</option>
-        <option value="낮병동">낮병동</option>
-        <option value="심혈관">심혈관</option>
-        <option value="내시경실">내시경실</option>
-        <option value="중환자실">중환자실</option>
-        <option value="인공신장실">인공신장실</option>
-        <option value="수술실">수술실</option>
-        <option value="면역치료실">면역치료실</option>
-        <option value="응급실">응급실</option>
-        <option value="방사선종양학과">방사선종양학과</option>
-      </select>
-    </div>
-
-    <div class="form-group half date-wrapper">
-      <label for="requestDate" class="date-placeholder">입고 요청일을 선택해주세요.</label>
-      <input type="date" id="requestDate" class="date-picker" name="requestDate" required />
-    </div>
+ <!-- ✅ 병동 + 날짜 한 줄(반반) -->
+<div class="form-grid form-grid--two">
+  <div class="form-group">
+    <select id="wardDropdown" name="ward" required>
+      <option value="" disabled selected>병동을 선택해주세요.</option>
+      <option value="낮병동">낮병동</option>
+      <option value="심혈관">심혈관</option>
+      <option value="내시경실">내시경실</option>
+      <option value="중환자실">중환자실</option>
+      <option value="인공신장실">인공신장실</option>
+      <option value="수술실">수술실</option>
+      <option value="면역치료실">면역치료실</option>
+      <option value="응급실">응급실</option>
+      <option value="방사선종양학과">방사선종양학과</option>
+    </select>
   </div>
+
+  <div class="form-group date-wrapper">
+    <label for="requestDate" class="date-placeholder">입고 요청일을 선택해주세요.</label>
+    <input type="date" id="requestDate" class="date-picker" name="requestDate" required />
+  </div>
+</div>
+
 
   <!-- (바로 아래) 공지 마퀴: 기존 그대로 유지 -->
   <div class="notice-bar" id="noticeBar" aria-live="polite">
