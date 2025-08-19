@@ -47,6 +47,28 @@ $(document).ready(function() {
     
     // 요청서 전송
     $("#linenRequestForm").submit(function(event) {
+
+// (맨 위 도우미)
+function highlightInvalid($el){
+  $el.addClass('invalid');
+  $el[0]?.scrollIntoView({behavior:'smooth', block:'center'});
+  $el.focus();
+  setTimeout(()=> $el.removeClass('invalid'), 1500);
+}
+
+// ... 당신의 submit 핸들러 안에서, 유효성 검사 부분을 이렇게 보강:
+if (!wardValue) {
+  alert('병동을 선택해주세요.');
+  highlightInvalid($('#wardDropdown'));
+  return;
+}
+if (!requestDate) {
+  alert('입고 날짜를 선택해주세요.');
+  highlightInvalid($('#requestDate'));
+  return;
+}
+
+
         event.preventDefault();
         
         const wardValue = $("#wardDropdown").val().trim(); // 드롭다운 메뉴에서 선택된 병동명 가져오기
