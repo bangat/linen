@@ -111,19 +111,24 @@ $(document).ready(function () {
    * 6) 폼 제출 (유효성 검사 + 전송)
    * ========================= */
   // 시각 강조 도우미
-  function highlightInvalid($el) {
-    $el.addClass("invalid");
-    $el[0]?.scrollIntoView({ behavior: "smooth", block: "center" });
-    $el.focus();
-    setTimeout(() => $el.removeClass("invalid"), 1500);
+function highlightInvalid($el) {
+  $el.addClass("invalid");
+  if ($el[0] && $el[0].scrollIntoView) {
+    $el[0].scrollIntoView({ behavior: "smooth", block: "center" });
   }
+  try { $el.focus(); } catch(e) {}
+  setTimeout(function(){ $el.removeClass("invalid"); }, 1500);
+}
+
 
   $("#linenRequestForm")
     .off("submit.submitLinen")
     .on("submit.submitLinen", function (event) {
       event.preventDefault();
 
-      const wardValue = $("#wardDropdown").val()?.trim() || "";
+      var wardValRaw = $("#wardDropdown").val();
+var wardValue = (wardValRaw ? String(wardValRaw) : "").trim();
+
       const requestDate = $("#requestDate").val();
       const photoFile = $("#inventoryPhoto")[0].files[0];
 
