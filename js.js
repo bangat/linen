@@ -54,20 +54,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 실시간 구독
   const noticeRef = ref(db, "/notice");
-  onValue(
-    noticeRef,
-    (snap) => {
-      const val = snap.val();
-      const text = (val && typeof val === "object")
-        ? (val.message ?? JSON.stringify(val))
-        : (val ?? "");
-      renderNotice(text);
-    },
-    (err) => {
-      console.error("공지 구독 오류:", err);
-      renderNotice("공지 로드 실패");
-    }
-  );
+ onValue(
+  noticeRef,
+  (snap) => {
+-   const val = snap.val();
+-   const text = (val && typeof val === "object")
+-     ? (val.message ?? JSON.stringify(val))
+-     : (val ?? "");
+-   renderNotice(text);
++   const val = snap.val();
++   let out = "";
++   if (val && typeof val === "object") {
++     // RTDB: { text: "...", updatedAt: ... }
++     out = val.text ?? val.message ?? "";
++   } else if (typeof val === "string") {
++     // 혹시 문자열에 JSON이 들어온 경우 방어적으로 파싱
++     try {
++       const obj = JSON.parse(val);
++       out = (obj && typeof obj === "object") ? (obj.text ?? obj.message ?? val) : val;
++     } catch {
++       out = val;
++     }
++   }
++   renderNotice(out);
+  },
+  (err) => { /* 그대로 */ }
+);
+
 
   /* =========================
    * 2) 병동 캐시 + 오늘 날짜 기본값
