@@ -452,171 +452,109 @@
  <script src="js.js?v=20250820a"></script>
 
   <!-- 인라인 스크립트: 탭/공지/라벨/생성 등 핵심 동작 -->
-  <script>
-    $(document).ready(function () {
-      /* ===== 데이터/표 자동 생성 ===== */
-      const sheetItems = [
-        { name: "대 시 트", key: "대시트_요청수량" },
-        { name: "반 시 트", key: "반시트_요청수량" },
-        { name: "베 갯 잇", key: "베갯잇_요청수량" },
-        { name: "중 환 의", key: "중환의_요청수량" },
-        { name: "이 불", key: "이불_요청수량" },
-        { name: "얼음주머니", key: "얼음포_요청수량" },
-        { name: "억 제 대", key: "억제대_요청수량" },
-        { name: "수 건", key: "수건_요청수량" },
-        { name: "검진복(하의)", key: "하의_요청수량" },
-      ];
-      const requiredSizes = ["3XL", "2XL", "XL", "L"];
-      const sizes = ["4XL", "3XL", "2XL", "XL", "L", "M", "S"];
-      const types = ["상의", "하의"];
+<script>
+  $(document).ready(function () {
+    /* ===== 표 자동 생성 ===== */
+    const sheetItems = [
+      { name: "대 시 트", key: "대시트_요청수량" },
+      { name: "반 시 트", key: "반시트_요청수량" },
+      { name: "베 갯 잇", key: "베갯잇_요청수량" },
+      { name: "중 환 의", key: "중환의_요청수량" },
+      { name: "이 불", key: "이불_요청수량" },
+      { name: "얼음주머니", key: "얼음포_요청수량" },
+      { name: "억 제 대", key: "억제대_요청수량" },
+      { name: "수 건", key: "수건_요청수량" },
+      { name: "검진복(하의)", key: "하의_요청수량" },
+    ];
+    const requiredSizes = ["3XL", "2XL", "XL", "L"];
+    const sizes = ["4XL", "3XL", "2XL", "XL", "L", "M", "S"];
+    const types = ["상의", "하의"];
 
-      function populateTable(sectionId, items) {
-        const table = document.querySelector(`#${sectionId} table`);
-        items.forEach((item) => {
-          const row = document.createElement("tr");
-          const itemCell = document.createElement("td");
-          itemCell.textContent = item.name;
-          const inputCell = document.createElement("td");
-          const input = document.createElement("input");
-          input.type = "number";
-          input.name = item.key;
-          input.min = 0;
-          inputCell.appendChild(input);
-          row.appendChild(itemCell);
-          row.appendChild(inputCell);
-          table.appendChild(row);
-        });
-      }
+    function populateTable(sectionId, items) {
+      const table = document.querySelector(`#${sectionId} table`);
+      items.forEach((item) => {
+        const row = document.createElement("tr");
+        const itemCell = document.createElement("td");
+        itemCell.textContent = item.name;
+        const inputCell = document.createElement("td");
+        const input = document.createElement("input");
+        input.type = "number";
+        input.name = item.key;
+        input.min = 0;
+        inputCell.appendChild(input);
+        row.appendChild(itemCell);
+        row.appendChild(inputCell);
+        table.appendChild(row);
+      });
+    }
+    function generateClothingItems(sizes, types) {
+      return sizes.flatMap((size) =>
+        types.map((type) => ({
+          name: `${size} ${type}`,
+          key: `${size}_${type}_요청수량`,
+        }))
+      );
+    }
+    populateTable("sheet", sheetItems);
+    populateTable("normal", generateClothingItems(sizes, types));
+    populateTable("ortho", generateClothingItems(sizes.slice(1), types));
+    populateTable("uniform", generateClothingItems(requiredSizes, types));
 
-      function generateClothingItems(sizes, types) {
-        return sizes.flatMap((size) =>
-          types.map((type) => ({
-            name: `${size} ${type}`,
-            key: `${size}_${type}_요청수량`,
-          }))
-        );
-      }
-
-      populateTable("sheet", sheetItems);
-      populateTable("normal", generateClothingItems(sizes, types));
-      populateTable("ortho", generateClothingItems(sizes.slice(1), types));
-      populateTable("uniform", generateClothingItems(requiredSizes, types));
-
-/* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
-$("#noticeHeader").off("click.reset").on("click.reset", function () {
-      // 1) 수량 입력만 초기화
+    /* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
+    $("#noticeHeader").off("click.reset").on("click.reset", function () {
+      // 수량만 초기화
       $('input[type="number"]').val('');
 
-      // 2) 날짜: 오늘 날짜로 기본 세팅 (전역 함수 의존 X)
+      // 날짜: 오늘로 세팅 (전역 함수 의존 X)
       const d = new Date();
-      const today = d.getFullYear() + '-' +
-                    String(d.getMonth() + 1).padStart(2, '0') + '-' +
-                    String(d.getDate()).padStart(2, '0');
+      const today =
+        d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
       $('#requestDate').val(today).trigger('change'); // 라벨 동기화
 
-      // 3) 병동: "비우지 말고" 저장된 병동을 복원 (없으면 그대로 비워둠)
+      // 병동: 저장된 값 복원(있을 때만), 없으면 비움
       const SAVED_WARD_KEY = 'linen_last_ward';
       const savedWard = localStorage.getItem(SAVED_WARD_KEY);
       if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
         $('#wardDropdown').val(savedWard);
       } else {
-        // 옵션이 바뀌어 존재하지 않으면 비움
         $('#wardDropdown').val('');
       }
 
-      // 4) 탭 초기화(시트/기타)
+      // 탭 초기화(시트/기타)
       $(".tab").removeClass("active").css("background-color", "");
       $(".form-section").removeClass("active");
       $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
       $("#sheet").addClass("active");
     });
-  });
 
-
-      /* ===== 탭 전환(비활성 탭 무시) ===== */
-      $(".tab")
-        .off("click.linen")
-        .on("click.linen", function () {
-          if ($(this).hasClass("disabled")) return;
-          const tabId = $(this).data("tab");
-
-          $(".tab").removeClass("active").css("background-color", "");
-          $(this).addClass("active").css("background-color", "#4CAF50");
-
-          $(".form-section").removeClass("active");
-          $("#" + tabId).addClass("active");
-        });
-
-      /* ===== 비활성 탭(요청대로) ===== */
-      $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass(
-        "disabled"
-      );
-
-
-      /* ===== 메뉴 토글 ===== */
-      $("#menuBar").on("click", function () {
-        $("#dropdownMenu").toggle();
-      });
-
-      /* ===== 관리자 이동(두 손가락 제스처) ===== */
-      document.addEventListener("touchstart", function (event) {
-        if (event.touches.length === 2)
-          document.getElementById("adminAccessBtn").click();
-      });
-      document
-        .getElementById("adminAccessBtn")
-        .addEventListener("click", function () {
-          window.location.href = "admin.html";
-        });
-
-      /* ===== 날짜 라벨 겹침 해결(JS로 표시/숨김) ===== */
-      const $dateInput = $("#requestDate");
-      const $dateLabel = $(".date-placeholder");
-      function syncDatePlaceholder() {
-        if ($dateInput.val()) {
-          $dateLabel.hide();
-        } else {
-          $dateLabel.show();
-        }
-      }
-      $dateLabel.on("click", () => $dateInput.trigger("focus"));
-      $dateInput.on("input change blur", syncDatePlaceholder);
-      syncDatePlaceholder();
-
-      /* ===== 공지 마퀴 ===== */
-const NOTICE_URL = "https://hallymlinen-default-rtdb.firebaseio.com/notice.json";
-// GitHub 편집 버튼 안 쓸 거면 GITHUB_EDIT_URL은 삭제해도 됨
-
-
-
-function setNotice(text) {
-  const clean = (text || "").trim().replace(/\s+/g, " ");
-  const track = document.getElementById("noticeTrack");
-  if (!track) return;
-  track.textContent = clean || "공지 없음";   // 한 번만 표시
-}
-
-
-async function fetchNotice() {
-  try {
-    const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, { cache: "no-store" });
-    if (!res.ok) throw new Error("fail");
-    const data = await res.json(); // { text: "...", updatedAt: ... } 형태
-
-    const txt = (data && typeof data === "object") ? (data.text || "") : (data || "");
-    setNotice(txt);
-  } catch (e) {
-    setNotice("공지 로드 실패");
-  }
-}
-
-
-      $("#noticeRefreshBtn").on("click", fetchNotice);
-      fetchNotice();
-      setInterval(fetchNotice, 10 * 60 * 1000);
-
-      // 예) 관리자 인증 성공 지점에서 enableNoticeEdit() 호출하면 됩니다.
+    /* ===== 탭 전환(비활성 탭 무시) ===== */
+    $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass("disabled");
+    $(".tab").off("click.linen").on("click.linen", function () {
+      if ($(this).hasClass("disabled")) return;
+      const tabId = $(this).data("tab");
+      $(".tab").removeClass("active").css("background-color", "");
+      $(this).addClass("active").css("background-color", "#4CAF50");
+      $(".form-section").removeClass("active");
+      $("#" + tabId).addClass("active");
     });
-  </script>
+
+    /* ===== 날짜 라벨 겹침: 입력 상태에 따라 show/hide ===== */
+    const $dateInput = $("#requestDate");
+    const $dateLabel = $(".date-placeholder");
+    function syncDatePlaceholder() {
+      $dateLabel.toggle(!$dateInput.val());
+    }
+    $dateLabel.on("click", () => $dateInput.trigger("focus"));
+    $dateInput.on("input change blur", syncDatePlaceholder);
+    syncDatePlaceholder();
+
+    /* ===== 공지: js.js에서 폴링하므로 index에선 중복 폴링 제거 ===== */
+    // 👉 js.js가 fetchNotice + setInterval 처리함.
+    //    index.html에서는 따로 호출/타이머 두지 않음.
+  });
+</script>
+
 </body>
 </html>
