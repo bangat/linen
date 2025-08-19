@@ -633,7 +633,7 @@ $("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
           const txt = await res.text();
           setNotice(txt);
         } catch (e) {
-          setNotice(" ");
+          setNotice("공지 로드 실패");
         }
       }
 
