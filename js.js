@@ -193,77 +193,75 @@ $(document).ready(function () {
         message += `[근무복]\n${uniformItems}\n`;
       }
 
-      const chatId = "5432510881"; // 텔레그램 채팅방 ID
-      const token = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
-      let url;
-      let formData;
+    const chatId = "5432510881"; // 그대로 사용
+const token  = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
 
-      if (photoFile) {
-        // 사진 파일 첨부
-        url = `https://api.telegram.org/bot${token}/sendPhoto`;
-        formData = new FormData();
-        formData.append("chat_id", chatId);
-        formData.append("photo", photoFile);
-        formData.append("caption", message);
+let url;
+let formData;
 
-        fetch(url, { method: "POST", body: formData })
-          .then((r) => r.json())
-          .then((data) => {
-            if (data.ok) {
-              playNotificationSound();
-              alert("요청이 성공적으로 전송되었습니다.");
-              $("#linenRequestForm")[0].reset();
-              $("#preview").attr("src", "#").hide();
-              // 날짜 라벨 동기화
-              $("#requestDate").trigger("change");
-            } else {
-              throw new Error("전송 실패");
-            }
-          })
-          .catch((err) => {
-            console.error("Error:", err);
-            alert("요청을 전송하는 도중 오류가 발생했습니다.");
-          })
-          .finally(() => {
-            $("#submitBtn").prop("disabled", false);
-            $("#statusMessage").fadeOut();
-          });
-      } else {
-        // 텍스트만
-        url = `https://api.telegram.org/bot${token}/sendMessage`;
-        formData = JSON.stringify({
-          chat_id: chatId,
-          parse_mode: "HTML",
-          text: message,
-        });
+// ✅ 공통: 에러 디테일 표시 함수
+function handleTgResponse(resp, context){
+  console.log(`TG ${context} response:`, resp);
+  if (!resp.ok) {
+    const desc = resp.description || '원인 불명';
+    throw new Error(`${context} 실패: ${desc}`);
+  }
+}
 
-        fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: formData,
-        })
-          .then((r) => r.json())
-          .then((data) => {
-            if (data.ok) {
-              playNotificationSound();
-              alert("요청이 성공적으로 전송되었습니다.");
-              $("#linenRequestForm")[0].reset();
-              // 날짜 라벨 동기화
-              $("#requestDate").trigger("change");
-            } else {
-              throw new Error("전송 실패");
-            }
-          })
-          .catch((err) => {
-            console.error("Error:", err);
-            alert("요청을 전송하는 도중 오류가 발생했습니다.");
-          })
-          .finally(() => {
-            $("#submitBtn").prop("disabled", false);
-            $("#statusMessage").fadeOut();
-          });
-      }
+// ✅ 사진 파일이 첨부된 경우: sendPhoto (multipart/form-data)
+if (photoFile) {
+  url = `https://api.telegram.org/bot${token}/sendPhoto`;
+  formData = new FormData();
+  formData.append("chat_id", chatId);
+  formData.append("photo", photoFile);
+  formData.append("caption", message);
+
+  fetch(url, { method: "POST", body: formData })
+    .then(r => r.json())
+    .then(data => {
+      handleTgResponse(data, 'sendPhoto');
+      playNotificationSound();
+      alert("요청이 성공적으로 전송되었습니다.");
+      $("#linenRequestForm")[0].reset();
+      $("#preview").attr("src", "#").hide();
+      $("#requestDate").trigger("change"); // 날짜 라벨 동기화
+    })
+    .catch(err => {
+      console.error("TG sendPhoto error:", err);
+      alert("전송 오류: " + err.message);
+    })
+    .finally(() => {
+      $("#submitBtn").prop("disabled", false);
+      $("#statusMessage").fadeOut();
     });
+
+} else {
+  // ✅ 사진 없음: sendMessage도 FormData로 (JSON 대신)
+  url = `https://api.telegram.org/bot${token}/sendMessage`;
+  formData = new FormData();
+  formData.append("chat_id", chatId);
+  formData.append("text", message);
+  formData.append("parse_mode", "HTML"); // 필요시 유지
+
+  fetch(url, { method: "POST", body: formData })
+    .then(r => r.json())
+    .then(data => {
+      handleTgResponse(data, 'sendMessage');
+      playNotificationSound();
+      alert("요청이 성공적으로 전송되었습니다.");
+      $("#linenRequestForm")[0].reset();
+      $("#requestDate").trigger("change");
+    })
+    .catch(err => {
+      console.error("TG sendMessage error:", err);
+      alert("전송 오류: " + err.message);
+    })
+    .finally(() => {
+      $("#submitBtn").prop("disabled", false);
+      $("#statusMessage").fadeOut();
+    });
+}
+
 
   /* =========================
    * 7) 관리자 페이지 링크 처리
