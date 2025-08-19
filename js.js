@@ -20,27 +20,26 @@ $(document).ready(function () {
   if (!window.__noticeInit) {
     window.__noticeInit = true;
 
-    const NOTICE_URL =
+    var NOTICE_URL =
       "https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt"; // 공지 텍스트 파일
-    const GITHUB_EDIT_URL =
+    var GITHUB_EDIT_URL =
       "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt"; // 모바일에서 바로 수정
 
     function setNotice(text) {
-      const clean = (text || "").trim().replace(/\s+/g, " ");
-      const track = document.getElementById("noticeTrack");
+      var clean = (text || "").trim().replace(/\s+/g, " ");
+      var track = document.getElementById("noticeTrack");
       if (!track) return;
-      track.textContent = clean ? `${clean}   •   ${clean}` : "공지 없음";
+      track.textContent = clean ? (clean + "   •   " + clean) : "공지 없음";
     }
 
-    async function fetchNotice() {
-      try {
-        const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, { cache: "no-store" });
-        if (!res.ok) throw new Error("fail");
-        const txt = await res.text();
-        setNotice(txt);
-      } catch (e) {
-        setNotice("공지 로드 실패");
-      }
+    function fetchNotice() {
+      fetch(NOTICE_URL + "?t=" + Date.now(), { cache: "no-store" })
+        .then(function(res){
+          if (!res.ok) throw new Error("fail");
+          return res.text();
+        })
+        .then(function(txt){ setNotice(txt); })
+        .catch(function(){ setNotice("공지 로드 실패"); });
     }
 
     $("#noticeRefreshBtn").off("click.notice").on("click.notice", fetchNotice);
@@ -51,9 +50,9 @@ $(document).ready(function () {
     window.enableNoticeEdit = function () {
       if ($("#noticeEditBtn").length) return;
       $(".notice-actions").append(
-        $("<button type='button' id='noticeEditBtn'>공지 수정</button>").on("click", () =>
-          window.open(GITHUB_EDIT_URL, "_blank")
-        )
+        $("<button type='button' id='noticeEditBtn'>공지 수정</button>").on("click", function () {
+          window.open(GITHUB_EDIT_URL, "_blank");
+        })
       );
     };
   }
@@ -68,7 +67,7 @@ $(document).ready(function () {
     .off("click.tabs")
     .on("click.tabs", function () {
       if ($(this).hasClass("disabled")) return; // 비활성 탭 클릭 무시
-      const tabId = $(this).attr("data-tab");
+      var tabId = $(this).attr("data-tab");
 
       $(".tab").removeClass("active").css("background-color", "");
       $(this).addClass("active").css("background-color", "#4CAF50");
@@ -89,9 +88,10 @@ $(document).ready(function () {
   $("#inventoryPhoto")
     .off("change.preview")
     .on("change.preview", function (event) {
-      const file = event.target.files[0];
+      var file = event.target && event.target.files && event.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
+      // 네 환경에서 잘 되던 FileReader 유지
+      var reader = new FileReader();
       reader.onload = function (e) {
         $("#preview").attr("src", e.target.result).show();
       };
@@ -111,15 +111,14 @@ $(document).ready(function () {
    * 6) 폼 제출 (유효성 검사 + 전송)
    * ========================= */
   // 시각 강조 도우미
-function highlightInvalid($el) {
-  $el.addClass("invalid");
-  if ($el[0] && $el[0].scrollIntoView) {
-    $el[0].scrollIntoView({ behavior: "smooth", block: "center" });
+  function highlightInvalid($el) {
+    $el.addClass("invalid");
+    if ($el[0] && $el[0].scrollIntoView) {
+      $el[0].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    try { $el.focus(); } catch(e) {}
+    setTimeout(function(){ $el.removeClass("invalid"); }, 1500);
   }
-  try { $el.focus(); } catch(e) {}
-  setTimeout(function(){ $el.removeClass("invalid"); }, 1500);
-}
-
 
   $("#linenRequestForm")
     .off("submit.submitLinen")
@@ -127,12 +126,11 @@ function highlightInvalid($el) {
       event.preventDefault();
 
       var wardValRaw = $("#wardDropdown").val();
-var wardValue = (wardValRaw ? String(wardValRaw) : "").trim();
+      var wardValue = (wardValRaw ? String(wardValRaw) : "").trim();
+      var requestDate = $("#requestDate").val();
+      var photoFile = ($("#inventoryPhoto")[0] && $("#inventoryPhoto")[0].files && $("#inventoryPhoto")[0].files[0]) || null;
 
-      const requestDate = $("#requestDate").val();
-      const photoFile = $("#inventoryPhoto")[0].files[0];
-
-      // 유효성 검사 (순서/스코프 수정)
+      // 유효성 검사
       if (!wardValue) {
         alert("병동을 선택해주세요.");
         highlightInvalid($("#wardDropdown"));
@@ -147,126 +145,106 @@ var wardValue = (wardValRaw ? String(wardValRaw) : "").trim();
       $("#submitBtn").prop("disabled", true);
       $("#statusMessage").fadeIn();
 
-      let message = `병동명 : ${wardValue}\n`;
-      message += `입고날짜 : ${requestDate}\n\n`;
+      var message = "병동명 : " + wardValue + "\n";
+      message += "입고날짜 : " + requestDate + "\n\n";
 
-      let sheetItems = "";
+      var sheetItems = "";
       $("#sheet input[type='number']").each(function () {
-        const itemName = $(this).closest("tr").find("td:first").text().trim();
-        const itemCount = $(this).val();
-        if (itemCount > 0) {
-          sheetItems += `${itemName} ${itemCount}장\n`;
-        }
+        var itemName = $(this).closest("tr").find("td:first").text().trim();
+        var itemCount = $(this).val();
+        if (itemCount > 0) sheetItems += itemName + " " + itemCount + "장\n";
       });
-      if (sheetItems) {
-        message += `[시트/기타]\n${sheetItems}\n`;
-      }
+      if (sheetItems) message += "[시트/기타]\n" + sheetItems + "\n";
 
-      let normalItems = "";
+      var normalItems = "";
       $("#normal input[type='number']").each(function () {
-        const itemName = $(this).closest("tr").find("td:first").text().trim();
-        const itemCount = $(this).val();
-        if (itemCount > 0) {
-          normalItems += `${itemName} ${itemCount}장\n`;
-        }
+        var itemName = $(this).closest("tr").find("td:first").text().trim();
+        var itemCount = $(this).val();
+        if (itemCount > 0) normalItems += itemName + " " + itemCount + "장\n";
       });
-      if (normalItems) {
-        message += `[일반환의]\n${normalItems}\n`;
-      }
+      if (normalItems) message += "[일반환의]\n" + normalItems + "\n";
 
-      let orthoItems = "";
+      var orthoItems = "";
       $("#ortho input[type='number']").each(function () {
-        const itemName = $(this).closest("tr").find("td:first").text().trim();
-        const itemCount = $(this).val();
-        if (itemCount > 0) {
-          orthoItems += `${itemName} ${itemCount}장\n`;
-        }
+        var itemName = $(this).closest("tr").find("td:first").text().trim();
+        var itemCount = $(this).val();
+        if (itemCount > 0) orthoItems += itemName + " " + itemCount + "장\n";
       });
-      if (orthoItems) {
-        message += `[정형환의]\n${orthoItems}\n`;
-      }
+      if (orthoItems) message += "[정형환의]\n" + orthoItems + "\n";
 
-      let uniformItems = "";
+      var uniformItems = "";
       $("#uniform input[type='number']").each(function () {
-        const itemName = $(this).closest("tr").find("td:first").text().trim();
-        const itemCount = $(this).val();
-        if (itemCount > 0) {
-          uniformItems += `${itemName} ${itemCount}장\n`;
-        }
+        var itemName = $(this).closest("tr").find("td:first").text().trim();
+        var itemCount = $(this).val();
+        if (itemCount > 0) uniformItems += itemName + " " + itemCount + "장\n";
       });
-      if (uniformItems) {
-        message += `[근무복]\n${uniformItems}\n`;
+      if (uniformItems) message += "[근무복]\n" + uniformItems + "\n";
+
+      var chatId = "5432510881";
+      var token  = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
+
+      if (photoFile) {
+        // 사진 + 캡션 전송 (원래 쓰던 방식)
+        var url1 = "https://api.telegram.org/bot" + token + "/sendPhoto";
+        var fd = new FormData();
+        fd.append("chat_id", chatId);
+        // 파일명 명시(안전)
+        fd.append("photo", photoFile, photoFile.name || "photo.jpg");
+        fd.append("caption", message);
+
+        fetch(url1, { method: "POST", body: fd })
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            console.log("TG sendPhoto:", data);
+            if (!data.ok) throw new Error(data.description || "전송 실패");
+            playNotificationSound();
+            alert("요청이 성공적으로 전송되었습니다.");
+            $("#linenRequestForm")[0].reset();
+            $("#preview").attr("src", "#").hide();
+            $("#requestDate").trigger("change");
+          })
+          .catch(function(err){
+            console.error("TG sendPhoto error:", err);
+            alert("전송 오류: " + err.message);
+          })
+          .finally(function(){
+            $("#submitBtn").prop("disabled", false);
+            $("#statusMessage").fadeOut();
+          });
+
+      } else {
+        // 텍스트만 전송 (원래 쓰던 JSON 방식 유지)
+        var url2 = "https://api.telegram.org/bot" + token + "/sendMessage";
+        var payload = JSON.stringify({
+          chat_id: chatId,
+          parse_mode: "HTML",
+          text: message
+        });
+
+        fetch(url2, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload
+        })
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            console.log("TG sendMessage:", data);
+            if (!data.ok) throw new Error(data.description || "전송 실패");
+            playNotificationSound();
+            alert("요청이 성공적으로 전송되었습니다.");
+            $("#linenRequestForm")[0].reset();
+            $("#requestDate").trigger("change");
+          })
+          .catch(function(err){
+            console.error("TG sendMessage error:", err);
+            alert("전송 오류: " + err.message);
+          })
+          .finally(function(){
+            $("#submitBtn").prop("disabled", false);
+            $("#statusMessage").fadeOut();
+          });
       }
-
-    const chatId = "5432510881"; // 그대로 사용
-const token  = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
-
-let url;
-let formData;
-
-// ✅ 공통: 에러 디테일 표시 함수
-function handleTgResponse(resp, context){
-  console.log(`TG ${context} response:`, resp);
-  if (!resp.ok) {
-    const desc = resp.description || '원인 불명';
-    throw new Error(`${context} 실패: ${desc}`);
-  }
-}
-
-// ✅ 사진 파일이 첨부된 경우: sendPhoto (multipart/form-data)
-if (photoFile) {
-  url = `https://api.telegram.org/bot${token}/sendPhoto`;
-  formData = new FormData();
-  formData.append("chat_id", chatId);
-  formData.append("photo", photoFile);
-  formData.append("caption", message);
-
-  fetch(url, { method: "POST", body: formData })
-    .then(r => r.json())
-    .then(data => {
-      handleTgResponse(data, 'sendPhoto');
-      playNotificationSound();
-      alert("요청이 성공적으로 전송되었습니다.");
-      $("#linenRequestForm")[0].reset();
-      $("#preview").attr("src", "#").hide();
-      $("#requestDate").trigger("change"); // 날짜 라벨 동기화
-    })
-    .catch(err => {
-      console.error("TG sendPhoto error:", err);
-      alert("전송 오류: " + err.message);
-    })
-    .finally(() => {
-      $("#submitBtn").prop("disabled", false);
-      $("#statusMessage").fadeOut();
-    });
-
-} else {
-  // ✅ 사진 없음: sendMessage도 FormData로 (JSON 대신)
-  url = `https://api.telegram.org/bot${token}/sendMessage`;
-  formData = new FormData();
-  formData.append("chat_id", chatId);
-  formData.append("text", message);
-  formData.append("parse_mode", "HTML"); // 필요시 유지
-
-  fetch(url, { method: "POST", body: formData })
-    .then(r => r.json())
-    .then(data => {
-      handleTgResponse(data, 'sendMessage');
-      playNotificationSound();
-      alert("요청이 성공적으로 전송되었습니다.");
-      $("#linenRequestForm")[0].reset();
-      $("#requestDate").trigger("change");
-    })
-    .catch(err => {
-      console.error("TG sendMessage error:", err);
-      alert("전송 오류: " + err.message);
-    })
-    .finally(() => {
-      $("#submitBtn").prop("disabled", false);
-      $("#statusMessage").fadeOut();
-    });
-}
-
+    }); // ←★★ submit 핸들러 닫기 (중요)
 
   /* =========================
    * 7) 관리자 페이지 링크 처리
@@ -278,7 +256,7 @@ if (photoFile) {
       var password = prompt("관리자 페이지 암호를 입력하세요.");
       if (password === "9") {
         window.location.href = "admin.html";
-        // 필요 시: enableNoticeEdit();  // 공지 수정 버튼 노출(메인에서 바로 편집 원하면)
+        // enableNoticeEdit(); // 원하면 공지 수정 버튼 노출
       } else {
         alert("암호가 일치하지 않습니다.");
       }
@@ -287,28 +265,26 @@ if (photoFile) {
   /* =========================
    * 8) 날짜 라벨 겹침 해결 (네이티브 date용)
    * ========================= */
-  const dateInput = document.getElementById("requestDate");
-  const datePlaceholder = document.querySelector(".date-placeholder");
+  var dateInput = document.getElementById("requestDate");
+  var datePlaceholder = document.querySelector(".date-placeholder");
 
   function syncDatePlaceholder() {
-    if (dateInput.value) {
+    if (dateInput && dateInput.value) {
       datePlaceholder.style.display = "none";
     } else {
       datePlaceholder.style.display = "block";
     }
   }
-  dateInput.addEventListener("input", syncDatePlaceholder);
-  dateInput.addEventListener("change", syncDatePlaceholder);
-  // 초기 동기화
+  if (dateInput) {
+    dateInput.addEventListener("input", syncDatePlaceholder);
+    dateInput.addEventListener("change", syncDatePlaceholder);
+  }
   syncDatePlaceholder();
 
-  // 선택적으로 jQuery UI datepicker가 있을 때만 초기화(없으면 네이티브 유지)
   if ($.fn && $.fn.datepicker) {
     $("#requestDate").datepicker({
       dateFormat: "yy-mm-dd",
-      onSelect: function () {
-        syncDatePlaceholder();
-      },
+      onSelect: function () { syncDatePlaceholder(); },
     });
   }
 
@@ -316,9 +292,9 @@ if (photoFile) {
    * 9) 알림음 재생 함수
    * ========================= */
   function playNotificationSound() {
-    const audio = document.getElementById("notificationSound");
+    var audio = document.getElementById("notificationSound");
     if (!audio) return;
     audio.currentTime = 0;
-    audio.play().catch(() => {});
+    audio.play().catch(function(){});
   }
-});
+}); // ←★★ document.ready 닫기
