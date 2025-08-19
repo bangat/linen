@@ -2,6 +2,39 @@ $(document).ready(function () {
   /* =========================
    * 1) 헤더 클릭: 초기화 & 시트 탭으로
    * ========================= */
+
+  // === 병동 캐시 ===
+var SAVED_WARD_KEY = 'linen_last_ward';
+var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+
+// 저장된 병동이 실제 옵션에 있으면 세팅
+if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+  $('#wardDropdown').val(savedWard);
+}
+
+// 변경 시마다 저장
+$('#wardDropdown').off('change.saveWard').on('change.saveWard', function () {
+  var v = $(this).val() || '';
+  localStorage.setItem(SAVED_WARD_KEY, v);
+});
+
+  // === 오늘 날짜 기본값 ===
+function getTodayYYYYMMDD() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = ('0' + (d.getMonth() + 1)).slice(-2);
+  var day = ('0' + d.getDate()).slice(-2);
+  return y + '-' + m + '-' + day;
+}
+
+var todayStr = getTodayYYYYMMDD();
+if (!$('#requestDate').val()) {
+  $('#requestDate').val(todayStr).trigger('change'); // 라벨 숨김 동기화
+}
+
+
+
+  
   $("h1").off("click.headerReset").on("click.headerReset", function () {
     $(".tab").removeClass("active").css("background-color", "");
     $(".tab[data-tab='sheet']").addClass("active").css("background-color", "#4CAF50");
