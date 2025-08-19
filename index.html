@@ -11,7 +11,7 @@
   <title>린넨실 요청서</title>
 
   <!-- 외부 CSS(기존) -->
-<link rel="stylesheet" href="linen.css" />
+  <link rel="stylesheet" href="linen.css" />
 
   <!-- 아이콘/파비콘 -->
   <link
@@ -303,7 +303,11 @@
     .form-grid--two {
       grid-template-columns: 1fr 1fr;
     }
-
+    @media (max-width: 768px) {
+      .form-grid--two {
+        grid-template-columns: 1fr;
+      }
+    }
     
     /* 드롭다운 높이(모바일) */
     select {
@@ -324,6 +328,17 @@
   </style>
 </head>
 <body>
+  <!-- 햄버거 -->
+  <div class="menu-bar" id="menuBar">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <!-- 메뉴 -->
+  <div class="dropdown-menu" id="dropdownMenu">
+    <a href="#" id="adminPageLink">관리자페이지</a>
+  </div>
+
   <!-- 헤더 -->
   <div class="content">
     <div class="header-container">
@@ -449,112 +464,195 @@
   <!-- 스크립트 -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- 기존 js.js 유지 가능(제출/텔레그램 등 로직이 있다면). 단, 충돌 없게 최신화 필요 -->
- <script src="js.js?v=20250820a"></script>
+  <script src="js.js"></script>
 
   <!-- 인라인 스크립트: 탭/공지/라벨/생성 등 핵심 동작 -->
-<script>
-  $(document).ready(function () {
-    /* ===== 표 자동 생성 ===== */
-    const sheetItems = [
-      { name: "대 시 트", key: "대시트_요청수량" },
-      { name: "반 시 트", key: "반시트_요청수량" },
-      { name: "베 갯 잇", key: "베갯잇_요청수량" },
-      { name: "중 환 의", key: "중환의_요청수량" },
-      { name: "이 불", key: "이불_요청수량" },
-      { name: "얼음주머니", key: "얼음포_요청수량" },
-      { name: "억 제 대", key: "억제대_요청수량" },
-      { name: "수 건", key: "수건_요청수량" },
-      { name: "검진복(하의)", key: "하의_요청수량" },
-    ];
-    const requiredSizes = ["3XL", "2XL", "XL", "L"];
-    const sizes = ["4XL", "3XL", "2XL", "XL", "L", "M", "S"];
-    const types = ["상의", "하의"];
+  <script>
+    $(document).ready(function () {
+      /* ===== 데이터/표 자동 생성 ===== */
+      const sheetItems = [
+        { name: "대 시 트", key: "대시트_요청수량" },
+        { name: "반 시 트", key: "반시트_요청수량" },
+        { name: "베 갯 잇", key: "베갯잇_요청수량" },
+        { name: "중 환 의", key: "중환의_요청수량" },
+        { name: "이 불", key: "이불_요청수량" },
+        { name: "얼음주머니", key: "얼음포_요청수량" },
+        { name: "억 제 대", key: "억제대_요청수량" },
+        { name: "수 건", key: "수건_요청수량" },
+        { name: "검진복(하의)", key: "하의_요청수량" },
+      ];
+      const requiredSizes = ["3XL", "2XL", "XL", "L"];
+      const sizes = ["4XL", "3XL", "2XL", "XL", "L", "M", "S"];
+      const types = ["상의", "하의"];
 
-    function populateTable(sectionId, items) {
-      const table = document.querySelector(`#${sectionId} table`);
-      items.forEach((item) => {
-        const row = document.createElement("tr");
-        const itemCell = document.createElement("td");
-        itemCell.textContent = item.name;
-        const inputCell = document.createElement("td");
-        const input = document.createElement("input");
-        input.type = "number";
-        input.name = item.key;
-        input.min = 0;
-        inputCell.appendChild(input);
-        row.appendChild(itemCell);
-        row.appendChild(inputCell);
-        table.appendChild(row);
-      });
-    }
-    function generateClothingItems(sizes, types) {
-      return sizes.flatMap((size) =>
-        types.map((type) => ({
-          name: `${size} ${type}`,
-          key: `${size}_${type}_요청수량`,
-        }))
-      );
-    }
-    populateTable("sheet", sheetItems);
-    populateTable("normal", generateClothingItems(sizes, types));
-    populateTable("ortho", generateClothingItems(sizes.slice(1), types));
-    populateTable("uniform", generateClothingItems(requiredSizes, types));
-
-    /* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
-    $("#noticeHeader").off("click.reset").on("click.reset", function () {
-      // 수량만 초기화
-      $('input[type="number"]').val('');
-
-      // 날짜: 오늘로 세팅 (전역 함수 의존 X)
-      const d = new Date();
-      const today =
-        d.getFullYear() + '-' +
-        String(d.getMonth() + 1).padStart(2, '0') + '-' +
-        String(d.getDate()).padStart(2, '0');
-      $('#requestDate').val(today).trigger('change'); // 라벨 동기화
-
-      // 병동: 저장된 값 복원(있을 때만), 없으면 비움
-      const SAVED_WARD_KEY = 'linen_last_ward';
-      const savedWard = localStorage.getItem(SAVED_WARD_KEY);
-      if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
-        $('#wardDropdown').val(savedWard);
-      } else {
-        $('#wardDropdown').val('');
+      function populateTable(sectionId, items) {
+        const table = document.querySelector(`#${sectionId} table`);
+        items.forEach((item) => {
+          const row = document.createElement("tr");
+          const itemCell = document.createElement("td");
+          itemCell.textContent = item.name;
+          const inputCell = document.createElement("td");
+          const input = document.createElement("input");
+          input.type = "number";
+          input.name = item.key;
+          input.min = 0;
+          inputCell.appendChild(input);
+          row.appendChild(itemCell);
+          row.appendChild(inputCell);
+          table.appendChild(row);
+        });
       }
 
-      // 탭 초기화(시트/기타)
-      $(".tab").removeClass("active").css("background-color", "");
-      $(".form-section").removeClass("active");
-      $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
-      $("#sheet").addClass("active");
-    });
+      function generateClothingItems(sizes, types) {
+        return sizes.flatMap((size) =>
+          types.map((type) => ({
+            name: `${size} ${type}`,
+            key: `${size}_${type}_요청수량`,
+          }))
+        );
+      }
 
-    /* ===== 탭 전환(비활성 탭 무시) ===== */
-    $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass("disabled");
-    $(".tab").off("click.linen").on("click.linen", function () {
-      if ($(this).hasClass("disabled")) return;
-      const tabId = $(this).data("tab");
-      $(".tab").removeClass("active").css("background-color", "");
-      $(this).addClass("active").css("background-color", "#4CAF50");
-      $(".form-section").removeClass("active");
-      $("#" + tabId).addClass("active");
-    });
+      populateTable("sheet", sheetItems);
+      populateTable("normal", generateClothingItems(sizes, types));
+      populateTable("ortho", generateClothingItems(sizes.slice(1), types));
+      populateTable("uniform", generateClothingItems(requiredSizes, types));
 
-    /* ===== 날짜 라벨 겹침: 입력 상태에 따라 show/hide ===== */
-    const $dateInput = $("#requestDate");
-    const $dateLabel = $(".date-placeholder");
-    function syncDatePlaceholder() {
-      $dateLabel.toggle(!$dateInput.val());
-    }
-    $dateLabel.on("click", () => $dateInput.trigger("focus"));
-    $dateInput.on("input change blur", syncDatePlaceholder);
-    syncDatePlaceholder();
+/* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
+$("#noticeHeader").off("click.reset").on("click.reset", function () {
+  // 수량 입력만 초기화
+  $('input[type="number"]').val('');
 
-    /* ===== 공지: js.js에서 폴링하므로 index에선 중복 폴링 제거 ===== */
-    // 👉 js.js가 fetchNotice + setInterval 처리함.
-    //    index.html에서는 따로 호출/타이머 두지 않음.
+  // 병동: 저장된 병동이 있으면 복원, 없으면 비움
+  var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+  if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+    $('#wardDropdown').val(savedWard);
+  } else {
+    $('#wardDropdown').val('');
+  }
+
+  // 날짜: 오늘 날짜로 기본 세팅
+  $('#requestDate').val(getTodayYYYYMMDD()).trigger('change'); // 라벨 숨김
+
+  // 탭 초기화(시트/기타)
+  $(".tab").removeClass("active").css("background-color", "");
+  $(".form-section").removeClass("active");
+  $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
+  $("#sheet").addClass("active");
+});
+
+
+      /* ===== 탭 전환(비활성 탭 무시) ===== */
+      $(".tab")
+        .off("click.linen")
+        .on("click.linen", function () {
+          if ($(this).hasClass("disabled")) return;
+          const tabId = $(this).data("tab");
+
+          $(".tab").removeClass("active").css("background-color", "");
+          $(this).addClass("active").css("background-color", "#4CAF50");
+
+          $(".form-section").removeClass("active");
+          $("#" + tabId).addClass("active");
+        });
+
+      /* ===== 비활성 탭(요청대로) ===== */
+      $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass(
+        "disabled"
+      );
+
+/* ===== 카메라/미리보기 ===== */
+$("#cameraButton").off("click.camera").on("click.camera", function () {
+  $("#inventoryPhoto").click();
+});
+
+$("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
+  var files = e.target && e.target.files;
+  var file = files && files[0];
+  if (!file) return;
+
+  // FileReader 대신 Object URL 사용 (호환성↑, 빠름)
+  var blobUrl = (window.URL || window.webkitURL).createObjectURL(file);
+  $("#preview").attr("src", blobUrl).show();
+
+  // 폼 리셋 시 URL 해제(메모리 누수 방지)
+  $("#linenRequestForm").one("reset", function(){
+    (window.URL || window.webkitURL).revokeObjectURL(blobUrl);
   });
-</script>
+});
 
+
+      /* ===== 메뉴 토글 ===== */
+      $("#menuBar").on("click", function () {
+        $("#dropdownMenu").toggle();
+      });
+
+      /* ===== 관리자 이동(두 손가락 제스처) ===== */
+      document.addEventListener("touchstart", function (event) {
+        if (event.touches.length === 2)
+          document.getElementById("adminAccessBtn").click();
+      });
+      document
+        .getElementById("adminAccessBtn")
+        .addEventListener("click", function () {
+          window.location.href = "admin.html";
+        });
+
+      /* ===== 날짜 라벨 겹침 해결(JS로 표시/숨김) ===== */
+      const $dateInput = $("#requestDate");
+      const $dateLabel = $(".date-placeholder");
+      function syncDatePlaceholder() {
+        if ($dateInput.val()) {
+          $dateLabel.hide();
+        } else {
+          $dateLabel.show();
+        }
+      }
+      $dateLabel.on("click", () => $dateInput.trigger("focus"));
+      $dateInput.on("input change blur", syncDatePlaceholder);
+      syncDatePlaceholder();
+
+      /* ===== 공지 마퀴 ===== */
+      const NOTICE_URL =
+        "https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
+      const GITHUB_EDIT_URL =
+        "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt";
+
+      function setNotice(text) {
+        const clean = (text || "").trim().replace(/\s+/g, " ");
+        const track = document.getElementById("noticeTrack");
+        if (!track) return;
+        track.textContent = clean ? `${clean}   •   ${clean}` : "공지 없음";
+      }
+
+      async function fetchNotice() {
+        try {
+          const res = await fetch(`${NOTICE_URL}?t=${Date.now()}`, {
+            cache: "no-store",
+          });
+          if (!res.ok) throw new Error("fail");
+          const txt = await res.text();
+          setNotice(txt);
+        } catch (e) {
+          setNotice("공지 로드 실패");
+        }
+      }
+
+      $("#noticeRefreshBtn").on("click", fetchNotice);
+      fetchNotice();
+      setInterval(fetchNotice, 10 * 60 * 1000);
+
+      // (선택) 관리자 모드에서 공지 수정 버튼 노출
+      window.enableNoticeEdit = function () {
+        if ($("#noticeEditBtn").length) return;
+        $(".notice-actions").append(
+          $("<button type='button' id='noticeEditBtn'>공지 수정</button>").on(
+            "click",
+            () => window.open(GITHUB_EDIT_URL, "_blank")
+          )
+        );
+      };
+      // 예) 관리자 인증 성공 지점에서 enableNoticeEdit() 호출하면 됩니다.
+    });
+  </script>
 </body>
 </html>
