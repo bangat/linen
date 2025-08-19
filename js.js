@@ -123,10 +123,50 @@ if (!$('#requestDate').val()) {
     .on("change.preview", function (event) {
       var file = event.target && event.target.files && event.target.files[0];
       if (!file) return;
-      // 네 환경에서 잘 되던 FileReader 유지
+      
+      // 이미지 최적화: 크기 제한 및 압축
+      var maxWidth = 1024;
+      var maxHeight = 1024;
+      var quality = 0.7;
+      
       var reader = new FileReader();
       reader.onload = function (e) {
-        $("#preview").attr("src", e.target.result).show();
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          
+          var width = img.width;
+          var height = img.height;
+          
+          // 비율 유지하면서 크기 조정
+          if (width > maxWidth || height > maxHeight) {
+            var ratio = Math.min(maxWidth / width, maxHeight / height);
+            width = width * ratio;
+            height = height * ratio;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // 압축된 이미지를 미리보기에 표시
+          var compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          $("#preview").attr("src", compressedDataUrl).show();
+          
+          // 압축된 이미지를 파일로 변환하여 저장
+          canvas.toBlob(function(blob) {
+            var compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            // 압축된 파일을 input에 저장
+            var dataTransfer = new DataTransfer();
+            dataTransfer.items.add(compressedFile);
+            $("#inventoryPhoto")[0].files = dataTransfer.files;
+          }, 'image/jpeg', quality);
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     });
@@ -217,11 +257,11 @@ if (!$('#requestDate').val()) {
       var token  = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
 
       if (photoFile) {
-        // 사진 + 캡션 전송 (원래 쓰던 방식)
+        // 사진 + 캡션 전송 (최적화된 파일)
         var url1 = "https://api.telegram.org/bot" + token + "/sendPhoto";
         var fd = new FormData();
         fd.append("chat_id", chatId);
-        // 파일명 명시(안전)
+        // 최적화된 파일 전송
         fd.append("photo", photoFile, photoFile.name || "photo.jpg");
         fd.append("caption", message);
 
@@ -234,7 +274,12 @@ if (!$('#requestDate').val()) {
             alert("요청이 성공적으로 전송되었습니다.");
             $("#linenRequestForm")[0].reset();
             $("#preview").attr("src", "#").hide();
-            $("#requestDate").trigger("change");
+            $("#requestDate").val(getTodayYYYYMMDD()).trigger("change");
+            // 저장된 병동 복원
+            var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+            if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+              $('#wardDropdown').val(savedWard);
+            }
           })
           .catch(function(err){
             console.error("TG sendPhoto error:", err);
@@ -266,7 +311,12 @@ if (!$('#requestDate').val()) {
             playNotificationSound();
             alert("요청이 성공적으로 전송되었습니다.");
             $("#linenRequestForm")[0].reset();
-            $("#requestDate").trigger("change");
+            $("#requestDate").val(getTodayYYYYMMDD()).trigger("change");
+            // 저장된 병동 복원
+            var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+            if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+              $('#wardDropdown').val(savedWard);
+            }
           })
           .catch(function(err){
             console.error("TG sendMessage error:", err);
