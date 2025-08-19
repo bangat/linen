@@ -355,6 +355,26 @@ button[disabled], #submitBtn[disabled] {
   cursor: pointer;
 }
 
+/* 병동/날짜를 항상 2열로 */
+.form-grid--two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* 너무 작은 초소형 화면에서만 1열로 (선택) */
+@media (max-width: 360px) {
+  .form-grid--two {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 그리드 아이템 안에서 자식이 넘치지 않도록 */
+.form-grid .form-group { min-width: 0; }
+.form-grid .form-group select,
+.form-grid .form-group input { min-width: 0; }
+
+
 
 
 
