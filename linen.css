@@ -1,5 +1,4 @@
-/* ▼▼ 추가/유지 (기본은 네가 준 그대로) ▼▼ */
-
+/* ========== Base ========== */
 body {
   font-family: Arial, sans-serif;
   max-width: 1200px;
@@ -8,63 +7,233 @@ body {
   position: relative;
 }
 
-/* ... 중략(네 기존 스타일 유지) ... */
-
-/* 항상 2열(모바일에서도 한 줄) 유지 */
-.form-grid--two {
-  display: grid;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 10px;
+/* 입력+단위 정렬 */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+.input-container input {
+  width: 80px;
+  margin-right: 5px;
+  height: 100%;
+}
+.input-container span {
+  font-size: 14px;
+  line-height: normal;
 }
 
-/* 테이블 헤더 고정 & 스크롤 (유지) */
-.form-section table { display:block; max-height:55vh; overflow:auto; }
-.form-section th { position:sticky; top:0; z-index:1; background:#f2f2f2; }
+/* 날짜 입력 & 라벨 */
+.date-wrapper { position: relative; width: 100%; }
+.date-placeholder {
+  position: absolute;
+  top: 50%; left: 10px;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.date-picker {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+.date-picker:focus + .date-placeholder,
+.date-picker:not(:placeholder-shown) + .date-placeholder {
+  top: -10px; left: 10px;
+  font-size: 12px;
+  color: #666;
+}
+.date-picker.filled + .date-placeholder { display: none; }
 
-/* 공지 바 (호버 멈춤 금지) */
-.notice-track { 
+/* ========== 제거: 햄버거/드롭다운 관련 전부 삭제 ========== */
+/* (menu-bar, dropdown-menu 관련 CSS 의도적으로 없음) */
+
+/* 버튼 공통 */
+#cameraButton,
+#submitBtn {
+  background-color: #3498db;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-left: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+}
+.camera-icon,
+.submit-icon {
+  font-size: 12px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* 폼 그룹 */
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.form-group label {
+  margin-right: 10px;
+  min-width: 100px;
+}
+.form-group input,
+.form-group select {
+  flex-grow: 1;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+/* 탭 */
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2px;
+  margin-top: 25px;
+  margin-bottom: 8px;
+}
+.tab {
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 11px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+}
+.tab.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* 섹션 표시 */
+.form-section { display: none; }
+.form-section.active { display: block; }
+
+/* 테이블 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+th { background-color: #f2f2f2; }
+td:first-child { width: 75%; }
+td:last-child { width: 25%; }
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+}
+input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+input[type="submit"]:hover { background-color: #45a049; }
+
+/* 카메라 섹션 */
+.camera-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.camera-section button {
+  cursor: pointer;
+  padding: 8px 16px;
+  background-color: #3498db;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  margin-right: 20px;
+  font-size: 12px;
+}
+.camera-section input[type="file"] { display: none; }
+
+#preview { max-width: 100%; margin-top: 10px; display: none; }
+#statusMessage { margin-top: 10px; display: none; font-size: 12px; }
+
+/* 드롭다운 높이 조절 */
+select { height: auto; overflow-y: auto; }
+@media only screen and (max-width: 768px) {
+  select {
+    font-size: 16px;
+    max-height: 200px;
+    overflow-y: scroll;
+  }
+}
+
+/* 테이블 헤더 고정 & 섹션 스크롤 */
+.form-section table { display: block; max-height: 55vh; overflow: auto; }
+.form-section th { position: sticky; top: 0; z-index: 1; background-color: #f2f2f2; }
+
+/* 버튼 상태 */
+button[disabled], #submitBtn[disabled] { opacity: 0.6; cursor: not-allowed; }
+.btn-success { background: #2ecc71 !important; }
+
+/* 필수값 강조 */
+.invalid {
+  outline: 2px solid #ff6b6b;
+  border-radius: 6px;
+  animation: invalidBlink 0.6s ease-in-out 0s 2;
+}
+@keyframes invalidBlink {
+  0% { outline-color: #ff6b6b; }
+  50% { outline-color: transparent; }
+  100% { outline-color: #ff6b6b; }
+}
+
+/* 공지사항 바 (새로고침/호버정지 없음, 마퀴만) */
+.notice-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 10px 0 14px 0;
+  border-radius: 8px;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  overflow: hidden;
+}
+.notice-label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #ad6800;
+  flex: 0 0 auto;
+}
+.notice-track {
   position: relative;
   white-space: nowrap;
   flex: 1 1 auto;
   will-change: transform;
   animation: marquee 18s linear infinite;
 }
-/* ⛔ 호버 시 멈춤 되는 줄 삭제 (기존에 있던 것 제거) */
+/* ⛔ 호버 멈춤 제거: 아래 줄(hover 일시정지)은 두지 않습니다. */
 /* .notice-track:hover { animation-play-state: paused; } */
+
 @keyframes marquee {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
-/* 폼 하단 버튼 영역 여유(선택: 짤림 방지) */
+/* notice-actions는 HTML에서 제거했으므로 CSS도 생략 */
+
+/* 폼 하단 여백(모바일에서 버튼 가림 방지) */
 form { padding-bottom: 100px; }
 
-/* 비활성 버튼 시각 */
-button[disabled], #submitBtn[disabled] { opacity:.6; cursor:not-allowed; }
-
-/* 필수값 강조 */
-.invalid { outline:2px solid #ff6b6b; border-radius:6px; animation: invalidBlink .6s ease-in-out 0s 2; }
-@keyframes invalidBlink { 0%{outline-color:#ff6b6b;} 50%{outline-color:transparent;} 100%{outline-color:#ff6b6b;} }
-
-/* ▲▲ 추가/유지 끝 ▲▲ */
-
-
-/* ▼▼ 완전 삭제해야 하는 블럭 ▼▼
-   - 햄버거/드롭다운 관련 DOM을 html에서 제거했으므로 CSS도 삭제
-*/
-
-/* 삭제 대상:
-.menu-bar { ... }
-.menu-bar div { ... }
-.dropdown-menu { ... }
-.dropdown-menu a { ... }
-.dropdown-menu a:last-child { ... }
-*/
-
-/* 또한, 아래 ‘모바일에서 1열로 바꾸는’ 미디어쿼리도 삭제 (항상 2열 유지)
-@media (max-width: 768px) {
-  .form-grid--two { grid-template-columns: 1fr; }
-}
-*/
-
-/* ▲▲ 삭제 끝 ▲▲ */
+/* ========== 병동/날짜 2열 고정 (모바일에서도 한 줄) ========== */
+.form-grid { display: grid; gap: 10px; margin-bottom: 10px; }
+.form-grid--two { grid-template-columns: 1fr 1fr !important; }
