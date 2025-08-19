@@ -324,17 +324,6 @@
   </style>
 </head>
 <body>
-  <!-- 햄버거 -->
-  <div class="menu-bar" id="menuBar">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-  <!-- 메뉴 -->
-  <div class="dropdown-menu" id="dropdownMenu">
-    <a href="#" id="adminPageLink">관리자페이지</a>
-  </div>
-
   <!-- 헤더 -->
   <div class="content">
     <div class="header-container">
@@ -515,26 +504,33 @@
 
 /* ===== 헤더 클릭: 저장된 병동 복원 + 오늘 날짜로 초기화 ===== */
 $("#noticeHeader").off("click.reset").on("click.reset", function () {
-  // 수량 입력만 초기화
-  $('input[type="number"]').val('');
+      // 1) 수량 입력만 초기화
+      $('input[type="number"]').val('');
 
-  // 병동: 저장된 병동이 있으면 복원, 없으면 비움
-  var savedWard = localStorage.getItem(SAVED_WARD_KEY);
-  if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
-    $('#wardDropdown').val(savedWard);
-  } else {
-    $('#wardDropdown').val('');
-  }
+      // 2) 날짜: 오늘 날짜로 기본 세팅 (전역 함수 의존 X)
+      const d = new Date();
+      const today = d.getFullYear() + '-' +
+                    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(d.getDate()).padStart(2, '0');
+      $('#requestDate').val(today).trigger('change'); // 라벨 동기화
 
-  // 날짜: 오늘 날짜로 기본 세팅
-  $('#requestDate').val(getTodayYYYYMMDD()).trigger('change'); // 라벨 숨김
+      // 3) 병동: "비우지 말고" 저장된 병동을 복원 (없으면 그대로 비워둠)
+      const SAVED_WARD_KEY = 'linen_last_ward';
+      const savedWard = localStorage.getItem(SAVED_WARD_KEY);
+      if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+        $('#wardDropdown').val(savedWard);
+      } else {
+        // 옵션이 바뀌어 존재하지 않으면 비움
+        $('#wardDropdown').val('');
+      }
 
-  // 탭 초기화(시트/기타)
-  $(".tab").removeClass("active").css("background-color", "");
-  $(".form-section").removeClass("active");
-  $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
-  $("#sheet").addClass("active");
-});
+      // 4) 탭 초기화(시트/기타)
+      $(".tab").removeClass("active").css("background-color", "");
+      $(".form-section").removeClass("active");
+      $('[data-tab="sheet"]').addClass("active").css("background-color", "#4CAF50");
+      $("#sheet").addClass("active");
+    });
+  });
 
 
       /* ===== 탭 전환(비활성 탭 무시) ===== */
@@ -555,26 +551,6 @@ $("#noticeHeader").off("click.reset").on("click.reset", function () {
       $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass(
         "disabled"
       );
-
-/* ===== 카메라/미리보기 ===== */
-$("#cameraButton").off("click.camera").on("click.camera", function () {
-  $("#inventoryPhoto").click();
-});
-
-$("#inventoryPhoto").off("change.preview").on("change.preview", function (e) {
-  var files = e.target && e.target.files;
-  var file = files && files[0];
-  if (!file) return;
-
-  // FileReader 대신 Object URL 사용 (호환성↑, 빠름)
-  var blobUrl = (window.URL || window.webkitURL).createObjectURL(file);
-  $("#preview").attr("src", blobUrl).show();
-
-  // 폼 리셋 시 URL 해제(메모리 누수 방지)
-  $("#linenRequestForm").one("reset", function(){
-    (window.URL || window.webkitURL).revokeObjectURL(blobUrl);
-  });
-});
 
 
       /* ===== 메뉴 토글 ===== */
