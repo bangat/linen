@@ -61,7 +61,8 @@ $(document).ready(function () {
    * 1) 병동 캐시 + 날짜 기본값
    * ========================= */
   var SAVED_WARD_KEY = 'linen_last_ward';
-  var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+  var savedWard = null;
+  try { savedWard = localStorage.getItem(SAVED_WARD_KEY); } catch(e){}
 
   if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
     $('#wardDropdown').val(savedWard);
@@ -69,7 +70,7 @@ $(document).ready(function () {
 
   $('#wardDropdown').off('change.saveWard').on('change.saveWard', function () {
     var v = $(this).val() || '';
-    localStorage.setItem(SAVED_WARD_KEY, v);
+    try { localStorage.setItem(SAVED_WARD_KEY, v); } catch(e){}
   });
 
   function getTodayYYYYMMDD() {
@@ -133,7 +134,6 @@ $(document).ready(function () {
       var file = event.target && event.target.files && event.target.files[0];
       if (!file) return;
 
-      // 파일 리더(네 환경 기준 유지)
       var reader = new FileReader();
       reader.onload = function (e) {
         $("#preview").attr("src", e.target.result).show();
@@ -209,7 +209,7 @@ $(document).ready(function () {
       var orthoOut = "";
       $("#ortho input[type='number']").each(function () {
         var itemName = $(this).closest("tr").find("td:first").text().trim();
-        var itemCount = Number($(this).val()));
+        var itemCount = Number($(this).val()); // ← 여분 괄호 제거
         if (itemCount > 0) orthoOut += itemName + " " + itemCount + "장\n";
       });
       if (orthoOut) message += "[정형환의]\n" + orthoOut + "\n";
@@ -217,7 +217,7 @@ $(document).ready(function () {
       var uniformOut = "";
       $("#uniform input[type='number']").each(function () {
         var itemName = $(this).closest("tr").find("td:first").text().trim();
-        var itemCount = Number($(this).val()));
+        var itemCount = Number($(this).val()); // ← 여분 괄호 제거
         if (itemCount > 0) uniformOut += itemName + " " + itemCount + "장\n";
       });
       if (uniformOut) message += "[근무복]\n" + uniformOut + "\n";
@@ -240,8 +240,10 @@ $(document).ready(function () {
             playNotificationSound();
             alert("요청이 성공적으로 전송되었습니다.");
             $("#linenRequestForm")[0].reset();
+            // reset 후 오늘 날짜 재세팅 + 라벨 동기화
+            $('#requestDate').val(getTodayYYYYMMDD());
+            syncDatePlaceholder();
             $("#preview").attr("src", "#").hide();
-            $("#requestDate").trigger("change");
           })
           .catch(function(err){
             console.error("TG sendPhoto error:", err);
@@ -271,7 +273,9 @@ $(document).ready(function () {
             playNotificationSound();
             alert("요청이 성공적으로 전송되었습니다.");
             $("#linenRequestForm")[0].reset();
-            $("#requestDate").trigger("change");
+            // reset 후 오늘 날짜 재세팅 + 라벨 동기화
+            $('#requestDate').val(getTodayYYYYMMDD());
+            syncDatePlaceholder();
           })
           .catch(function(err){
             console.error("TG sendMessage error:", err);
@@ -306,7 +310,8 @@ $(document).ready(function () {
   var datePlaceholder = document.querySelector(".date-placeholder");
 
   function syncDatePlaceholder() {
-    if (dateInput && dateInput.value) {
+    if (!dateInput || !datePlaceholder) return;
+    if (dateInput.value) {
       datePlaceholder.style.display = "none";
     } else {
       datePlaceholder.style.display = "block";
@@ -315,7 +320,12 @@ $(document).ready(function () {
   if (dateInput) {
     dateInput.addEventListener("input", syncDatePlaceholder);
     dateInput.addEventListener("change", syncDatePlaceholder);
+    // 라벨 클릭 시 포커스
+    if (datePlaceholder) {
+      datePlaceholder.addEventListener("click", function(){ dateInput.focus(); });
+    }
   }
+  // 초기 동기화
   syncDatePlaceholder();
 
   // (선택) jQuery UI datepicker 호환
