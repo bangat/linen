@@ -4,37 +4,34 @@ $(document).ready(function () {
    * ========================= */
 
   // === 병동 캐시 ===
-var SAVED_WARD_KEY = 'linen_last_ward';
-var savedWard = localStorage.getItem(SAVED_WARD_KEY);
+  var SAVED_WARD_KEY = 'linen_last_ward';
+  var savedWard = localStorage.getItem(SAVED_WARD_KEY);
 
-// 저장된 병동이 실제 옵션에 있으면 세팅
-if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
-  $('#wardDropdown').val(savedWard);
-}
+  // 저장된 병동이 실제 옵션에 있으면 세팅
+  if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
+    $('#wardDropdown').val(savedWard);
+  }
 
-// 변경 시마다 저장
-$('#wardDropdown').off('change.saveWard').on('change.saveWard', function () {
-  var v = $(this).val() || '';
-  localStorage.setItem(SAVED_WARD_KEY, v);
-});
+  // 변경 시마다 저장
+  $('#wardDropdown').off('change.saveWard').on('change.saveWard', function () {
+    var v = $(this).val() || '';
+    localStorage.setItem(SAVED_WARD_KEY, v);
+  });
 
   // === 오늘 날짜 기본값 ===
-function getTodayYYYYMMDD() {
-  var d = new Date();
-  var y = d.getFullYear();
-  var m = ('0' + (d.getMonth() + 1)).slice(-2);
-  var day = ('0' + d.getDate()).slice(-2);
-  return y + '-' + m + '-' + day;
-}
+  function getTodayYYYYMMDD() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = ('0' + (d.getMonth() + 1)).slice(-2);
+    var day = ('0' + d.getDate()).slice(-2);
+    return y + '-' + m + '-' + day;
+  }
 
-var todayStr = getTodayYYYYMMDD();
-if (!$('#requestDate').val()) {
-  $('#requestDate').val(todayStr).trigger('change'); // 라벨 숨김 동기화
-}
+  var todayStr = getTodayYYYYMMDD();
+  if (!$('#requestDate').val()) {
+    $('#requestDate').val(todayStr).trigger('change'); // 라벨 숨김 동기화
+  }
 
-
-
-  
   $("h1").off("click.headerReset").on("click.headerReset", function () {
     $(".tab").removeClass("active").css("background-color", "");
     $(".tab[data-tab='sheet']").addClass("active").css("background-color", "#4CAF50");
@@ -48,46 +45,70 @@ if (!$('#requestDate').val()) {
   });
 
   /* =========================
-   * 2) 공지사항 마퀴 (중복 초기화 방지)
+   * 2) 공지사항 (마퀴 제거 + Firebase 실시간 반영)
    * ========================= */
   if (!window.__noticeInit) {
     window.__noticeInit = true;
 
-    var NOTICE_URL =
-      "https://raw.githubusercontent.com/bangat/hallymlinen/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt"; // 공지 텍스트 파일
-    var GITHUB_EDIT_URL =
-      "https://github.com/bangat/hallymlinen/edit/main/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD.txt"; // 모바일에서 바로 수정
-
+    // 2-1) 표시 함수(중복 제거)
     function setNotice(text) {
-      var clean = (text || "").trim().replace(/\s+/g, " ");
       var track = document.getElementById("noticeTrack");
       if (!track) return;
-      track.textContent = clean ? (clean + "   •   " + clean) : "공지 없음";
+      var clean = (text || "").trim();
+      track.textContent = clean || "공지 없음";
     }
 
-    function fetchNotice() {
-      fetch(NOTICE_URL + "?t=" + Date.now(), { cache: "no-store" })
-        .then(function(res){
-          if (!res.ok) throw new Error("fail");
-          return res.text();
-        })
-        .then(function(txt){ setNotice(txt); })
-        .catch(function(){ setNotice("공지 로드 실패"); });
+    // 2-2) Firebase 초기화
+    try {
+      if (!firebase.apps.length) {
+        // FB_CONFIG는 HTML에서 주입(위 0) 참고)
+        if (!window.FB_CONFIG || !window.FB_CONFIG.projectId) {
+          console.warn("FB_CONFIG 누락: 공지는 기본 값으로 표시됩니다.");
+        } else {
+          firebase.initializeApp(window.FB_CONFIG);
+        }
+      }
+    } catch (e) {
+      console.warn("Firebase init error:", e);
     }
 
-    $("#noticeRefreshBtn").off("click.notice").on("click.notice", fetchNotice);
-    fetchNotice();
-    setInterval(fetchNotice, 10 * 60 * 1000);
+    // 2-3) Firestore 실시간 리스너
+    var db = null, noticeDocRef = null, unsubscribe = null;
+    try {
+      db = firebase.firestore();
+      noticeDocRef = db.doc("linen/notice");
 
-    // (선택) 관리자면 편집 버튼 노출
-    window.enableNoticeEdit = function () {
-      if ($("#noticeEditBtn").length) return;
-      $(".notice-actions").append(
-        $("<button type='button' id='noticeEditBtn'>공지 수정</button>").on("click", function () {
-          window.open(GITHUB_EDIT_URL, "_blank");
-        })
-      );
-    };
+      // 실시간 반영: 챗봇/서버가 업데이트하면 즉시 화면에 적용
+      unsubscribe = noticeDocRef.onSnapshot(function (snap) {
+        var data = snap && snap.data && snap.data();
+        if (data && typeof data.text === "string") {
+          setNotice(data.text);
+        } else {
+          setNotice(""); // "공지 없음"
+        }
+      }, function (err) {
+        console.warn("Firestore listen error:", err);
+      });
+    } catch (e) {
+      console.warn("Firestore not available:", e);
+    }
+
+    // 2-4) 새로고침 버튼: 수동 재조회(get)
+    $("#noticeRefreshBtn")
+      .off("click.notice")
+      .on("click.notice", function () {
+        if (!noticeDocRef) return;
+        noticeDocRef.get()
+          .then(function (snap) {
+            var data = snap && snap.data && snap.data();
+            setNotice((data && data.text) || "");
+          })
+          .catch(function () {
+            // 리스너가 이미 돌고 있으므로, 실패시 기존 표시 유지
+          });
+      });
+
+    // (깃허브 fetch / 수정버튼 / setInterval 등은 전부 제거)
   }
 
   /* =========================
@@ -217,11 +238,10 @@ if (!$('#requestDate').val()) {
       var token  = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
 
       if (photoFile) {
-        // 사진 + 캡션 전송 (원래 쓰던 방식)
+        // 사진 + 캡션 전송
         var url1 = "https://api.telegram.org/bot" + token + "/sendPhoto";
         var fd = new FormData();
         fd.append("chat_id", chatId);
-        // 파일명 명시(안전)
         fd.append("photo", photoFile, photoFile.name || "photo.jpg");
         fd.append("caption", message);
 
@@ -246,7 +266,7 @@ if (!$('#requestDate').val()) {
           });
 
       } else {
-        // 텍스트만 전송 (원래 쓰던 JSON 방식 유지)
+        // 텍스트만 전송
         var url2 = "https://api.telegram.org/bot" + token + "/sendMessage";
         var payload = JSON.stringify({
           chat_id: chatId,
@@ -277,7 +297,7 @@ if (!$('#requestDate').val()) {
             $("#statusMessage").fadeOut();
           });
       }
-    }); // ←★★ submit 핸들러 닫기 (중요)
+    }); // submit 핸들러 끝
 
   /* =========================
    * 7) 관리자 페이지 링크 처리
@@ -289,7 +309,7 @@ if (!$('#requestDate').val()) {
       var password = prompt("관리자 페이지 암호를 입력하세요.");
       if (password === "9") {
         window.location.href = "admin.html";
-        // enableNoticeEdit(); // 원하면 공지 수정 버튼 노출
+        // enableNoticeEdit();  // 공지수정 버튼 기능은 제거했으니 미사용
       } else {
         alert("암호가 일치하지 않습니다.");
       }
@@ -330,4 +350,4 @@ if (!$('#requestDate').val()) {
     audio.currentTime = 0;
     audio.play().catch(function(){});
   }
-}); // ←★★ document.ready 닫기
+}); // document.ready 끝
