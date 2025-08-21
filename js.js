@@ -1,24 +1,77 @@
+/*******************************************************
+ * 린넨실 요청서 - 클라이언트 스크립트 (js.js)
+ * - 공지(공지사항) 처리: index.html의 RTDB 스크립트가 담당
+ * - 본 파일은 UI/폼/전송 로직만 포함
+ *******************************************************/
+
 $(document).ready(function () {
   /* =========================
-   * 1) 헤더 클릭: 초기화 & 시트 탭으로
+   * 0) 테이블 자동 생성
    * ========================= */
+  const sheetItems = [
+    { name: "대 시 트", key: "대시트_요청수량" },
+    { name: "반 시 트", key: "반시트_요청수량" },
+    { name: "베 갯 잇", key: "베갯잇_요청수량" },
+    { name: "중 환 의", key: "중환의_요청수량" },
+    { name: "이 불",   key: "이불_요청수량" },
+    { name: "얼음주머니", key: "얼음포_요청수량" },
+    { name: "억 제 대", key: "억제대_요청수량" },
+    { name: "수 건",   key: "수건_요청수량" },
+    { name: "검진복(하의)", key: "하의_요청수량" },
+  ];
+  const requiredSizes = ["3XL", "2XL", "XL", "L"];
+  const sizes = ["4XL", "3XL", "2XL", "XL", "L", "M", "S"];
+  const types = ["상의", "하의"];
 
-  // === 병동 캐시 ===
+  function populateTable(sectionId, items) {
+    const table = document.querySelector(`#${sectionId} table`);
+    if (!table) return;
+    items.forEach((item) => {
+      const row = document.createElement("tr");
+      const itemCell = document.createElement("td");
+      itemCell.textContent = item.name;
+      const inputCell = document.createElement("td");
+      const input = document.createElement("input");
+      input.type = "number";
+      input.name = item.key;
+      input.min = 0;
+      inputCell.appendChild(input);
+      row.appendChild(itemCell);
+      row.appendChild(inputCell);
+      table.appendChild(row);
+    });
+  }
+
+  function generateClothingItems(sizeList, typeList) {
+    return sizeList.flatMap((size) =>
+      typeList.map((type) => ({
+        name: `${size} ${type}`,
+        key: `${size}_${type}_요청수량`,
+      }))
+    );
+  }
+
+  // 최초 1회 테이블 구성
+  populateTable("sheet", sheetItems);
+  populateTable("normal", generateClothingItems(sizes, types));
+  populateTable("ortho",  generateClothingItems(sizes.slice(1), types)); // 3XL 이하
+  populateTable("uniform",generateClothingItems(requiredSizes, types));
+
+  /* =========================
+   * 1) 병동 캐시 + 날짜 기본값
+   * ========================= */
   var SAVED_WARD_KEY = 'linen_last_ward';
   var savedWard = localStorage.getItem(SAVED_WARD_KEY);
 
-  // 저장된 병동이 실제 옵션에 있으면 세팅
   if (savedWard && $('#wardDropdown option[value="' + savedWard + '"]').length) {
     $('#wardDropdown').val(savedWard);
   }
 
-  // 변경 시마다 저장
   $('#wardDropdown').off('change.saveWard').on('change.saveWard', function () {
     var v = $(this).val() || '';
     localStorage.setItem(SAVED_WARD_KEY, v);
   });
 
-  // === 오늘 날짜 기본값 ===
   function getTodayYYYYMMDD() {
     var d = new Date();
     var y = d.getFullYear();
@@ -27,100 +80,35 @@ $(document).ready(function () {
     return y + '-' + m + '-' + day;
   }
 
-  var todayStr = getTodayYYYYMMDD();
   if (!$('#requestDate').val()) {
-    $('#requestDate').val(todayStr).trigger('change'); // 라벨 숨김 동기화
+    $('#requestDate').val(getTodayYYYYMMDD()).trigger('change');
   }
 
+  /* =========================
+   * 2) 헤더 클릭: 시트 탭으로 초기화
+   * ========================= */
   $("h1").off("click.headerReset").on("click.headerReset", function () {
     $(".tab").removeClass("active").css("background-color", "");
     $(".tab[data-tab='sheet']").addClass("active").css("background-color", "#4CAF50");
     $(".form-section").removeClass("active");
     $("#sheet").addClass("active");
 
-    // 입력값 초기화
+    // 수량만 초기화
     $('input[type="number"]').val("");
-    $("#wardDropdown").val("");
-    $("#requestDate").val("").trigger("change"); // 날짜 라벨 동기화
+    // 병동/날짜는 유지(원하면 아래 주석 해제)
+    // $("#wardDropdown").val("");
+    // $("#requestDate").val("").trigger("change");
   });
-
-  /* =========================
-   * 2) 공지사항 (마퀴 제거 + Firebase 실시간 반영)
-   * ========================= */
-  if (!window.__noticeInit) {
-    window.__noticeInit = true;
-
-    // 2-1) 표시 함수(중복 제거)
-    function setNotice(text) {
-      var track = document.getElementById("noticeTrack");
-      if (!track) return;
-      var clean = (text || "").trim();
-      track.textContent = clean || "공지 없음";
-    }
-
-    // 2-2) Firebase 초기화
-    try {
-      if (!firebase.apps.length) {
-        // FB_CONFIG는 HTML에서 주입(위 0) 참고)
-        if (!window.FB_CONFIG || !window.FB_CONFIG.projectId) {
-          console.warn("FB_CONFIG 누락: 공지는 기본 값으로 표시됩니다.");
-        } else {
-          firebase.initializeApp(window.FB_CONFIG);
-        }
-      }
-    } catch (e) {
-      console.warn("Firebase init error:", e);
-    }
-
-    // 2-3) Firestore 실시간 리스너
-    var db = null, noticeDocRef = null, unsubscribe = null;
-    try {
-      db = firebase.firestore();
-      noticeDocRef = db.doc("linen/notice");
-
-      // 실시간 반영: 챗봇/서버가 업데이트하면 즉시 화면에 적용
-      unsubscribe = noticeDocRef.onSnapshot(function (snap) {
-        var data = snap && snap.data && snap.data();
-        if (data && typeof data.text === "string") {
-          setNotice(data.text);
-        } else {
-          setNotice(""); // "공지 없음"
-        }
-      }, function (err) {
-        console.warn("Firestore listen error:", err);
-      });
-    } catch (e) {
-      console.warn("Firestore not available:", e);
-    }
-
-    // 2-4) 새로고침 버튼: 수동 재조회(get)
-    $("#noticeRefreshBtn")
-      .off("click.notice")
-      .on("click.notice", function () {
-        if (!noticeDocRef) return;
-        noticeDocRef.get()
-          .then(function (snap) {
-            var data = snap && snap.data && snap.data();
-            setNotice((data && data.text) || "");
-          })
-          .catch(function () {
-            // 리스너가 이미 돌고 있으므로, 실패시 기존 표시 유지
-          });
-      });
-
-    // (깃허브 fetch / 수정버튼 / setInterval 등은 전부 제거)
-  }
 
   /* =========================
    * 3) 탭 전환 (비활성 탭 무시)
    * ========================= */
-  // 비활성 탭 지정 (요청대로)
   $("[data-tab='normal'], [data-tab='ortho'], [data-tab='uniform']").addClass("disabled");
 
   $(".tab")
     .off("click.tabs")
     .on("click.tabs", function () {
-      if ($(this).hasClass("disabled")) return; // 비활성 탭 클릭 무시
+      if ($(this).hasClass("disabled")) return;
       var tabId = $(this).attr("data-tab");
 
       $(".tab").removeClass("active").css("background-color", "");
@@ -144,7 +132,8 @@ $(document).ready(function () {
     .on("change.preview", function (event) {
       var file = event.target && event.target.files && event.target.files[0];
       if (!file) return;
-      // 네 환경에서 잘 되던 FileReader 유지
+
+      // 파일 리더(네 환경 기준 유지)
       var reader = new FileReader();
       reader.onload = function (e) {
         $("#preview").attr("src", e.target.result).show();
@@ -162,9 +151,8 @@ $(document).ready(function () {
     });
 
   /* =========================
-   * 6) 폼 제출 (유효성 검사 + 전송)
+   * 6) 폼 제출 (유효성 검사 + 텔레그램 전송)
    * ========================= */
-  // 시각 강조 도우미
   function highlightInvalid($el) {
     $el.addClass("invalid");
     if ($el[0] && $el[0].scrollIntoView) {
@@ -202,43 +190,43 @@ $(document).ready(function () {
       var message = "병동명 : " + wardValue + "\n";
       message += "입고날짜 : " + requestDate + "\n\n";
 
-      var sheetItems = "";
+      var sheetOut = "";
       $("#sheet input[type='number']").each(function () {
         var itemName = $(this).closest("tr").find("td:first").text().trim();
-        var itemCount = $(this).val();
-        if (itemCount > 0) sheetItems += itemName + " " + itemCount + "장\n";
+        var itemCount = Number($(this).val());
+        if (itemCount > 0) sheetOut += itemName + " " + itemCount + "장\n";
       });
-      if (sheetItems) message += "[시트/기타]\n" + sheetItems + "\n";
+      if (sheetOut) message += "[시트/기타]\n" + sheetOut + "\n";
 
-      var normalItems = "";
+      var normalOut = "";
       $("#normal input[type='number']").each(function () {
         var itemName = $(this).closest("tr").find("td:first").text().trim();
-        var itemCount = $(this).val();
-        if (itemCount > 0) normalItems += itemName + " " + itemCount + "장\n";
+        var itemCount = Number($(this).val());
+        if (itemCount > 0) normalOut += itemName + " " + itemCount + "장\n";
       });
-      if (normalItems) message += "[일반환의]\n" + normalItems + "\n";
+      if (normalOut) message += "[일반환의]\n" + normalOut + "\n";
 
-      var orthoItems = "";
+      var orthoOut = "";
       $("#ortho input[type='number']").each(function () {
         var itemName = $(this).closest("tr").find("td:first").text().trim();
-        var itemCount = $(this).val();
-        if (itemCount > 0) orthoItems += itemName + " " + itemCount + "장\n";
+        var itemCount = Number($(this).val()));
+        if (itemCount > 0) orthoOut += itemName + " " + itemCount + "장\n";
       });
-      if (orthoItems) message += "[정형환의]\n" + orthoItems + "\n";
+      if (orthoOut) message += "[정형환의]\n" + orthoOut + "\n";
 
-      var uniformItems = "";
+      var uniformOut = "";
       $("#uniform input[type='number']").each(function () {
         var itemName = $(this).closest("tr").find("td:first").text().trim();
-        var itemCount = $(this).val();
-        if (itemCount > 0) uniformItems += itemName + " " + itemCount + "장\n";
+        var itemCount = Number($(this).val()));
+        if (itemCount > 0) uniformOut += itemName + " " + itemCount + "장\n";
       });
-      if (uniformItems) message += "[근무복]\n" + uniformItems + "\n";
+      if (uniformOut) message += "[근무복]\n" + uniformOut + "\n";
 
+      // ⛔ 공개 저장소/배포 환경에서는 토큰/아이디 노출 주의!
       var chatId = "5432510881";
       var token  = "6253877113:AAEyEqwqf5m0A5YB5Ag6vpez3ceCfIasKj0";
 
       if (photoFile) {
-        // 사진 + 캡션 전송
         var url1 = "https://api.telegram.org/bot" + token + "/sendPhoto";
         var fd = new FormData();
         fd.append("chat_id", chatId);
@@ -248,7 +236,6 @@ $(document).ready(function () {
         fetch(url1, { method: "POST", body: fd })
           .then(function(r){ return r.json(); })
           .then(function(data){
-            console.log("TG sendPhoto:", data);
             if (!data.ok) throw new Error(data.description || "전송 실패");
             playNotificationSound();
             alert("요청이 성공적으로 전송되었습니다.");
@@ -266,7 +253,6 @@ $(document).ready(function () {
           });
 
       } else {
-        // 텍스트만 전송
         var url2 = "https://api.telegram.org/bot" + token + "/sendMessage";
         var payload = JSON.stringify({
           chat_id: chatId,
@@ -281,7 +267,6 @@ $(document).ready(function () {
         })
           .then(function(r){ return r.json(); })
           .then(function(data){
-            console.log("TG sendMessage:", data);
             if (!data.ok) throw new Error(data.description || "전송 실패");
             playNotificationSound();
             alert("요청이 성공적으로 전송되었습니다.");
@@ -297,10 +282,10 @@ $(document).ready(function () {
             $("#statusMessage").fadeOut();
           });
       }
-    }); // submit 핸들러 끝
+    });
 
   /* =========================
-   * 7) 관리자 페이지 링크 처리
+   * 7) 관리자 페이지 링크
    * ========================= */
   $("#adminPageLink")
     .off("click.adminLink")
@@ -309,14 +294,13 @@ $(document).ready(function () {
       var password = prompt("관리자 페이지 암호를 입력하세요.");
       if (password === "9") {
         window.location.href = "admin.html";
-        // enableNoticeEdit();  // 공지수정 버튼 기능은 제거했으니 미사용
       } else {
         alert("암호가 일치하지 않습니다.");
       }
     });
 
   /* =========================
-   * 8) 날짜 라벨 겹침 해결 (네이티브 date용)
+   * 8) 날짜 라벨 겹침 해결
    * ========================= */
   var dateInput = document.getElementById("requestDate");
   var datePlaceholder = document.querySelector(".date-placeholder");
@@ -334,6 +318,7 @@ $(document).ready(function () {
   }
   syncDatePlaceholder();
 
+  // (선택) jQuery UI datepicker 호환
   if ($.fn && $.fn.datepicker) {
     $("#requestDate").datepicker({
       dateFormat: "yy-mm-dd",
@@ -342,7 +327,7 @@ $(document).ready(function () {
   }
 
   /* =========================
-   * 9) 알림음 재생 함수
+   * 9) 알림음
    * ========================= */
   function playNotificationSound() {
     var audio = document.getElementById("notificationSound");
@@ -350,4 +335,4 @@ $(document).ready(function () {
     audio.currentTime = 0;
     audio.play().catch(function(){});
   }
-}); // document.ready 끝
+});
